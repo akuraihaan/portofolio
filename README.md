@@ -1,46 +1,53 @@
-# bworiey Portfolio
+# BWORIEY Portfolio
 
-Portofolio kreatif dengan arah visual yang mengikuti `DESIGN.md`: kanvas near-black, cream typography, outlined pill controls, organic gradient shapes, dan taxonomy warna per disiplin.
+Portfolio editorial vanilla JavaScript + Vite yang mempertahankan desain utama `DESIGN.md`. Root Vite adalah aplikasi publik dan admin yang berjalan di Vercel; Supabase menjadi sumber data, Auth, RLS, dan Storage. Folder `backend/` tetap dipertahankan sebagai backend Laravel lokal yang sudah ada.
 
-## Yang sudah dibuat
+## Struktur aktual
 
-- Hero editorial dengan headline besar, abstract portrait, dan animated organic shapes.
-- Sticky navigation, mobile menu, smooth scroll, theme switcher, dan reduced-motion support.
-- Section About, Capabilities, Selected Work, Process, Field Notes, dan Contact.
-- Filter project untuk kategori Digital, Identity, dan Motion.
-- Modal detail project yang dapat dibuka dari setiap project card.
-- Contact form dengan validasi browser dan feedback status.
-- Copy email ke clipboard dengan toast notification.
-- Responsive layout untuk mobile, tablet, dan desktop.
+```text
+index.html              # entry publik dan fallback SPA
+script.js               # entry router berdasarkan window.location.pathname
+supabase.js             # client publishable Supabase
+js/                     # auth, router, admin, public content, utilities
+styles.css              # desain publik dan admin
+supabase/migrations/    # schema, functions, seed role/permission, RLS, Storage
+vercel.json             # rewrite direct route ke index.html
+backend/                # Laravel auth/admin lokal yang sudah tersedia
+```
 
-## Menjalankan public site lokal
+## Instalasi dan lokal
 
 ```bash
 npm install
+copy .env.example .env.local
 npm run dev
 ```
 
-Untuk build production:
+Isi `.env.local` dengan `VITE_SUPABASE_URL` dan `VITE_SUPABASE_PUBLISHABLE_KEY`. Jalankan migration Supabase sesuai [SUPABASE_SETUP.md](SUPABASE_SETUP.md), lalu buka:
+
+- `/` — portfolio publik
+- `/login` — Supabase Auth login
+- `/forgot-password` — kirim reset password
+- `/reset-password` — simpan password baru
+- `/admin` — dashboard terlindungi
+
+Subroute admin mencakup projects, articles, skills, experiences, educations, certificates, services, testimonials, messages, media, social links, settings, users, roles, permissions, security, dan login history.
+
+## Role dan permission
+
+Role bawaan: `super_admin`, `admin`, `editor`, dan `viewer`. Permission menggunakan format `module.action`, misalnya `projects.view`, `projects.create`, `settings.update`, `users.deactivate`, dan `security.view`. Menu, form, dan tombol admin memakai helper permission di frontend; keputusan akhir tetap dipaksa oleh RLS Supabase.
+
+Daftar lengkap schema, permission, dan policy ada di file migration `supabase/migrations/`.
+
+## Build dan deployment
 
 ```bash
+npm ci
 npm run build
 ```
 
-## Menjalankan backend Laravel
+Konfigurasi Vercel dijelaskan di [VERCEL_DEPLOYMENT.md](VERCEL_DEPLOYMENT.md). Build output adalah `dist`. Environment variable frontend hanya `VITE_SUPABASE_URL` dan `VITE_SUPABASE_PUBLISHABLE_KEY`; jangan menaruh service-role key di repository atau bundle.
 
-Backend autentikasi berada di folder [`backend/`](C:/laragon/www/portofolio/backend). Jalankan:
+## Validasi
 
-```bash
-cd backend
-composer install
-copy .env.example .env
-php artisan key:generate
-php artisan migrate --seed
-php artisan serve
-```
-
-Sebelum menjalankan seeder, isi `SUPER_ADMIN_NAME`, `SUPER_ADMIN_EMAIL`, dan `SUPER_ADMIN_PASSWORD` di `backend/.env`. Registrasi publik sengaja nonaktif secara default.
-
-## Catatan pengembangan
-
-Repository sekarang memiliki public-facing front-end Vite dan backend Laravel 13 + Breeze Blade + Spatie Permission. Homepage Laravel membaca identitas, profil, judul profesional, social links, dan resume dari database; auth, role, permission, login history, activity log, dan admin access control sudah menggunakan database Laravel.
+Build root Vite berhasil dengan Node lokal 22.11.0 dan menghasilkan warning rekomendasi Vite untuk Node 22.12+. Dependency binding Rolldown Windows tidak lagi menjadi dependency langsung backend.
