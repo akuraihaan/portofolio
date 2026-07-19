@@ -1,3 +1,4 @@
+import { supabase } from './supabase.js'
 const root = document.documentElement;
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -166,3 +167,18 @@ document.querySelectorAll('a[href^="#"]').forEach((link) => link.addEventListene
 
 const year = document.querySelector('[data-year]');
 if (year) year.textContent = new Date().getFullYear();
+async function checkCurrentSession() {
+  const {
+    data: { session },
+    error
+  } = await supabase.auth.getSession()
+
+  if (error) {
+    console.error('Gagal membaca sesi:', error)
+    return
+  }
+
+  console.log('Sesi Supabase:', session)
+}
+
+checkCurrentSession()
