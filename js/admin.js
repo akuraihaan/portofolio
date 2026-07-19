@@ -1,6 +1,6 @@
 import { supabase, supabaseConfiguration } from '../supabase.js'
 import { ADMIN_MODULES } from './router.js'
-import { authReady, getAccessContext, getSession, hasPermission, signIn, signOut, startIdleSessionTimeout, clearAccessCache } from './auth.js'
+import { authReady, getAccessContext, getCurrentSession, hasPermission, signIn, signOut, startIdleSessionTimeout } from './auth.js'
 import { escapeHtml, formatDate, getValue, parseSettingValue, safeFileName, setBusy, showToast, slugify } from './utils.js'
 
 const contentFields = {
@@ -29,17 +29,42 @@ export async function initializeAdminRoute(route) {
   if (!route.path.startsWith('/admin')) { renderNotFound(); return }
 
   if (!authReady()) { renderConfigurationError(); return }
-  const { session, error } = await getSession()
-  if (error || !session?.user) { window.location.replace('/login'); return }
-  const context = await getAccessContext(session.user.id)
-  if (context.error || !context.profile?.is_active) { await signOut(); window.location.replace('/login'); return }
-  if (route.name === 'dashboard' && !hasPermission(context, 'dashboard.view')) { renderAccessDenied(); return }
   const module = ADMIN_MODULES[route.name]
-  if (module && !hasPermission(context, module.permission)) { renderAccessDenied(); return }
-  renderAdminShell(context, session.user, route)
+  const requiredPermission = route.name === 'dashboard' ? 'dashboard.view' : module?.permission
+  const context = await protectRoute(requiredPermission)
+  if (!context) return
+  renderAdminShell(context, context.user, route)
   startIdleSessionTimeout(async () => { await signOut(); window.location.replace('/login?expired=1') })
   if (route.name === 'dashboard') await renderDashboard(context)
   else await renderModule(route.name, context)
+}
+
+async function protectRoute(requiredPermission = null) {
+  try {
+    const context = await getAccessContext(true)
+
+    if (!context?.user) {
+      window.location.replace('/login')
+      return null
+    }
+
+    if (!context.profile?.is_active) {
+      await signOut()
+      window.location.replace('/login')
+      return null
+    }
+
+    if (requiredPermission && !hasPermission(context, requiredPermission)) {
+      renderAccessDenied()
+      return null
+    }
+
+    return context
+  } catch (error) {
+    console.error('Route guard error:', error)
+    renderAccessDenied(error.message || 'Akses pengguna tidak dapat diverifikasi.')
+    return null
+  }
 }
 
 async function renderLoginPage() {
@@ -51,8 +76,15 @@ async function renderLoginPage() {
     renderConfigurationError('Isi VITE_SUPABASE_URL dan VITE_SUPABASE_PUBLISHABLE_KEY untuk mengaktifkan login.')
     return
   }
-  const { session } = await getSession()
-  if (session?.user) { const context = await getAccessContext(session.user.id); if (!context.error && context.profile?.is_active) { window.location.replace('/admin'); return } }
+  const session = await getCurrentSession()
+  if (session?.user) {
+    try {
+      const context = await getAccessContext()
+      if (context?.profile?.is_active) { window.location.replace('/admin'); return }
+    } catch (error) {
+      console.error('Access context saat login:', error)
+    }
+  }
   document.title = 'Login — bworiey'
   document.body.innerHTML = `<main class="admin-auth-page"><section class="admin-auth-card"><div class="admin-auth-header"><p class="admin-auth-eyebrow">BWORIEY CMS</p><h1>Masuk sebagai Admin</h1><p>Gunakan akun yang terdaftar pada Supabase Authentication.</p></div><div id="login-alert"></div><form id="login-form" novalidate><label class="admin-field"><span>Email</span><input name="email" type="email" autocomplete="email" placeholder="admin@email.com" required></label><label class="admin-field"><span>Password</span><input name="password" type="password" autocomplete="current-password" required></label><button type="submit" class="admin-primary-button">Masuk</button><p class="admin-form-error" id="login-error" role="alert"></p></form><a class="admin-back-link" href="/forgot-password">Lupa password?</a><a class="admin-back-link" href="/">Kembali ke portfolio</a></section></main>`
   const form = document.querySelector('#login-form'); const error = document.querySelector('#login-error'); const button = form.querySelector('button')
@@ -196,11 +228,16 @@ async function renderMedia(context) {
 async function renderUsers(context) {
   const content = document.querySelector('#admin-content'); const canUpdate = hasPermission(context, 'users.update') || hasPermission(context, 'users.deactivate'); const canAssign = hasPermission(context, 'users.update')
   content.innerHTML = `<div class="admin-page-heading"><div><p>{ Access control }</p><h1>Users.</h1><span>Pembuatan akun dilakukan melalui Supabase Authentication; panel ini mengatur profil aktif dan role.</span></div></div><section class="admin-card"><div id="users-list">Memuat...</div></section>`
-  const [{ data: profiles, error }, { data: roles }] = await Promise.all([supabase.from('profiles').select('*').order('created_at', { ascending: false }), supabase.from('roles').select('id,name,label').order('name')])
-  const list = document.querySelector('#users-list'); if (error) { list.innerHTML = '<span class="admin-form-error">User tidak dapat dimuat. Periksa policy RLS.</span>'; return }
-  const { data: userRoles } = await supabase.from('user_roles').select('user_id, role_id, roles(name,label)')
+  const [{ data: profiles, error }, { data: roles }, { data: userRoles, error: userRolesError }] = await Promise.all([
+    supabase.from('profiles').select('*').order('created_at', { ascending: false }),
+    supabase.from('roles').select('id,name,label').order('name'),
+    supabase.from('user_roles').select('user_id, role_id')
+  ])
+  const list = document.querySelector('#users-list')
+  if (error || userRolesError) { list.innerHTML = '<span class="admin-form-error">User tidak dapat dimuat. Periksa policy RLS.</span>'; return }
+  const roleIndex = new Map((roles ?? []).map(role => [role.id, role]))
   const roleMap = Object.groupBy ? Object.groupBy(userRoles ?? [], row => row.user_id) : (userRoles ?? []).reduce((map, row) => { (map[row.user_id] ||= []).push(row); return map }, {})
-  list.innerHTML = profiles?.length ? profiles.map(profile => { const currentRoles = roleMap[profile.id] ?? []; return `<article class="admin-list-card"><div><p class="admin-list-kicker">${profile.is_active ? 'active' : 'inactive'} · ${formatDate(profile.created_at)}</p><h3>${escapeHtml(profile.full_name || profile.username || 'Tanpa nama')}</h3><p>${escapeHtml(profile.phone || profile.bio || profile.id)}</p><div class="admin-role-pills">${currentRoles.map(row => `<span>${escapeHtml(row.roles?.label || row.roles?.name || '')}</span>`).join('')}</div></div><div class="admin-row-actions">${canUpdate ? `<button class="admin-secondary-button" data-user-active="${profile.id}" data-active="${profile.is_active}">${profile.is_active ? 'Nonaktifkan' : 'Aktifkan'}</button>` : ''}${canAssign ? `<select data-user-role="${profile.id}"><option value="">Tambah role...</option>${(roles ?? []).map(role => `<option value="${role.id}">${escapeHtml(role.label || role.name)}</option>`).join('')}</select>` : ''}</div></article>` }).join('') : '<p class="admin-empty">Belum ada profil user.</p>'
+  list.innerHTML = profiles?.length ? profiles.map(profile => { const currentRoles = (roleMap[profile.id] ?? []).map(row => roleIndex.get(row.role_id)).filter(Boolean); return `<article class="admin-list-card"><div><p class="admin-list-kicker">${profile.is_active ? 'active' : 'inactive'} · ${formatDate(profile.created_at)}</p><h3>${escapeHtml(profile.full_name || profile.username || 'Tanpa nama')}</h3><p>${escapeHtml(profile.phone || profile.bio || profile.id)}</p><div class="admin-role-pills">${currentRoles.map(role => `<span>${escapeHtml(role.label || role.name || '')}</span>`).join('')}</div></div><div class="admin-row-actions">${canUpdate ? `<button class="admin-secondary-button" data-user-active="${profile.id}" data-active="${profile.is_active}">${profile.is_active ? 'Nonaktifkan' : 'Aktifkan'}</button>` : ''}${canAssign ? `<select data-user-role="${profile.id}"><option value="">Tambah role...</option>${(roles ?? []).map(role => `<option value="${role.id}">${escapeHtml(role.label || role.name)}</option>`).join('')}</select>` : ''}</div></article>` }).join('') : '<p class="admin-empty">Belum ada profil user.</p>'
   list.addEventListener('click', async event => { const button = event.target.closest('[data-user-active]'); if (!button) return; const next = button.dataset.active !== 'true'; const { error: updateError } = await supabase.from('profiles').update({ is_active: next, updated_at: new Date().toISOString() }).eq('id', button.dataset.userActive); if (updateError) showToast('Status user ditolak oleh RLS.', 'error'); else { button.dataset.active = String(next); button.textContent = next ? 'Nonaktifkan' : 'Aktifkan'; showToast('Status user diperbarui.') } })
   list.addEventListener('change', async event => { const select = event.target.closest('[data-user-role]'); if (!select?.value) return; const { error: assignError } = await supabase.from('user_roles').insert({ user_id: select.dataset.userRole, role_id: select.value, assigned_by: context.user.id }); if (assignError) showToast('Role tidak dapat ditambahkan oleh RLS.', 'error'); else { showToast('Role ditambahkan.'); select.value = '' } })
 }
@@ -211,7 +248,7 @@ async function renderReadOnlyModule(key) {
   const { data, error } = await supabase.from(table).select('*').order('created_at', { ascending: false }).limit(100); const list = document.querySelector('#readonly-list'); if (error) { list.innerHTML = '<span class="admin-form-error">Data tidak dapat dimuat.</span>'; return } list.innerHTML = data?.length ? data.map(row => `<article class="admin-list-card"><div>${columns.map(column => `<p><strong>${escapeHtml(column)}:</strong> ${escapeHtml(row[column] === true ? 'true' : row[column] === false ? 'false' : row[column] ?? '-')}</p>`).join('')}</div></article>`).join('') : '<p class="admin-empty">Belum ada data.</p>'
 }
 
-function renderAccessDenied() { document.body.innerHTML = `<main class="admin-auth-page"><section class="admin-auth-card"><p class="admin-auth-eyebrow">403</p><h1>Akses ditolak.</h1><p>Akunmu tidak memiliki permission untuk halaman ini.</p><a class="admin-primary-button admin-button-link" href="/admin">Kembali ke dashboard</a></section></main>` }
+function renderAccessDenied(message = 'Akunmu tidak memiliki permission untuk halaman ini.') { document.body.innerHTML = `<main class="admin-auth-page"><section class="admin-auth-card"><p class="admin-auth-eyebrow">403</p><h1>Akses ditolak.</h1><p>${escapeHtml(message)}</p><a class="admin-primary-button admin-button-link" href="/admin">Kembali ke dashboard</a></section></main>` }
 function renderConfigurationError(message = 'Supabase belum dikonfigurasi.') { document.body.innerHTML = `<main class="admin-auth-page"><section class="admin-auth-card"><p class="admin-auth-eyebrow">Configuration</p><h1>Konfigurasi belum siap.</h1><p>${escapeHtml(message)}</p><a class="admin-back-link" href="/">Kembali ke portfolio</a></section></main>` }
 function renderNotFound() { document.body.innerHTML = `<main class="admin-auth-page"><section class="admin-auth-card"><p class="admin-auth-eyebrow">404</p><h1>Halaman tidak ditemukan.</h1><a class="admin-primary-button admin-button-link" href="/">Kembali</a></section></main>` }
 function translateAuthError(message = '') { const value = message.toLowerCase(); if (value.includes('invalid login credentials')) return 'Email atau password salah.'; if (value.includes('email not confirmed')) return 'Email belum dikonfirmasi.'; if (value.includes('too many requests')) return 'Terlalu banyak percobaan. Coba lagi nanti.'; return 'Login belum berhasil. Periksa data dan coba lagi.' }

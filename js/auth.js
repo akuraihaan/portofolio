@@ -7,44 +7,116 @@ export function authReady() {
   return Boolean(supabaseConfiguration.ready && supabase)
 }
 
+export async function getCurrentSession() {
+  if (!authReady()) return null
+
+  const { data, error } = await supabase.auth.getSession()
+  if (error) {
+    console.error('Gagal membaca session:', error)
+    return null
+  }
+
+  return data?.session ?? null
+}
+
 export async function getSession() {
   if (!authReady()) return { session: null, error: new Error('Supabase belum dikonfigurasi.') }
+
   const { data, error } = await supabase.auth.getSession()
   return { session: data?.session ?? null, error }
 }
 
-export async function getAccessContext(userId, force = false) {
-  if (!authReady()) return { error: new Error('Supabase belum dikonfigurasi.') }
-  if (accessCache?.user?.id === userId && !force) return accessCache
+export async function getAccessContext(forceRefresh = false) {
+  if (!authReady()) return null
+  if (accessCache && !forceRefresh) return accessCache
 
-  const [{ data: profile, error: profileError }, { data: userRoles, error: rolesError }] = await Promise.all([
-    supabase.from('profiles').select('id, full_name, username, avatar_url, phone, bio, is_active, last_login_at').eq('id', userId).maybeSingle(),
-    supabase.from('user_roles').select('role_id, roles(id, name, label, is_system)').eq('user_id', userId)
-  ])
+  const session = await getCurrentSession()
+  if (!session?.user) return null
 
-  if (profileError) return { error: profileError }
-  if (rolesError) return { error: rolesError }
-  if (!profile) return { error: new Error('Profil pengguna belum tersedia.') }
+  const userId = session.user.id
+  const { data: profile, error: profileError } = await supabase
+    .from('profiles')
+    .select('id, full_name, username, avatar_url, phone, bio, is_active, last_login_at')
+    .eq('id', userId)
+    .maybeSingle()
 
-  const roleRows = (userRoles ?? []).map(row => row.roles).filter(Boolean)
-  const roleIds = roleRows.map(role => role.id)
+  if (profileError) {
+    console.error('Gagal membaca profil:', profileError)
+    throw new Error('Profil pengguna tidak dapat dibaca.')
+  }
+
+  if (!profile || !profile.is_active) {
+    throw new Error('Akun belum aktif atau belum memiliki profil.')
+  }
+
+  const { data: userRoles, error: userRolesError } = await supabase
+    .from('user_roles')
+    .select('role_id')
+    .eq('user_id', userId)
+
+  if (userRolesError) {
+    console.error('Gagal membaca user role:', userRolesError)
+    throw new Error('Role pengguna tidak dapat dibaca.')
+  }
+
+  const roleIds = [...new Set((userRoles ?? []).map(row => row.role_id).filter(Boolean))]
+  if (!roleIds.length) throw new Error('Akun belum memiliki role.')
+
+  const { data: roles, error: rolesError } = await supabase
+    .from('roles')
+    .select('id, name, label, is_system')
+    .in('id', roleIds)
+
+  if (rolesError) {
+    console.error('Gagal membaca role:', rolesError)
+    throw new Error('Data role tidak dapat dibaca.')
+  }
+
+  const { data: rolePermissions, error: rolePermissionsError } = await supabase
+    .from('role_permissions')
+    .select('permission_id')
+    .in('role_id', roleIds)
+
+  if (rolePermissionsError) {
+    console.error('Gagal membaca role permission:', rolePermissionsError)
+    throw new Error('Hubungan role dan permission tidak dapat dibaca.')
+  }
+
+  const permissionIds = [...new Set((rolePermissions ?? []).map(row => row.permission_id).filter(Boolean))]
   let permissionRows = []
-  if (roleIds.length) {
-    const { data, error } = await supabase
-      .from('role_permissions')
-      .select('role_id, permissions(key, module, action)')
-      .in('role_id', roleIds)
-    if (error) return { error }
+
+  if (permissionIds.length) {
+    const { data, error: permissionsError } = await supabase
+      .from('permissions')
+      .select('id, key, module, action')
+      .in('id', permissionIds)
+
+    if (permissionsError) {
+      console.error('Gagal membaca permission:', permissionsError)
+      throw new Error('Permission pengguna tidak dapat dibaca.')
+    }
+
     permissionRows = data ?? []
   }
 
+  const roleNames = [...new Set((roles ?? []).map(role => role.name).filter(Boolean))]
+  const permissionKeys = [...new Set(permissionRows.map(permission => permission.key).filter(Boolean))]
+
   accessCache = {
-    user: { id: userId },
+    user: session.user,
     profile,
-    roles: roleRows,
-    roleNames: roleRows.map(role => role.name),
-    permissions: [...new Set(permissionRows.map(row => row.permissions?.key).filter(Boolean))]
+    roles: roleNames,
+    roleNames,
+    permissions: permissionKeys
   }
+
+  console.info('Access context', JSON.stringify({
+    userId,
+    roles: roleNames,
+    permissionCount: permissionKeys.length,
+    hasDashboardAccess: permissionKeys.includes('dashboard.view')
+  }))
+
   return accessCache
 }
 
@@ -70,19 +142,24 @@ export function hasAnyPermission(context, permissions = []) {
 
 export async function signIn(email, password) {
   if (!authReady()) throw new Error('Supabase belum dikonfigurasi. Isi environment variables terlebih dahulu.')
+
   const { data, error } = await supabase.auth.signInWithPassword({ email, password })
   if (error) throw error
-  const context = await getAccessContext(data.user.id, true)
-  if (context.error || !context.profile?.is_active) {
+
+  clearAccessCache()
+  const context = await getAccessContext(true)
+  if (!context?.profile?.is_active) {
     await supabase.auth.signOut()
     throw new Error('Akun belum aktif atau belum memiliki profil.')
   }
+
   await supabase.rpc('record_login', {
     login_success: true,
     login_email: data.user.email,
     failure_reason_value: null,
     user_agent_value: navigator.userAgent
   })
+
   return { user: data.user, context }
 }
 
@@ -93,18 +170,21 @@ export async function signOut() {
 
 export function subscribeToAuthChanges(callback) {
   if (!authReady()) return { data: { subscription: { unsubscribe() {} } } }
+
   return supabase.auth.onAuthStateChange((event, session) => {
-    if (event === 'SIGNED_OUT') clearAccessCache()
+    clearAccessCache()
     callback(event, session)
   })
 }
 
 export function startIdleSessionTimeout(onTimeout, duration = 2 * 60 * 60 * 1000) {
   if (!authReady()) return () => {}
+
   const reset = () => {
     window.clearTimeout(idleTimer)
     idleTimer = window.setTimeout(onTimeout, duration)
   }
+
   const events = ['pointerdown', 'keydown', 'scroll', 'touchstart']
   events.forEach(event => window.addEventListener(event, reset, { passive: true }))
   reset()

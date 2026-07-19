@@ -18,6 +18,7 @@ Urutan migration:
 1. `supabase/migrations/202607190001_initial_schema.sql`
 2. `supabase/migrations/202607190002_security_and_rls.sql`
 3. `supabase/migrations/202607190003_seed_roles_permissions.sql`
+4. `supabase/migrations/202607190004_fix_admin_authorization.sql`
 
 Cara yang direkomendasikan memakai Supabase CLI:
 
@@ -27,7 +28,7 @@ supabase link --project-ref YOUR_PROJECT_REF
 supabase db push
 ```
 
-Atau buka **SQL Editor**, tempel dan jalankan file tersebut satu per satu sesuai urutan. Migration membuat 20 tabel, trigger profile otomatis, default role viewer, function security-definer, RLS, dan bucket `portfolio-public` privat.
+Atau buka **SQL Editor**, tempel dan jalankan file tersebut satu per satu sesuai urutan. Migration membuat 20 tabel, trigger profile otomatis, default role viewer, function security-definer, RLS, dan bucket `portfolio-public` privat. Migration keempat mempertahankan ID UUID yang sudah dipakai schema ini, memastikan `dashboard.view` dan permission super admin tersedia, memperbaiki policy baca metadata akses, serta menetapkan user admin pertama jika UUID tersebut sudah ada di `auth.users`.
 
 ## 3. Buat Super Admin pertama
 
