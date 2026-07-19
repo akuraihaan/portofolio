@@ -1,0 +1,24 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    body { font-family: 'DM Sans', ui-sans-serif, system-ui, sans-serif; }
+    .font-display { font-family: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif; }
+}
+
+@layer components {
+    .admin-nav-link {
+        @apply flex items-center justify-between rounded-md px-3 py-2.5 text-sm text-[#7c7c6f] transition;
+    }
+    .admin-nav-link:hover, .admin-nav-link.is-active {
+        @apply bg-[#0e100f] text-[#fffce1];
+    }
+    .admin-nav-link.is-active span { @apply text-[#abff84]; }
+    .admin-input {
+        @apply w-full rounded-md border border-[#42433d] bg-[#0e100f] px-3 py-2.5 text-sm text-[#fffce1] outline-none transition;
+    }
+    .admin-input:focus { @apply border-[#abff84] ring-1 ring-[#abff84]/40; }
+}

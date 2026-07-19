@@ -1,0 +1,13 @@
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+
+backend/vendor/
+backend/vendor-broken/
+backend/node_modules/
+backend/public/build/
+backend/database/database.sqlite
+backend/.env
+.laravel-scaffold/
