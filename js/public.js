@@ -1,4 +1,4 @@
-import { isSupabaseConfigured, supabase } from '../supabase.js'
+import { supabase, supabaseConfiguration } from '../supabase.js'
 import { normalizeSettingValue, escapeHtml, formatDate, showToast } from './utils.js'
 
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -17,7 +17,7 @@ export function initializePublic() {
 }
 
 async function readTable(table, configure = query => query) {
-  if (!isSupabaseConfigured || !supabase) return { ok: false, data: [], error: new Error('Supabase belum dikonfigurasi.') }
+  if (!supabaseConfiguration.ready || !supabase) return { ok: false, data: [], error: new Error('Supabase belum dikonfigurasi.') }
   const { data, error } = await configure(supabase.from(table).select('*'))
   if (error) {
     console.error(`Gagal membaca ${table}:`, error)
@@ -35,7 +35,7 @@ function publishedQuery(query) {
 }
 
 async function loadPublicContent() {
-  if (!isSupabaseConfigured || !supabase) {
+  if (!supabaseConfiguration.ready || !supabase) {
     showPublicConfigNotice()
     return
   }

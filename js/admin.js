@@ -1,4 +1,4 @@
-import { isSupabaseConfigured, supabase } from '../supabase.js'
+import { supabase, supabaseConfiguration } from '../supabase.js'
 import { ADMIN_MODULES } from './router.js'
 import { authReady, getAccessContext, getSession, hasPermission, signIn, signOut, startIdleSessionTimeout, clearAccessCache } from './auth.js'
 import { escapeHtml, formatDate, getValue, parseSettingValue, safeFileName, setBusy, showToast, slugify } from './utils.js'
@@ -43,7 +43,14 @@ export async function initializeAdminRoute(route) {
 }
 
 async function renderLoginPage() {
-  if (!authReady()) { renderConfigurationError('Isi VITE_SUPABASE_URL dan VITE_SUPABASE_PUBLISHABLE_KEY untuk mengaktifkan login.'); return }
+  if (!supabaseConfiguration.ready || !supabase) {
+    console.error('Supabase configuration missing', {
+      urlConfigured: supabaseConfiguration.urlConfigured,
+      keyConfigured: supabaseConfiguration.keyConfigured
+    })
+    renderConfigurationError('Isi VITE_SUPABASE_URL dan VITE_SUPABASE_PUBLISHABLE_KEY untuk mengaktifkan login.')
+    return
+  }
   const { session } = await getSession()
   if (session?.user) { const context = await getAccessContext(session.user.id); if (!context.error && context.profile?.is_active) { window.location.replace('/admin'); return } }
   document.title = 'Login — bworiey'

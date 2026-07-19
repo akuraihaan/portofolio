@@ -1,10 +1,10 @@
-import { isSupabaseConfigured, supabase } from '../supabase.js'
+import { supabase, supabaseConfiguration } from '../supabase.js'
 
 let accessCache = null
 let idleTimer = null
 
 export function authReady() {
-  return Boolean(isSupabaseConfigured && supabase)
+  return Boolean(supabaseConfiguration.ready && supabase)
 }
 
 export async function getSession() {

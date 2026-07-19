@@ -1,19 +1,27 @@
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
-const supabasePublishableKey =
-  import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY
+const supabaseUrl = String(
+  import.meta.env.VITE_SUPABASE_URL || ''
+).trim()
 
-export const supabaseConfig = {
-  url: supabaseUrl,
-  publishableKey: supabasePublishableKey
+const supabasePublishableKey = String(
+  import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || ''
+).trim()
+
+export const supabaseConfiguration = {
+  urlConfigured: Boolean(supabaseUrl),
+  keyConfigured: Boolean(supabasePublishableKey),
+  ready: Boolean(supabaseUrl && supabasePublishableKey)
 }
 
-export const isSupabaseConfigured = Boolean(
-  supabaseUrl && supabasePublishableKey
-)
+console.info('Supabase environment status', JSON.stringify({
+  mode: import.meta.env.MODE,
+  production: import.meta.env.PROD,
+  urlConfigured: supabaseConfiguration.urlConfigured,
+  keyConfigured: supabaseConfiguration.keyConfigured
+}))
 
-export const supabase = isSupabaseConfigured
+export const supabase = supabaseConfiguration.ready
   ? createClient(supabaseUrl, supabasePublishableKey, {
       db: { schema: 'public' },
       auth: {
