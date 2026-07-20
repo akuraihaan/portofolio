@@ -214,7 +214,8 @@ async function saveGeneric(event, key, row, context, reload, formContainer) {
       await saved
     } else {
       const request = row ? supabase.from(ADMIN_MODULES[key].table).update(payload).eq('id', row.id) : supabase.from(ADMIN_MODULES[key].table).insert(payload)
-      ({ error: saveError } = await request)
+      const result = await request
+      saveError = result.error
     }
   } catch (error) {
     saveError = error
