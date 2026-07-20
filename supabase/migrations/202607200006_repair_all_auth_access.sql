@@ -128,7 +128,7 @@ security definer
 set search_path = public, auth
 as $$
 declare
-    viewer_role_id uuid;
+    viewer_role_id bigint;
 begin
     insert into public.profiles (id, full_name, username, is_active)
     values (

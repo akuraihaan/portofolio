@@ -85,7 +85,7 @@ as $$
     );
 $$;
 
-create or replace function public.can_assign_role(target_role_id uuid, target_user_id uuid)
+create or replace function public.can_assign_role(target_role_id bigint, target_user_id uuid)
 returns boolean
 language sql
 stable
@@ -105,7 +105,7 @@ as $$
        );
 $$;
 
-create or replace function public.can_remove_user_role(target_user_id uuid, target_role_id uuid)
+create or replace function public.can_remove_user_role(target_user_id uuid, target_role_id bigint)
 returns boolean
 language sql
 stable
@@ -180,7 +180,7 @@ security definer
 set search_path = public, auth
 as $$
 declare
-    viewer_role_id uuid;
+    viewer_role_id bigint;
 begin
     insert into public.profiles (id, full_name, username, is_active)
     values (

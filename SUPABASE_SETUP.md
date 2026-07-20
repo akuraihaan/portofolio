@@ -30,7 +30,7 @@ supabase link --project-ref YOUR_PROJECT_REF
 supabase db push
 ```
 
-Atau buka **SQL Editor**, tempel dan jalankan file tersebut satu per satu sesuai urutan. Migration membuat 20 tabel, trigger profile otomatis, default role viewer, function security-definer, RLS, dan bucket `portfolio-public` privat. Migration keempat mempertahankan ID UUID yang sudah dipakai schema ini, memastikan `dashboard.view` dan permission super admin tersedia, memperbaiki policy baca metadata akses, serta menetapkan user admin pertama jika UUID tersebut sudah ada di `auth.users`. Migration kelima memperbaiki kasus ketika user Auth dibuat setelah migration sebelumnya dijalankan.
+Atau buka **SQL Editor**, tempel dan jalankan file tersebut satu per satu sesuai urutan. Migration membuat 20 tabel, trigger profile otomatis, default role viewer, function security-definer, RLS, dan bucket `portfolio-public` privat. Role dan permission memakai `bigint`, sedangkan user/Auth memakai `uuid`. Migration final memastikan `dashboard.view` dan permission super admin tersedia, memperbaiki policy baca metadata akses, serta menetapkan user admin pertama jika UUID tersebut sudah ada di `auth.users`. Migration kelima memperbaiki kasus ketika user Auth dibuat setelah migration sebelumnya dijalankan.
 
 ## 3. Buat Super Admin pertama
 

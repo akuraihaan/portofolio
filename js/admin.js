@@ -39,7 +39,7 @@ export async function initializeAdminRoute(route) {
   else await renderModule(route.name, context)
 }
 
-async function protectRoute(requiredPermission = null) {
+export async function protectRoute(requiredPermission = null) {
   try {
     const context = await getAccessContext(true)
 
@@ -61,8 +61,31 @@ async function protectRoute(requiredPermission = null) {
 
     return context
   } catch (error) {
-    console.error('Route guard error:', error)
-    renderAccessDenied(error.message || 'Akses pengguna tidak dapat diverifikasi.')
+    console.error('Route guard error:', {
+      code: error?.code || null,
+      message: error?.message || 'Unknown route guard error',
+      details: error?.details || null,
+      hint: error?.hint || null
+    })
+
+    const requiresFreshLogin = [
+      'Profil pengguna belum tersedia.',
+      'Akun pengguna tidak aktif.',
+      'Role pengguna tidak dapat dibaca.',
+      'Akun belum memiliki role pada tabel user_roles.',
+      'Data role tidak dapat dibaca.',
+      'Relasi role ditemukan, tetapi data roles tidak tersedia.',
+      'Permission role tidak dapat dibaca.',
+      'Permission pengguna tidak dapat dibaca.'
+    ].includes(error?.message)
+
+    if (requiresFreshLogin) {
+      await signOut()
+      window.location.replace('/login')
+      return null
+    }
+
+    renderAccessDenied('Akses pengguna tidak dapat diverifikasi. Periksa policy RLS dan konfigurasi Supabase.')
     return null
   }
 }
@@ -82,13 +105,19 @@ async function renderLoginPage() {
       const context = await getAccessContext()
       if (context?.profile?.is_active) { window.location.replace('/admin'); return }
     } catch (error) {
-      console.error('Access context saat login:', error)
+      console.error('Access context saat login:', {
+        code: error?.code || null,
+        message: error?.message || 'Unknown access context error',
+        details: error?.details || null,
+        hint: error?.hint || null
+      })
+      await signOut()
     }
   }
   document.title = 'Login — bworiey'
   document.body.innerHTML = `<main class="admin-auth-page"><section class="admin-auth-card"><div class="admin-auth-header"><p class="admin-auth-eyebrow">BWORIEY CMS</p><h1>Masuk sebagai Admin</h1><p>Gunakan akun yang terdaftar pada Supabase Authentication.</p></div><div id="login-alert"></div><form id="login-form" novalidate><label class="admin-field"><span>Email</span><input name="email" type="email" autocomplete="email" placeholder="admin@email.com" required></label><label class="admin-field"><span>Password</span><input name="password" type="password" autocomplete="current-password" required></label><button type="submit" class="admin-primary-button">Masuk</button><p class="admin-form-error" id="login-error" role="alert"></p></form><a class="admin-back-link" href="/forgot-password">Lupa password?</a><a class="admin-back-link" href="/">Kembali ke portfolio</a></section></main>`
   const form = document.querySelector('#login-form'); const error = document.querySelector('#login-error'); const button = form.querySelector('button')
-  form.addEventListener('submit', async event => { event.preventDefault(); if (!form.checkValidity()) { form.reportValidity(); return } setBusy(button, true); error.textContent = ''; try { await signIn(form.elements.email.value.trim(), form.elements.password.value); window.location.replace('/admin') } catch (loginError) { console.error('Login gagal:', loginError); error.textContent = translateAuthError(loginError.message) } finally { setBusy(button, false, 'Masuk') } })
+  form.addEventListener('submit', async event => { event.preventDefault(); if (!form.checkValidity()) { form.reportValidity(); return } setBusy(button, true); error.textContent = ''; try { await signIn(form.elements.email.value.trim(), form.elements.password.value); window.location.replace('/admin') } catch (loginError) { console.error('Login gagal:', { code: loginError?.code || null, message: loginError?.message || 'Unknown login error', details: loginError?.details || null, hint: loginError?.hint || null }); error.textContent = translateAuthError(loginError.message) } finally { setBusy(button, false, 'Masuk') } })
 }
 
 function renderForgotPasswordPage() {
