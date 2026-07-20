@@ -10,6 +10,9 @@ const supabasePublishableKey = String(
   import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || ''
 ).trim()
 
+export const supabaseProjectRef =
+  supabaseUrl.replace(/^https:\/\//, '').split('.')[0] || null
+
 const hasValidBaseUrl =
   Boolean(supabaseUrl) &&
   !supabaseUrl.includes('/rest/v1') &&
@@ -35,6 +38,10 @@ export const supabase = supabaseConfiguration.ready
           autoRefreshToken: true,
           detectSessionInUrl: true
         }
-      }
-    )
+    }
+  )
   : null
+
+if (import.meta.env.DEV) {
+  console.info('Supabase project', { projectRef: supabaseProjectRef })
+}

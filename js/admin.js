@@ -1,6 +1,7 @@
 import { supabase, supabaseConfiguration } from '../supabase.js'
 import { ADMIN_MODULES } from './router.js'
 import { authReady, getAccessContext, getCurrentSession, hasPermission, signIn, signOut, startIdleSessionTimeout } from './auth.js'
+import { createEducation, deleteEducation, getAdminEducations, updateEducation } from './educations.js'
 import { escapeHtml, formatDate, getValue, parseSettingValue, safeFileName, setBusy, showToast, slugify } from './utils.js'
 
 const contentFields = {
@@ -12,7 +13,7 @@ const contentFields = {
   ],
   skills: [['name', 'Nama', 'text', true], ['category', 'Kategori', 'text', false], ['description', 'Deskripsi', 'textarea', false], ['level', 'Level 0-100', 'number', false], ['status', 'Status', 'status', true], ['sort_order', 'Urutan', 'number', false]],
   experiences: [['company', 'Perusahaan', 'text', true], ['role_title', 'Jabatan', 'text', true], ['description', 'Deskripsi', 'textarea', false], ['location', 'Lokasi', 'text', false], ['start_date', 'Mulai', 'date', false], ['end_date', 'Selesai', 'date', false], ['is_current', 'Saat ini', 'boolean', false], ['status', 'Status', 'status', true], ['sort_order', 'Urutan', 'number', false]],
-  educations: [['institution', 'Institusi', 'text', true], ['degree', 'Gelar', 'text', true], ['description', 'Deskripsi', 'textarea', false], ['start_date', 'Mulai', 'date', false], ['end_date', 'Selesai', 'date', false], ['status', 'Status', 'status', true], ['sort_order', 'Urutan', 'number', false]],
+  educations: [['institution', 'Institusi', 'text', true], ['degree', 'Gelar', 'text', false], ['field_of_study', 'Bidang studi', 'text', false], ['location', 'Lokasi', 'text', false], ['description', 'Deskripsi', 'textarea', false], ['start_date', 'Mulai', 'date', false], ['end_date', 'Selesai', 'date', false], ['is_current', 'Saat ini', 'boolean', false], ['logo_url', 'URL logo', 'url', false], ['is_featured', 'Featured', 'boolean', false], ['status', 'Status', 'status', true], ['sort_order', 'Urutan', 'number', false]],
   certificates: [['title', 'Judul', 'text', true], ['issuer', 'Penerbit', 'text', false], ['issue_date', 'Tanggal', 'date', false], ['credential_url', 'URL credential', 'url', false], ['image_url', 'URL gambar', 'url', false], ['status', 'Status', 'status', true], ['sort_order', 'Urutan', 'number', false]],
   services: [['title', 'Judul', 'text', true], ['slug', 'Slug', 'text', true], ['description', 'Deskripsi', 'textarea', false], ['icon', 'Icon key', 'text', false], ['status', 'Status', 'status', true], ['sort_order', 'Urutan', 'number', false], ['is_featured', 'Featured', 'boolean', false]],
   testimonials: [['author_name', 'Nama', 'text', true], ['author_role', 'Peran', 'text', false], ['quote', 'Kutipan', 'textarea', true], ['avatar_url', 'URL avatar', 'url', false], ['status', 'Status', 'status', true], ['sort_order', 'Urutan', 'number', false], ['is_featured', 'Featured', 'boolean', false]],
@@ -166,12 +167,12 @@ async function renderModule(key, context) {
   const content = document.querySelector('#admin-content')
   content.innerHTML = `<div class="admin-page-heading"><div><p>{ ${escapeHtml(config.label)} }</p><h1>${escapeHtml(config.label)}.</h1><span>Kelola data ${escapeHtml(config.label.toLowerCase())} dengan status dan audit trail.</span></div>${canManage ? '<button class="admin-primary-button" data-action="new">Tambah</button>' : ''}</div><div id="module-form"></div><section class="admin-card"><div class="admin-section-heading"><div><p>Database</p><h2>Daftar ${escapeHtml(config.label)}</h2></div><input class="admin-search" data-search placeholder="Cari..."></div><div id="module-status">Memuat...</div><div id="module-list"></div></section>`
   const formContainer = document.querySelector('#module-form'); const list = document.querySelector('#module-list'); const status = document.querySelector('#module-status'); let rows = []
-  const load = async () => { status.textContent = 'Memuat data...'; const { data, error } = await supabase.from(config.table).select('*').order('created_at', { ascending: false }).limit(100); if (error) { status.innerHTML = `<span class="admin-form-error">Tidak dapat memuat data. Periksa policy RLS.</span>`; console.error(error); return } rows = data ?? []; status.textContent = `${rows.length} data`; renderRows(); }
+  const load = async () => { status.textContent = 'Memuat data...'; try { rows = key === 'educations' ? await getAdminEducations() : (await supabase.from(config.table).select('*').order('created_at', { ascending: false }).limit(100)).data ?? []; status.textContent = `${rows.length} data`; renderRows() } catch (loadError) { status.innerHTML = `<span class="admin-form-error">Tidak dapat memuat data. Periksa policy RLS.</span>`; console.error('Admin module load failed:', { code: loadError?.code || null, message: loadError?.message || 'Unknown error', details: loadError?.details || null, hint: loadError?.hint || null }) } }
   const renderRows = () => { const term = document.querySelector('[data-search]').value.toLowerCase(); const filtered = rows.filter(row => JSON.stringify(row).toLowerCase().includes(term)); list.innerHTML = filtered.length ? filtered.map(row => renderGenericRow(key, row, canManage)).join('') : '<p class="admin-empty">Belum ada data.</p>' }
   const openForm = row => { formContainer.innerHTML = renderGenericForm(key, row, fields, canManage); formContainer.scrollIntoView({ behavior: 'smooth', block: 'start' }); formContainer.querySelector('form').addEventListener('submit', event => saveGeneric(event, key, row, context, load, formContainer)) }
   document.querySelector('[data-action="new"]')?.addEventListener('click', () => openForm(null))
   document.querySelector('[data-search]').addEventListener('input', renderRows)
-  list.addEventListener('click', event => { const button = event.target.closest('[data-edit]'); if (button) { const row = rows.find(item => item.id === button.dataset.edit); if (row) openForm(row) } const remove = event.target.closest('[data-delete]'); if (remove) deleteRecord(config.table, remove.dataset.delete, context, load) })
+  list.addEventListener('click', event => { const button = event.target.closest('[data-edit]'); if (button) { const row = rows.find(item => item.id === button.dataset.edit); if (row) openForm(row) } const remove = event.target.closest('[data-delete]'); if (remove) { if (key === 'educations') deleteEducation(remove.dataset.delete).then(load).catch(error => showToast(error.message || 'Pendidikan tidak dapat dihapus.', 'error')); else deleteRecord(config.table, remove.dataset.delete, context, load) } })
   await load()
 }
 
@@ -204,8 +205,20 @@ async function saveGeneric(event, key, row, context, reload, formContainer) {
     if (!row) payload.created_by = context.user.id
     payload.updated_by = context.user.id
   }
-  const request = row ? supabase.from(ADMIN_MODULES[key].table).update(payload).eq('id', row.id) : supabase.from(ADMIN_MODULES[key].table).insert(payload)
-  const { error: saveError } = await request
+  let saveError = null
+  try {
+    if (key === 'educations') {
+      if (payload.is_current) payload.end_date = null
+      if (payload.status === 'published') payload.published_at = new Date().toISOString()
+      const saved = row ? updateEducation(row.id, payload) : createEducation(payload)
+      await saved
+    } else {
+      const request = row ? supabase.from(ADMIN_MODULES[key].table).update(payload).eq('id', row.id) : supabase.from(ADMIN_MODULES[key].table).insert(payload)
+      ({ error: saveError } = await request)
+    }
+  } catch (error) {
+    saveError = error
+  }
   setBusy(button, false, 'Simpan')
   if (saveError) { console.error(saveError); error.textContent = saveError.code === '42501' ? 'Operasi ditolak oleh permission/RLS.' : 'Data belum tersimpan. Periksa field dan coba lagi.'; return }
   showToast('Data berhasil disimpan.'); formContainer.innerHTML = ''; await reload()

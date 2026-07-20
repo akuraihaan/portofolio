@@ -1,5 +1,6 @@
 import { supabase, supabaseConfiguration } from '../supabase.js'
 import { normalizeSettingValue, escapeHtml, formatDate, showToast } from './utils.js'
+import { getPublishedEducations } from './educations.js'
 
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 const palette = ['orange', 'pink', 'lilac', 'blue']
@@ -20,10 +21,23 @@ async function readTable(table, configure = query => query) {
   if (!supabaseConfiguration.ready || !supabase) return { ok: false, data: [], error: new Error('Supabase belum dikonfigurasi.') }
   const { data, error } = await configure(supabase.from(table).select('*'))
   if (error) {
-    console.error(`Gagal membaca ${table}:`, error)
+    console.error(`Gagal membaca ${table}:`, {
+      code: error.code || null,
+      message: error.message || 'Unknown Supabase error',
+      details: error.details || null,
+      hint: error.hint || null
+    })
     return { ok: false, data: [], error }
   }
   return { ok: true, data: data ?? [], error: null }
+}
+
+async function readEducations() {
+  try {
+    return { ok: true, data: await getPublishedEducations(), error: null }
+  } catch (error) {
+    return { ok: false, data: [], error }
+  }
 }
 
 function publishedQuery(query) {
@@ -40,13 +54,14 @@ async function loadPublicContent() {
     return
   }
 
-  const [settingsResult, profileResult, projectsResult, articlesResult, skillsResult, servicesResult, socialResult] = await Promise.all([
+  const [settingsResult, profileResult, projectsResult, articlesResult, skillsResult, servicesResult, educationsResult, socialResult] = await Promise.all([
     readTable('site_settings', query => query.eq('is_public', true).order('group_name').order('key')),
     readTable('profiles', query => query.eq('is_active', true).limit(1)),
     readTable('projects', publishedQuery),
     readTable('articles', publishedQuery),
     readTable('skills', publishedQuery),
     readTable('services', publishedQuery),
+    readEducations(),
     readTable('social_links', query => query.eq('is_active', true).order('sort_order').order('created_at'))
   ])
 
@@ -56,12 +71,13 @@ async function loadPublicContent() {
   const articles = await resolveAssetRows(articlesResult.data, ['cover_image_url'])
   applySiteIdentity(settings, profile)
   renderDynamicCapabilities(skillsResult.data, servicesResult.data)
+  renderDynamicEducations(educationsResult.data)
   renderDynamicProjects(projects)
   renderDynamicArticles(articles)
   renderSocialLinks(socialResult.data)
   bindProjectInteractions()
 
-  if ([settingsResult, profileResult, projectsResult, articlesResult, skillsResult, servicesResult, socialResult].some(result => !result.ok)) {
+  if ([settingsResult, profileResult, projectsResult, articlesResult, skillsResult, servicesResult, educationsResult, socialResult].some(result => !result.ok)) {
     showToast('Sebagian konten belum dapat dimuat. Silakan coba lagi nanti.', 'error')
   }
 }
@@ -134,6 +150,19 @@ function renderDynamicCapabilities(skills, services) {
     const color = palette[index % palette.length]
     return `<article class="capability capability--${color}" data-reveal><div class="capability__visual capability__visual--${color}" aria-hidden="true"><span>${String(index + 1).padStart(2, '0')}</span><i></i><i></i><i></i></div><div class="capability__content"><div class="capability__meta"><span class="category-label">${escapeHtml(record.type)}</span><span>${String(index + 1).padStart(2, '0')}</span></div><h3>${escapeHtml(record.title)}</h3><p>${escapeHtml(record.description || 'Konten belum tersedia.')}</p></div></article>`
   }).join('')
+  initializeRevealAnimations()
+}
+
+function renderDynamicEducations(educations) {
+  const container = document.querySelector('[data-dynamic-educations]')
+  if (!container) return
+
+  if (!educations.length) {
+    container.innerHTML = '<div class="public-empty-state">Belum ada pendidikan published.</div>'
+    return
+  }
+
+  container.innerHTML = educations.map(education => `<article class="education-card" data-reveal><div class="education-card__period">${escapeHtml(education.is_current ? `${formatDate(education.start_date)} — Sekarang` : `${formatDate(education.start_date)} — ${formatDate(education.end_date)}`)}</div><div><h3>${escapeHtml(education.degree || 'Pendidikan')}</h3><p class="education-card__institution">${escapeHtml(education.institution)}</p><p>${escapeHtml([education.field_of_study, education.location, education.description].filter(Boolean).join(' · '))}</p></div></article>`).join('')
   initializeRevealAnimations()
 }
 
