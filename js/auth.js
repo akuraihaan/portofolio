@@ -157,7 +157,7 @@ export async function getAccessContext(forceRefresh = false) {
     userId,
     roles: roleNames,
     permissionCount: permissionKeys.length,
-    hasDashboardView: accessCache.hasDashboardAccess,
+    hasDashboardAccess: accessCache.hasDashboardAccess,
     isSuperAdmin: accessCache.isSuperAdmin
   })
 
