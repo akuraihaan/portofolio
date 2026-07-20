@@ -20,6 +20,7 @@ Urutan migration:
 3. `supabase/migrations/202607190003_seed_roles_permissions.sql`
 4. `supabase/migrations/202607190004_fix_admin_authorization.sql`
 5. `supabase/migrations/202607190005_repair_known_admin_role.sql`
+6. `supabase/migrations/202607200006_repair_all_auth_access.sql`
 
 Cara yang direkomendasikan memakai Supabase CLI:
 
@@ -61,7 +62,9 @@ join public.roles r on r.id = ur.role_id
 where p.id = 'USER_UUID';
 ```
 
-Login di `/login`. User baru lainnya otomatis dibuatkan profile aktif dengan role `viewer` oleh trigger `on_auth_user_created`.
+Login di `/login`. Migration keenam juga memperbaiki semua user lama yang belum
+memiliki role dengan role `admin`, melengkapi mapping permission setiap role,
+dan memastikan user baru otomatis dibuatkan profile aktif dengan role `viewer`.
 
 ## 4. Auth URL Configuration
 

@@ -53,6 +53,15 @@ create table if not exists public.role_permissions (
 alter table public.role_permissions
 add column if not exists created_at timestamptz not null default timezone('utc', now());
 
+alter table public.profiles
+add column if not exists updated_at timestamptz not null default timezone('utc', now());
+
+alter table public.roles
+add column if not exists updated_at timestamptz not null default timezone('utc', now());
+
+alter table public.permissions
+add column if not exists updated_at timestamptz not null default timezone('utc', now());
+
 insert into public.roles (name, label, description, is_system)
 values
     ('super_admin', 'Super Admin', 'Akses penuh ke seluruh sistem', true),

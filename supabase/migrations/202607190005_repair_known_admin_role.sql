@@ -1,6 +1,15 @@
 -- Apply after the first Auth user exists. Safe to run repeatedly.
 -- This repairs the known administrator when earlier seed migrations ran first.
 
+alter table public.profiles
+add column if not exists updated_at timestamptz not null default timezone('utc', now());
+
+alter table public.roles
+add column if not exists updated_at timestamptz not null default timezone('utc', now());
+
+alter table public.permissions
+add column if not exists updated_at timestamptz not null default timezone('utc', now());
+
 insert into public.roles (name, label, description, is_system)
 values ('super_admin', 'Super Admin', 'Akses penuh ke seluruh sistem', true)
 on conflict (name) do update set
