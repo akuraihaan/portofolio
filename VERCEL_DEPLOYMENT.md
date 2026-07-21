@@ -2,7 +2,7 @@
 
 ## Konfigurasi project
 
-Hubungkan repository ke Vercel dengan root project di folder yang berisi `package.json`, `index.html`, `script.js`, dan `vercel.json`.
+Hubungkan repository ke Vercel dengan **Root Directory** `.` (folder repository ini), yaitu folder yang berisi `package.json`, `index.html`, `script.js`, dan `vercel.json`. Jangan memilih `backend/`, karena folder tersebut adalah aplikasi Laravel terpisah yang membutuhkan runtime PHP.
 
 | Pengaturan | Nilai |
 | --- | --- |
@@ -11,6 +11,8 @@ Hubungkan repository ke Vercel dengan root project di folder yang berisi `packag
 | Build command | `npm run build` |
 | Output directory | `dist` |
 | Node.js | versi yang kompatibel dengan Vite, minimal engine project |
+
+`vercel.json` sudah mengunci `buildCommand` ke `npm run build` dan `outputDirectory` ke `dist`. Jika Project Settings Vercel masih memiliki Root Directory `backend`, ubah ke `.` lalu redeploy.
 
 `vercel.json` me-rewrite seluruh direct route ke `index.html`, sehingga refresh `/login`, `/admin`, dan subroute admin tidak menghasilkan 404.
 
