@@ -2,26 +2,28 @@ import { supabase, supabaseConfiguration } from '../supabase.js'
 import { ADMIN_MODULES } from './router.js'
 import { authReady, getAccessContext, getCurrentSession, hasPermission, signIn, signOut, startIdleSessionTimeout } from './auth.js'
 import { createEducation, deleteEducation, getAdminEducations, updateEducation } from './educations.js'
-import { escapeHtml, formatDate, getValue, parseSettingValue, safeFileName, setBusy, showToast, slugify } from './utils.js'
+import { escapeHtml, formatDate, getValue, parseSettingValue, setBusy, showToast, slugify } from './utils.js'
+import { deletePublicImage, uploadPublicImage } from './services/storage-service.js'
+import { bindImageUploaders, renderImageUploader } from './components/image-uploader.js'
 
 const contentFields = {
   projects: [
-    ['title', 'Judul', 'text', true], ['slug', 'Slug', 'text', true], ['category', 'Kategori', 'text', false], ['summary', 'Ringkasan', 'textarea', false], ['description', 'Deskripsi', 'textarea', false], ['cover_image_url', 'URL cover', 'url', false], ['project_url', 'URL proyek', 'url', false], ['status', 'Status', 'status', true], ['sort_order', 'Urutan', 'number', false], ['is_featured', 'Featured', 'boolean', false]
+    ['title', 'Judul', 'text', true], ['slug', 'Slug', 'text', true], ['category', 'Kategori', 'text', false], ['summary', 'Ringkasan', 'textarea', false], ['description', 'Deskripsi', 'textarea', false], ['thumbnail_url', 'Thumbnail', 'image', false, 'thumbnail_path', 'projects/thumbnails'], ['cover_image_url', 'Cover image', 'image', false, 'cover_path', 'projects/covers'], ['project_url', 'URL proyek', 'url', false], ['status', 'Status', 'status', true], ['sort_order', 'Urutan', 'number', false], ['is_featured', 'Featured', 'boolean', false]
   ],
   articles: [
-    ['title', 'Judul', 'text', true], ['slug', 'Slug', 'text', true], ['excerpt', 'Excerpt', 'textarea', false], ['content', 'Konten', 'textarea', true], ['cover_image_url', 'URL cover', 'url', false], ['status', 'Status', 'status', true], ['sort_order', 'Urutan', 'number', false], ['is_featured', 'Featured', 'boolean', false]
+    ['title', 'Judul', 'text', true], ['slug', 'Slug', 'text', true], ['excerpt', 'Excerpt', 'textarea', false], ['content', 'Konten', 'textarea', true], ['thumbnail_url', 'Thumbnail', 'image', false, 'thumbnail_path', 'articles/thumbnails'], ['cover_image_url', 'Cover image', 'image', false, 'cover_path', 'articles/covers'], ['status', 'Status', 'status', true], ['sort_order', 'Urutan', 'number', false], ['is_featured', 'Featured', 'boolean', false]
   ],
   skills: [['name', 'Nama', 'text', true], ['category', 'Kategori', 'text', false], ['description', 'Deskripsi', 'textarea', false], ['level', 'Level 0-100', 'number', false], ['status', 'Status', 'status', true], ['sort_order', 'Urutan', 'number', false]],
-  experiences: [['company', 'Perusahaan', 'text', true], ['role_title', 'Jabatan', 'text', true], ['description', 'Deskripsi', 'textarea', false], ['location', 'Lokasi', 'text', false], ['start_date', 'Mulai', 'date', false], ['end_date', 'Selesai', 'date', false], ['is_current', 'Saat ini', 'boolean', false], ['status', 'Status', 'status', true], ['sort_order', 'Urutan', 'number', false]],
-  educations: [['institution', 'Institusi', 'text', true], ['degree', 'Gelar', 'text', false], ['field_of_study', 'Bidang studi', 'text', false], ['location', 'Lokasi', 'text', false], ['description', 'Deskripsi', 'textarea', false], ['start_date', 'Mulai', 'date', false], ['end_date', 'Selesai', 'date', false], ['is_current', 'Saat ini', 'boolean', false], ['logo_url', 'URL logo', 'url', false], ['is_featured', 'Featured', 'boolean', false], ['status', 'Status', 'status', true], ['sort_order', 'Urutan', 'number', false]],
-  certificates: [['title', 'Judul', 'text', true], ['issuer', 'Penerbit', 'text', false], ['issue_date', 'Tanggal', 'date', false], ['credential_url', 'URL credential', 'url', false], ['image_url', 'URL gambar', 'url', false], ['status', 'Status', 'status', true], ['sort_order', 'Urutan', 'number', false]],
-  services: [['title', 'Judul', 'text', true], ['slug', 'Slug', 'text', true], ['description', 'Deskripsi', 'textarea', false], ['icon', 'Icon key', 'text', false], ['status', 'Status', 'status', true], ['sort_order', 'Urutan', 'number', false], ['is_featured', 'Featured', 'boolean', false]],
-  testimonials: [['author_name', 'Nama', 'text', true], ['author_role', 'Peran', 'text', false], ['quote', 'Kutipan', 'textarea', true], ['avatar_url', 'URL avatar', 'url', false], ['status', 'Status', 'status', true], ['sort_order', 'Urutan', 'number', false], ['is_featured', 'Featured', 'boolean', false]],
+  experiences: [['company', 'Perusahaan', 'text', true], ['role_title', 'Jabatan', 'text', true], ['description', 'Deskripsi', 'textarea', false], ['location', 'Lokasi', 'text', false], ['start_date', 'Mulai', 'date', false], ['end_date', 'Selesai', 'date', false], ['is_current', 'Saat ini', 'boolean', false], ['logo_url', 'Logo perusahaan', 'image', false, 'logo_path', 'experiences/logos'], ['status', 'Status', 'status', true], ['sort_order', 'Urutan', 'number', false]],
+  educations: [['institution', 'Institusi', 'text', true], ['degree', 'Gelar', 'text', false], ['field_of_study', 'Bidang studi', 'text', false], ['location', 'Lokasi', 'text', false], ['description', 'Deskripsi', 'textarea', false], ['start_date', 'Mulai', 'date', false], ['end_date', 'Selesai', 'date', false], ['is_current', 'Saat ini', 'boolean', false], ['logo_url', 'Logo institusi', 'image', false, 'logo_path', 'educations/logos'], ['is_featured', 'Featured', 'boolean', false], ['status', 'Status', 'status', true], ['sort_order', 'Urutan', 'number', false]],
+  certificates: [['title', 'Judul', 'text', true], ['issuer', 'Penerbit', 'text', false], ['issue_date', 'Tanggal', 'date', false], ['credential_url', 'URL credential', 'url', false], ['image_url', 'Gambar sertifikat', 'image', false, 'certificate_path', 'certificates'], ['status', 'Status', 'status', true], ['sort_order', 'Urutan', 'number', false]],
+  services: [['title', 'Judul', 'text', true], ['slug', 'Slug', 'text', true], ['description', 'Deskripsi', 'textarea', false], ['icon', 'Icon key', 'text', false], ['icon_url', 'Icon image', 'image', false, 'icon_path', 'services/icons'], ['status', 'Status', 'status', true], ['sort_order', 'Urutan', 'number', false], ['is_featured', 'Featured', 'boolean', false]],
+  testimonials: [['author_name', 'Nama', 'text', true], ['author_role', 'Peran', 'text', false], ['quote', 'Kutipan', 'textarea', true], ['avatar_url', 'Avatar', 'image', false, 'avatar_path', 'testimonials/avatars'], ['status', 'Status', 'status', true], ['sort_order', 'Urutan', 'number', false], ['is_featured', 'Featured', 'boolean', false]],
   social_links: [['platform', 'Platform', 'text', true], ['label', 'Label', 'text', true], ['url', 'URL', 'url', true], ['username', 'Username', 'text', false], ['icon', 'Icon key', 'text', false], ['is_active', 'Aktif', 'boolean', false], ['open_in_new_tab', 'Buka tab baru', 'boolean', false], ['sort_order', 'Urutan', 'number', false]],
   roles: [['name', 'Name', 'text', true], ['label', 'Label', 'text', true], ['description', 'Deskripsi', 'textarea', false], ['is_system', 'System role', 'boolean', false]]
 }
 
-const profileFields = [['full_name', 'Nama lengkap', 'text', false], ['username', 'Username', 'text', false], ['phone', 'Telepon', 'text', false], ['bio', 'Bio publik', 'textarea', false], ['is_active', 'Aktif di publik', 'boolean', false]]
+const profileFields = [['full_name', 'Nama lengkap', 'text', false], ['username', 'Username', 'text', false], ['phone', 'Telepon', 'text', false], ['bio', 'Bio publik', 'textarea', false], ['avatar_url', 'Avatar profile', 'image', false, 'avatar_path', 'avatars'], ['is_active', 'Aktif di publik', 'boolean', false]]
 
 export async function initializeAdminRoute(route) {
   if (route.name === 'login') { await renderLoginPage(); return }
@@ -147,8 +149,10 @@ async function renderDashboard(context) {
   const content = document.querySelector('#admin-content')
   content.innerHTML = `<div class="admin-page-heading"><div><p>{ Overview }</p><h1>Keep it <em>moving.</em></h1><span>Data dashboard dibaca langsung dari Supabase.</span></div></div><div class="admin-stat-grid" id="admin-stats"><article class="admin-card">Memuat statistik...</article></div><div class="admin-two-column"><section class="admin-card"><div class="admin-section-heading"><div><p>Audit trail</p><h2>Aktivitas terbaru</h2></div></div><div id="admin-activity">Memuat...</div></section><section class="admin-card"><div class="admin-section-heading"><div><p>Authentication</p><h2>Login terbaru</h2></div></div><div id="admin-logins">Memuat...</div></section></div>`
   const count = async (table, filter = null) => { let query = supabase.from(table).select('*', { count: 'exact', head: true }); if (filter) query = filter(query); const { count: total, error } = await query; return error ? null : total ?? 0 }
-  const [projects, articles, unread, users] = await Promise.all([count('projects'), count('articles'), count('contact_messages', query => query.eq('status', 'unread')), count('profiles', query => query.eq('is_active', true))])
-  document.querySelector('#admin-stats').innerHTML = [['Projects', projects], ['Articles', articles], ['Unread messages', unread], ['Active users', users]].map(([label, value]) => `<article class="admin-stat-card"><p>${label}</p><strong>${value === null ? '—' : value}</strong><span>Supabase</span></article>`).join('')
+  const [projects, articles, skills, experiences, educations, certificates, services, testimonials, unread, users, media] = await Promise.all([
+    count('projects'), count('articles'), count('skills'), count('experiences'), count('educations'), count('certificates'), count('services'), count('testimonials'), count('contact_messages', query => query.eq('status', 'unread')), count('profiles', query => query.eq('is_active', true)), count('media_assets')
+  ])
+  document.querySelector('#admin-stats').innerHTML = [['Projects', projects], ['Articles', articles], ['Skills', skills], ['Experiences', experiences], ['Educations', educations], ['Certificates', certificates], ['Services', services], ['Testimonials', testimonials], ['Unread messages', unread], ['Active users', users], ['Media assets', media]].map(([label, value]) => `<article class="admin-stat-card"><p>${label}</p><strong>${value === null ? '—' : value}</strong><span>Supabase</span></article>`).join('')
   const activity = document.querySelector('#admin-activity'); const logins = document.querySelector('#admin-logins')
   if (hasPermission(context, 'security.view')) { const { data } = await supabase.from('audit_logs').select('action, table_name, created_at').order('created_at', { ascending: false }).limit(6); activity.innerHTML = data?.length ? data.map(item => `<p class="admin-list-row"><span>${escapeHtml(item.action)} · ${escapeHtml(item.table_name)}</span><small>${formatDate(item.created_at)}</small></p>`).join('') : '<p class="admin-empty">Belum ada aktivitas.</p>' } else activity.innerHTML = '<p class="admin-empty">Tidak ada permission security.view.</p>'
   if (hasPermission(context, 'login_history.view')) { const { data } = await supabase.from('login_history').select('email, was_successful, created_at').order('created_at', { ascending: false }).limit(6); logins.innerHTML = data?.length ? data.map(item => `<p class="admin-list-row"><span class="${item.was_successful ? 'is-success' : 'is-failure'}">${item.was_successful ? 'Berhasil' : 'Gagal'} · ${escapeHtml(item.email || '-')}</span><small>${formatDate(item.created_at)}</small></p>`).join('') : '<p class="admin-empty">Belum ada login.</p>' } else logins.innerHTML = '<p class="admin-empty">Tidak ada permission login_history.view.</p>'
@@ -166,13 +170,14 @@ async function renderModule(key, context) {
   const canManage = Boolean(config.manage && hasPermission(context, config.manage))
   const content = document.querySelector('#admin-content')
   content.innerHTML = `<div class="admin-page-heading"><div><p>{ ${escapeHtml(config.label)} }</p><h1>${escapeHtml(config.label)}.</h1><span>Kelola data ${escapeHtml(config.label.toLowerCase())} dengan status dan audit trail.</span></div>${canManage ? '<button class="admin-primary-button" data-action="new">Tambah</button>' : ''}</div><div id="module-form"></div><section class="admin-card"><div class="admin-section-heading"><div><p>Database</p><h2>Daftar ${escapeHtml(config.label)}</h2></div><input class="admin-search" data-search placeholder="Cari..."></div><div id="module-status">Memuat...</div><div id="module-list"></div></section>`
-  const formContainer = document.querySelector('#module-form'); const list = document.querySelector('#module-list'); const status = document.querySelector('#module-status'); let rows = []
+  const formContainer = document.querySelector('#module-form'); const list = document.querySelector('#module-list'); const status = document.querySelector('#module-status'); const statusFilter = document.createElement('select'); statusFilter.className = 'admin-search'; statusFilter.dataset.statusFilter = ''; statusFilter.innerHTML = '<option value="all">Semua status</option><option value="draft">Draft</option><option value="published">Published</option><option value="archived">Archived</option>'; document.querySelector('[data-search]')?.after(statusFilter); let rows = []
   const load = async () => { status.textContent = 'Memuat data...'; try { rows = key === 'educations' ? await getAdminEducations() : (await supabase.from(config.table).select('*').order('created_at', { ascending: false }).limit(100)).data ?? []; status.textContent = `${rows.length} data`; renderRows() } catch (loadError) { status.innerHTML = `<span class="admin-form-error">Tidak dapat memuat data. Periksa policy RLS.</span>`; console.error('Admin module load failed:', { code: loadError?.code || null, message: loadError?.message || 'Unknown error', details: loadError?.details || null, hint: loadError?.hint || null }) } }
-  const renderRows = () => { const term = document.querySelector('[data-search]').value.toLowerCase(); const filtered = rows.filter(row => JSON.stringify(row).toLowerCase().includes(term)); list.innerHTML = filtered.length ? filtered.map(row => renderGenericRow(key, row, canManage)).join('') : '<p class="admin-empty">Belum ada data.</p>' }
-  const openForm = row => { formContainer.innerHTML = renderGenericForm(key, row, fields, canManage); formContainer.scrollIntoView({ behavior: 'smooth', block: 'start' }); formContainer.querySelector('form').addEventListener('submit', event => saveGeneric(event, key, row, context, load, formContainer)) }
+  const renderRows = () => { const term = document.querySelector('[data-search]').value.toLowerCase(); const filtered = rows.filter(row => JSON.stringify(row).toLowerCase().includes(term) && (statusFilter.value === 'all' || row.status === statusFilter.value)); list.innerHTML = filtered.length ? filtered.map(row => renderGenericRow(key, row, canManage)).join('') : '<p class="admin-empty">Belum ada data.</p>' }
+  const openForm = row => { formContainer.innerHTML = renderGenericForm(key, row, fields, canManage); bindImageUploaders(formContainer); formContainer.scrollIntoView({ behavior: 'smooth', block: 'start' }); const form = formContainer.querySelector('form'); form.addEventListener('submit', event => saveGeneric(event, key, row, context, load, formContainer)); form.querySelector('[data-cancel-form]')?.addEventListener('click', () => { formContainer.innerHTML = '' }) }
   document.querySelector('[data-action="new"]')?.addEventListener('click', () => openForm(null))
   document.querySelector('[data-search]').addEventListener('input', renderRows)
-  list.addEventListener('click', event => { const button = event.target.closest('[data-edit]'); if (button) { const row = rows.find(item => item.id === button.dataset.edit); if (row) openForm(row) } const remove = event.target.closest('[data-delete]'); if (remove) { if (key === 'educations') deleteEducation(remove.dataset.delete).then(load).catch(error => showToast(error.message || 'Pendidikan tidak dapat dihapus.', 'error')); else deleteRecord(config.table, remove.dataset.delete, context, load) } })
+  statusFilter.addEventListener('change', renderRows)
+  list.addEventListener('click', event => { const button = event.target.closest('[data-edit]'); if (button) { const row = rows.find(item => item.id === button.dataset.edit); if (row) openForm(row) } const remove = event.target.closest('[data-delete]'); if (remove) { if (key === 'educations') deleteEducation(remove.dataset.delete).then(load).catch(error => showToast(error.message || 'Pendidikan tidak dapat dihapus.', 'error')); else deleteRecord(config.table, remove.dataset.delete, context, load, key) } })
   await load()
 }
 
@@ -182,15 +187,38 @@ async function renderPortfolioProfile(context) {
   const { data: profile, error } = await supabase.from('profiles').select('*').eq('id', context.user.id).maybeSingle()
   const container = document.querySelector('#portfolio-profile-form')
   if (error || !profile) { container.innerHTML = '<p class="admin-form-error">Profil belum tersedia. Pastikan trigger profile sudah dijalankan.</p>'; return }
-  container.innerHTML = `<div class="admin-section-heading"><div><p>Profile</p><h2>Identitas publik</h2></div></div><form id="portfolio-profile-edit"><div class="admin-form-grid">${profileFields.map(([name, label, type, required]) => renderField(name, label, type, profile[name], required)).join('')}</div><div class="admin-form-actions"><button type="submit" class="admin-primary-button">Simpan</button></div><p class="admin-form-error" data-profile-error></p></form>`
-  container.querySelector('form').addEventListener('submit', async event => { event.preventDefault(); const form = event.currentTarget; const button = form.querySelector('button'); const errorElement = form.querySelector('[data-profile-error]'); const payload = { full_name: getValue(form, 'full_name'), username: getValue(form, 'username'), phone: getValue(form, 'phone'), bio: getValue(form, 'bio'), is_active: getValue(form, 'is_active', 'boolean'), updated_at: new Date().toISOString() }; setBusy(button, true); const { error: saveError } = await supabase.from('profiles').update(payload).eq('id', profile.id); setBusy(button, false, 'Simpan'); if (saveError) errorElement.textContent = 'Profil belum tersimpan. Periksa username unik dan policy RLS.'; else showToast('Profil portfolio diperbarui.') })
+  container.innerHTML = `<div class="admin-section-heading"><div><p>Profile</p><h2>Identitas publik</h2></div></div><form id="portfolio-profile-edit"><div class="admin-form-grid">${profileFields.map(([name, label, type, required, pathName, folder]) => renderField(name, label, type, profile[name], required, pathName, folder)).join('')}</div><div class="admin-form-actions"><button type="submit" class="admin-primary-button">Simpan</button></div><p class="admin-form-error" data-profile-error></p></form>`
+  const profileForm = container.querySelector('form')
+  bindImageUploaders(profileForm)
+  profileForm.addEventListener('submit', async event => {
+    event.preventDefault()
+    const form = event.currentTarget
+    const button = form.querySelector('button')
+    const errorElement = form.querySelector('[data-profile-error]')
+    const payload = { full_name: getValue(form, 'full_name'), username: getValue(form, 'username'), phone: getValue(form, 'phone'), bio: getValue(form, 'bio'), is_active: getValue(form, 'is_active', 'boolean'), updated_at: new Date().toISOString() }
+    let imageChanges = []
+    let saveError = null
+    setBusy(button, true)
+    try {
+      imageChanges = await prepareImageUploads(form, profileFields, payload, profile, context.user.id)
+      saveError = (await supabase.from('profiles').update(payload).eq('id', profile.id)).error
+      if (!saveError) await cleanupReplacedImages(imageChanges)
+    } catch (error) {
+      saveError = error
+      await cleanupNewImages(imageChanges)
+    }
+    setBusy(button, false, 'Simpan')
+    if (saveError) errorElement.textContent = saveError.code === '42501' ? 'Operasi ditolak oleh permission/RLS.' : (saveError.message || 'Profil belum tersimpan. Periksa username dan policy RLS.')
+    else showToast('Profil portfolio diperbarui.')
+  })
 }
 
 function renderGenericForm(key, row, fields, canManage) {
-  return `<section class="admin-card admin-form-card"><div class="admin-section-heading"><div><p>${row ? 'Edit' : 'Create'}</p><h2>${row ? 'Perbarui' : 'Tambah'} ${escapeHtml(ADMIN_MODULES[key].label)}</h2></div></div><form data-generic-form><div class="admin-form-grid">${fields.map(([name, label, type, required]) => renderField(name, label, type, row?.[name], required)).join('')}</div><div class="admin-form-actions"><button type="submit" class="admin-primary-button" ${canManage ? '' : 'disabled'}>Simpan</button><button type="button" class="admin-secondary-button" data-cancel-form>Batal</button></div><p class="admin-form-error" data-form-error role="alert"></p></form></section>`
+  return `<section class="admin-card admin-form-card"><div class="admin-section-heading"><div><p>${row ? 'Edit' : 'Create'}</p><h2>${row ? 'Perbarui' : 'Tambah'} ${escapeHtml(ADMIN_MODULES[key].label)}</h2></div></div><form data-generic-form><div class="admin-form-grid">${fields.map(([name, label, type, required, pathName, folder]) => renderField(name, label, type, row?.[name], required, pathName, folder)).join('')}</div><div class="admin-form-actions"><button type="submit" class="admin-primary-button" ${canManage ? '' : 'disabled'}>Simpan</button><button type="button" class="admin-secondary-button" data-cancel-form>Batal</button></div><p class="admin-form-error" data-form-error role="alert"></p></form></section>`
 }
 
-function renderField(name, label, type, value, required) {
+function renderField(name, label, type, value, required, pathName, folder) {
+  if (type === 'image') return renderImageUploader({ name, label, existingUrl: value, required })
   if (type === 'boolean') return `<label class="admin-checkbox"><input type="checkbox" name="${name}" ${value ? 'checked' : ''}><span>${escapeHtml(label)}</span></label>`
   if (type === 'status') return `<label class="admin-field"><span>${escapeHtml(label)}</span><select name="${name}" ${required ? 'required' : ''}><option value="draft" ${value === 'draft' || !value ? 'selected' : ''}>Draft</option><option value="published" ${value === 'published' ? 'selected' : ''}>Published</option><option value="archived" ${value === 'archived' ? 'selected' : ''}>Archived</option></select></label>`
   const input = type === 'textarea' ? `<textarea name="${name}" rows="4" ${required ? 'required' : ''}>${escapeHtml(value)}</textarea>` : `<input name="${name}" type="${type}" value="${escapeHtml(value)}" ${required ? 'required' : ''}>`
@@ -198,15 +226,17 @@ function renderField(name, label, type, value, required) {
 }
 
 async function saveGeneric(event, key, row, context, reload, formContainer) {
-  event.preventDefault(); const form = event.currentTarget; const button = form.querySelector('button[type="submit"]'); const error = form.querySelector('[data-form-error]'); setBusy(button, true); error.textContent = ''
-  const payload = {}; for (const [name, , type] of contentFields[key]) payload[name] = getValue(form, name, type === 'boolean' ? 'boolean' : type === 'number' ? 'number' : 'text')
+  event.preventDefault(); const form = event.currentTarget; const button = form.querySelector('button[type="submit"]'); if (button.disabled) return; const error = form.querySelector('[data-form-error]'); setBusy(button, true); error.textContent = ''
+  const payload = {}; for (const [name, , type] of contentFields[key]) if (type !== 'image') payload[name] = getValue(form, name, type === 'boolean' ? 'boolean' : type === 'number' ? 'number' : 'text')
   if ((key === 'projects' || key === 'articles' || key === 'services') && !payload.slug) payload.slug = slugify(payload.title)
   if (!['roles', 'permissions'].includes(key)) {
     if (!row) payload.created_by = context.user.id
     payload.updated_by = context.user.id
   }
   let saveError = null
+  let imageChanges = []
   try {
+    imageChanges = await prepareImageUploads(form, contentFields[key], payload, row, context.user.id)
     if (key === 'educations') {
       if (payload.is_current) payload.end_date = null
       if (payload.status === 'published') payload.published_at = new Date().toISOString()
@@ -217,23 +247,114 @@ async function saveGeneric(event, key, row, context, reload, formContainer) {
       const result = await request
       saveError = result.error
     }
+    if (!saveError) await cleanupReplacedImages(imageChanges)
   } catch (error) {
     saveError = error
+    await cleanupNewImages(imageChanges)
   }
   setBusy(button, false, 'Simpan')
   if (saveError) { console.error(saveError); error.textContent = saveError.code === '42501' ? 'Operasi ditolak oleh permission/RLS.' : 'Data belum tersimpan. Periksa field dan coba lagi.'; return }
   showToast('Data berhasil disimpan.'); formContainer.innerHTML = ''; await reload()
 }
 
+async function prepareImageUploads(form, fields, payload, row, userId) {
+  const changes = []
+  for (const [name, , type, , pathName, folder] of fields) {
+    if (type !== 'image') continue
+    const input = form.elements[name]
+    const uploader = input?.closest('[data-image-uploader]')
+    const file = input?.files?.[0]
+    if (file) {
+      const uploaded = await uploadPublicImage({ file, folder, userId })
+      payload[name] = uploaded.publicUrl
+      if (pathName) payload[pathName] = uploaded.path
+      changes.push({ newPath: uploaded.path, oldPath: row?.[pathName] })
+    } else if (uploader?.dataset.imageCleared === 'true' && row) {
+      payload[name] = null
+      if (pathName) payload[pathName] = null
+      changes.push({ oldPath: row?.[pathName] })
+    }
+  }
+  return changes
+}
+
+async function cleanupNewImages(changes) {
+  await Promise.all((changes || []).filter(item => item.newPath).map(item => deletePublicImage(item.newPath)))
+}
+
+async function cleanupReplacedImages(changes) {
+  await Promise.all((changes || []).filter(item => item.oldPath && item.oldPath !== item.newPath).map(item => deletePublicImage(item.oldPath)))
+}
+
 async function renderSettings(context) {
   const canManage = hasPermission(context, 'settings.update')
   const content = document.querySelector('#admin-content')
   content.innerHTML = `<div class="admin-page-heading"><div><p>{ Public configuration }</p><h1>Site settings.</h1><span>Nilai disimpan sebagai JSON agar tipe boolean dan angka tetap konsisten.</span></div>${canManage ? '<button class="admin-primary-button" data-setting-new>Tambah</button>' : ''}</div><div id="settings-form"></div><section class="admin-card"><div class="admin-section-heading"><div><p>Database</p><h2>Settings</h2></div><input class="admin-search" data-setting-search placeholder="Cari key..."></div><div id="settings-list">Memuat...</div></section>`
+  renderSiteAssetUploader(context)
   const formContainer = document.querySelector('#settings-form'); const list = document.querySelector('#settings-list'); let rows = []
   const renderRows = () => { const term = document.querySelector('[data-setting-search]').value.toLowerCase(); const filtered = rows.filter(row => `${row.key} ${row.group_name}`.toLowerCase().includes(term)); list.innerHTML = filtered.length ? filtered.map(row => `<article class="admin-list-card"><div><p class="admin-list-kicker">${escapeHtml(row.group_name)} · ${row.is_public ? 'public' : 'private'}</p><h3>${escapeHtml(row.key)}</h3><p>${escapeHtml(parseSettingValue(row.value))}</p></div>${canManage ? `<div class="admin-row-actions"><button class="admin-secondary-button" data-setting-edit="${row.id}">Edit</button><button class="admin-danger-button" data-setting-delete="${row.id}">Hapus</button></div>` : ''}</article>`).join('') : '<p class="admin-empty">Belum ada setting.</p>' }
   const load = async () => { const { data, error } = await supabase.from('site_settings').select('*').order('group_name').order('key'); if (error) { list.innerHTML = '<span class="admin-form-error">Settings tidak dapat dimuat.</span>'; return } rows = data ?? []; renderRows() }
   const openForm = row => { formContainer.innerHTML = `<section class="admin-card admin-form-card"><form id="settings-edit-form"><div class="admin-form-grid"><label class="admin-field"><span>Key</span><input name="key" value="${escapeHtml(row?.key)}" required ${row ? 'readonly' : ''}></label><label class="admin-field"><span>Group</span><input name="group_name" value="${escapeHtml(row?.group_name || 'general')}" required></label><label class="admin-field admin-field-wide"><span>Value (JSON atau teks)</span><textarea name="value" rows="4">${escapeHtml(parseSettingValue(row?.value))}</textarea></label><label class="admin-checkbox"><input type="checkbox" name="is_public" ${row?.is_public !== false ? 'checked' : ''}><span>Public setting</span></label></div><div class="admin-form-actions"><button class="admin-primary-button" type="submit">Simpan</button><button class="admin-secondary-button" type="button" data-setting-cancel>Batal</button></div><p class="admin-form-error" data-setting-error></p></form></section>`; formContainer.querySelector('form').addEventListener('submit', async event => { event.preventDefault(); const form = event.currentTarget; const button = form.querySelector('button[type="submit"]'); const error = form.querySelector('[data-setting-error]'); let value = form.elements.value.value; try { value = JSON.parse(value) } catch {} setBusy(button, true); const payload = { key: form.elements.key.value.trim(), group_name: form.elements.group_name.value.trim(), value, is_public: form.elements.is_public.checked, updated_by: context.user.id }; const request = row ? supabase.from('site_settings').update(payload).eq('id', row.id) : supabase.from('site_settings').insert(payload); const { error: saveError } = await request; setBusy(button, false, 'Simpan'); if (saveError) { error.textContent = 'Setting belum tersimpan. Periksa key unik dan permission.'; return } formContainer.innerHTML = ''; showToast('Setting berhasil disimpan.'); await load() }) }
   document.querySelector('[data-setting-new]')?.addEventListener('click', () => openForm(null)); document.querySelector('[data-setting-search]').addEventListener('input', renderRows); list.addEventListener('click', async event => { const edit = event.target.closest('[data-setting-edit]'); if (edit) openForm(rows.find(row => row.id === edit.dataset.settingEdit)); const remove = event.target.closest('[data-setting-delete]'); if (remove && window.confirm('Hapus setting ini?')) { const { error } = await supabase.from('site_settings').delete().eq('id', remove.dataset.settingDelete); if (error) showToast('Setting tidak dapat dihapus.', 'error'); else { showToast('Setting dihapus.'); await load() } } }); await load()
+}
+
+function renderSiteAssetUploader(context) {
+  if (!hasPermission(context, 'settings.update')) return
+  const assetFields = [
+    ['hero_image', 'Hero image', 'site/hero'],
+    ['site_logo', 'Logo situs', 'site/logo'],
+    ['site_favicon', 'Favicon', 'site/favicon'],
+    ['og_image', 'Open Graph image', 'site/og']
+  ]
+  const content = document.querySelector('#admin-content')
+  if (!content) return
+  content.insertAdjacentHTML('afterbegin', '<section class="admin-card admin-form-card"><div class="admin-section-heading"><div><p>Assets</p><h2>Site imagery</h2></div></div><form id="site-assets-form" class="admin-form-grid"><p>Memuat gambar situs...</p></form></section>')
+  const assetForm = document.querySelector('#site-assets-form')
+  const assetRows = new Map()
+  const load = async () => {
+    const { data, error } = await supabase.from('site_settings').select('id,key,value,asset_url,asset_path').in('key', assetFields.map(field => field[0]))
+    if (error) { assetForm.innerHTML = '<p class="admin-form-error">Asset situs tidak dapat dimuat.</p>'; return }
+    ;(data || []).forEach(row => assetRows.set(row.key, row))
+    assetForm.innerHTML = assetFields.map(([key, label]) => {
+      const row = assetRows.get(key)
+      const existingUrl = row?.asset_url || (typeof row?.value === 'string' ? row.value : '')
+      return renderImageUploader({ name: 'asset_' + key, label, existingUrl })
+    }).join('') + '<div class="admin-form-actions"><button class="admin-primary-button" type="submit">Simpan gambar situs</button></div><p class="admin-form-error" data-site-assets-error></p>'
+    bindImageUploaders(assetForm)
+  }
+  assetForm.addEventListener('submit', async event => {
+    event.preventDefault()
+    const button = assetForm.querySelector('button[type="submit"]')
+    const errorElement = assetForm.querySelector('[data-site-assets-error]')
+    const uploadedImages = []
+    setBusy(button, true)
+    try {
+      for (const [key, , folder] of assetFields) {
+        const file = assetForm.elements['asset_' + key]?.files?.[0]
+        if (!file) continue
+        const oldRow = assetRows.get(key)
+        const uploaded = await uploadPublicImage({ file, folder, userId: context.user.id })
+        uploadedImages.push({ key, uploaded, oldPath: oldRow?.asset_path, oldRow, saved: false })
+        const { error } = await supabase.from('site_settings').upsert({ key, group_name: 'assets', value: uploaded.publicUrl, asset_url: uploaded.publicUrl, asset_path: uploaded.path, is_public: true, updated_by: context.user.id }, { onConflict: 'key' })
+        if (error) throw error
+        uploadedImages[uploadedImages.length - 1].saved = true
+        assetRows.set(key, { asset_url: uploaded.publicUrl, asset_path: uploaded.path, value: uploaded.publicUrl })
+      }
+      await Promise.all(uploadedImages.filter(item => item.oldPath && item.oldPath !== item.uploaded.path).map(item => deletePublicImage(item.oldPath)))
+      showToast('Gambar situs diperbarui.')
+      await load()
+    } catch (saveError) {
+      for (const item of uploadedImages.filter(entry => entry.saved)) {
+        if (item.oldRow) await supabase.from('site_settings').update({ value: item.oldRow.value, asset_url: item.oldRow.asset_url || null, asset_path: item.oldRow.asset_path || null }).eq('key', item.key)
+        else await supabase.from('site_settings').delete().eq('key', item.key)
+      }
+      await cleanupNewImages(uploadedImages.map(item => ({ newPath: item.uploaded.path })))
+      errorElement.textContent = saveError.message || 'Gambar situs belum tersimpan.'
+    } finally {
+      setBusy(button, false, 'Simpan gambar situs')
+    }
+  })
+  load()
 }
 
 function renderGenericRow(key, row, canManage) {
@@ -242,10 +363,13 @@ function renderGenericRow(key, row, canManage) {
   return `<article class="admin-list-card"><div><p class="admin-list-kicker">${escapeHtml(row.status || (row.is_active === false ? 'inactive' : 'active'))}</p><h3>${escapeHtml(title)}</h3><p>${escapeHtml(String(secondary).slice(0, 180))}</p></div>${canManage ? `<div class="admin-row-actions"><button class="admin-secondary-button" data-edit="${row.id}">Edit</button><button class="admin-danger-button" data-delete="${row.id}">Hapus</button></div>` : ''}</article>`
 }
 
-async function deleteRecord(table, id, context, reload) {
+async function deleteRecord(table, id, context, reload, key = '') {
   if (!window.confirm('Hapus data ini?')) return
+  const existing = key ? (await supabase.from(table).select('*').eq('id', id).maybeSingle()).data : null
   const { error } = await supabase.from(table).delete().eq('id', id)
   if (error) { console.error(error); showToast('Data tidak dapat dihapus oleh policy/RLS.', 'error'); return }
+  const imagePaths = (contentFields[key] || []).filter(field => field[2] === 'image').map(field => existing?.[field[4]]).filter(Boolean)
+  await Promise.all(imagePaths.map(path => deletePublicImage(path)))
   showToast('Data dihapus.'); await reload()
 }
 
@@ -260,12 +384,55 @@ async function renderMessages(context) {
 }
 
 async function renderMedia(context) {
-  const canManage = hasPermission(context, 'media.manage'); const content = document.querySelector('#admin-content')
-  content.innerHTML = `<div class="admin-page-heading"><div><p>{ Asset library }</p><h1>Media.</h1><span>File tersimpan di Supabase Storage bucket portfolio-public.</span></div></div>${canManage ? `<section class="admin-card admin-form-card"><form id="media-form" class="admin-form-grid"><label class="admin-field"><span>File</span><input type="file" name="file" accept="image/jpeg,image/png,image/webp,image/gif,application/pdf" required></label><label class="admin-field"><span>Alt text</span><input name="alt_text" maxlength="160"></label><label class="admin-field"><span>Status</span><select name="status"><option value="draft">Draft</option><option value="published">Published</option></select></label><div class="admin-form-actions"><button class="admin-primary-button" type="submit">Upload</button></div><p class="admin-form-error" data-media-error></p></form></section>` : ''}<section class="admin-card"><div id="media-list">Memuat...</div></section>`
-  const load = async () => { const { data, error } = await supabase.from('media_assets').select('*').order('created_at', { ascending: false }).limit(100); const list = document.querySelector('#media-list'); if (error) { list.innerHTML = '<span class="admin-form-error">Media tidak dapat dimuat.</span>'; return } list.innerHTML = data?.length ? data.map(item => `<article class="admin-list-card"><div><p class="admin-list-kicker">${escapeHtml(item.status)} · ${escapeHtml(item.mime_type)}</p><h3>${escapeHtml(item.file_name)}</h3><p>${Math.round(item.size_bytes / 1024)} KB · ${formatDate(item.created_at)}</p></div>${canManage ? `<button class="admin-danger-button" data-media-delete="${item.id}" data-media-path="${escapeHtml(item.path)}">Hapus</button>` : ''}</article>`).join('') : '<p class="admin-empty">Belum ada media.</p>' }
+  const canManage = hasPermission(context, 'media.manage')
+  const content = document.querySelector('#admin-content')
+  content.innerHTML = '<div class="admin-page-heading"><div><p>{ Asset library }</p><h1>Media.</h1><span>File tersimpan di Supabase Storage bucket portfolio-public.</span></div></div>' +
+    (canManage ? '<section class="admin-card admin-form-card"><form id="media-form" class="admin-form-grid">' + renderImageUploader({ name: 'media_file', label: 'Upload gambar' }) + '<label class="admin-field"><span>Alt text</span><input name="alt_text" maxlength="160"></label><label class="admin-field"><span>Status</span><select name="status"><option value="draft">Draft</option><option value="published">Published</option></select></label><div class="admin-form-actions"><button class="admin-primary-button" type="submit">Upload</button></div><p class="admin-form-error" data-media-error></p></form></section>' : '') +
+    '<section class="admin-card"><div id="media-list">Memuat...</div></section>'
+  const mediaForm = document.querySelector('#media-form')
+  if (mediaForm) bindImageUploaders(mediaForm)
+  const load = async () => {
+    const { data, error } = await supabase.from('media_assets').select('*').order('created_at', { ascending: false }).limit(100)
+    const list = document.querySelector('#media-list')
+    if (error) { list.innerHTML = '<span class="admin-form-error">Media tidak dapat dimuat.</span>'; return }
+    list.innerHTML = data?.length ? data.map(item => '<article class="admin-list-card"><div><p class="admin-list-kicker">' + escapeHtml(item.status) + ' · ' + escapeHtml(item.mime_type) + '</p><h3>' + escapeHtml(item.file_name) + '</h3><p>' + Math.round(item.size_bytes / 1024) + ' KB · ' + formatDate(item.created_at) + '</p></div>' + (canManage ? '<button class="admin-danger-button" data-media-delete="' + item.id + '" data-media-path="' + escapeHtml(item.object_path || item.path) + '">Hapus</button>' : '') + '</article>').join('') : '<p class="admin-empty">Belum ada media.</p>'
+  }
   await load()
-  document.querySelector('#media-form')?.addEventListener('submit', async event => { event.preventDefault(); const form = event.currentTarget; const button = form.querySelector('button'); const error = form.querySelector('[data-media-error]'); const file = form.elements.file.files[0]; if (!file) return; setBusy(button, true); const path = `${context.user.id}/${crypto.randomUUID()}-${safeFileName(file.name)}`; const { error: uploadError } = await supabase.storage.from('portfolio-public').upload(path, file, { contentType: file.type, upsert: false }); if (uploadError) { error.textContent = 'Upload gagal. Periksa ukuran file dan policy Storage.'; setBusy(button, false, 'Upload'); return } const { error: rowError } = await supabase.from('media_assets').insert({ owner_id: context.user.id, path, file_name: file.name, mime_type: file.type, size_bytes: file.size, alt_text: form.elements.alt_text.value.trim(), status: form.elements.status.value, created_by: context.user.id }); setBusy(button, false, 'Upload'); if (rowError) { await supabase.storage.from('portfolio-public').remove([path]); error.textContent = 'Metadata media belum tersimpan.'; return } showToast('Media berhasil diupload.'); form.reset(); await load() })
-  document.querySelector('#media-list').addEventListener('click', async event => { const button = event.target.closest('[data-media-delete]'); if (!button || !window.confirm('Hapus media ini?')) return; const { error } = await supabase.from('media_assets').delete().eq('id', button.dataset.mediaDelete); if (error) { showToast('Media tidak dapat dihapus.', 'error'); return } await supabase.storage.from('portfolio-public').remove([button.dataset.mediaPath]); button.closest('.admin-list-card').remove(); showToast('Media dihapus.') })
+  mediaForm?.addEventListener('submit', async event => {
+    event.preventDefault()
+    const form = event.currentTarget
+    const button = form.querySelector('button[type="submit"]')
+    const error = form.querySelector('[data-media-error]')
+    const file = form.elements.media_file.files[0]
+    if (!file) { error.textContent = 'Pilih gambar terlebih dahulu.'; return }
+    setBusy(button, true)
+    let uploaded = null
+    try {
+      uploaded = await uploadPublicImage({ file, folder: 'media', userId: context.user.id })
+      const record = { owner_id: context.user.id, bucket_id: 'portfolio-public', bucket_name: 'portfolio-public', path: uploaded.path, object_path: uploaded.path, public_url: uploaded.publicUrl, file_name: file.name, mime_type: file.type, size_bytes: file.size, alt_text: form.elements.alt_text.value.trim(), status: form.elements.status.value, created_by: context.user.id, uploaded_by: context.user.id }
+      const { error: rowError } = await supabase.from('media_assets').insert(record)
+      if (rowError) throw rowError
+      showToast('Media berhasil diupload.')
+      form.reset()
+      form.querySelector('[data-image-clear]')?.click()
+      error.textContent = ''
+      await load()
+    } catch (uploadError) {
+      if (uploaded?.path) await deletePublicImage(uploaded.path)
+      error.textContent = uploadError.message || 'Upload gagal. Periksa ukuran file dan policy Storage.'
+    } finally {
+      setBusy(button, false, 'Upload')
+    }
+  })
+  document.querySelector('#media-list').addEventListener('click', async event => {
+    const button = event.target.closest('[data-media-delete]')
+    if (!button || !window.confirm('Hapus media ini?')) return
+    const { error } = await supabase.from('media_assets').delete().eq('id', button.dataset.mediaDelete)
+    if (error) { showToast('Media tidak dapat dihapus.', 'error'); return }
+    await deletePublicImage(button.dataset.mediaPath)
+    button.closest('.admin-list-card').remove()
+    showToast('Media dihapus.')
+  })
 }
 
 async function renderUsers(context) {

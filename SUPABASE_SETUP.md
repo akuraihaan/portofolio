@@ -21,6 +21,10 @@ Urutan migration:
 4. `supabase/migrations/202607190004_fix_admin_authorization.sql`
 5. `supabase/migrations/202607190005_repair_known_admin_role.sql`
 6. `supabase/migrations/202607200006_repair_all_auth_access.sql`
+7. `supabase/migrations/202607200007_finalize_auth_access_and_rls.sql`
+8. `supabase/migrations/202607200008_create_dynamic_content_schema.sql`
+9. `supabase/migrations/202607200009_repair_admin_authorization.sql`
+10. `supabase/migrations/202607210001_storage_uploads_and_image_paths.sql`
 
 Cara yang direkomendasikan memakai Supabase CLI:
 
@@ -77,7 +81,9 @@ Reset password memakai `/reset-password` sebagai redirect path.
 
 ## 5. Storage
 
-Migration membuat bucket privat `portfolio-public` dengan batas 10 MB dan MIME type gambar/PDF. Metadata disimpan di `media_assets`; file tidak disimpan sebagai base64. Admin dengan `media.manage` mengunggah file memakai nama acak berbasis UUID. File published dibaca melalui policy Storage dan signed URL bila dibutuhkan.
+Migration `202607210001_storage_uploads_and_image_paths.sql` memastikan bucket publik `portfolio-public` tersedia, menambah policy Storage berbasis permission `media.manage`, dan menambah path gambar tanpa menghapus URL lama. Frontend hanya menerima JPG, PNG, dan WebP dengan batas 5 MB; file tidak disimpan sebagai base64.
+
+Untuk project yang sudah menjalankan migration lama, jalankan file `202607210001_storage_uploads_and_image_paths.sql` sekali dari SQL Editor lalu refresh schema cache. Migration memastikan bucket publik `portfolio-public` tersedia, menambah policy Storage berdasarkan permission `media.manage`, dan menambah path gambar tanpa menghapus URL lama. Frontend hanya menerima JPG, PNG, dan WebP dengan batas 5 MB.
 
 ## 6. Troubleshooting
 
