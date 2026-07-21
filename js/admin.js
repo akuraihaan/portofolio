@@ -8,15 +8,15 @@ import { bindImageUploaders, renderImageUploader } from './components/image-uplo
 
 const contentFields = {
   projects: [
-    ['title', 'Judul', 'text', true], ['slug', 'Slug', 'text', true], ['category', 'Kategori', 'text', false], ['summary', 'Ringkasan', 'textarea', false], ['description', 'Deskripsi', 'textarea', false], ['thumbnail_url', 'Thumbnail', 'image', false, 'thumbnail_path', 'projects/thumbnails'], ['cover_image_url', 'Cover image', 'image', false, 'cover_path', 'projects/covers'], ['project_url', 'URL proyek', 'url', false], ['status', 'Status', 'status', true], ['sort_order', 'Urutan', 'number', false], ['is_featured', 'Featured', 'boolean', false]
+    ['title', 'Judul', 'text', true], ['slug', 'Slug', 'text', true], ['category', 'Kategori', 'text', false], ['summary', 'Ringkasan', 'textarea', false], ['description', 'Deskripsi', 'textarea', false], ['thumbnail_url', 'Thumbnail', 'image', false, 'thumbnail_path', 'projects/thumbnails'], ['cover_url', 'Cover image', 'image', false, 'cover_path', 'projects/covers'], ['project_url', 'URL proyek', 'url', false], ['status', 'Status', 'status', true], ['sort_order', 'Urutan', 'number', false], ['is_featured', 'Featured', 'boolean', false]
   ],
   articles: [
-    ['title', 'Judul', 'text', true], ['slug', 'Slug', 'text', true], ['excerpt', 'Excerpt', 'textarea', false], ['content', 'Konten', 'textarea', true], ['thumbnail_url', 'Thumbnail', 'image', false, 'thumbnail_path', 'articles/thumbnails'], ['cover_image_url', 'Cover image', 'image', false, 'cover_path', 'articles/covers'], ['status', 'Status', 'status', true], ['sort_order', 'Urutan', 'number', false], ['is_featured', 'Featured', 'boolean', false]
+    ['title', 'Judul', 'text', true], ['slug', 'Slug', 'text', true], ['excerpt', 'Excerpt', 'textarea', false], ['content', 'Konten', 'textarea', true], ['thumbnail_url', 'Thumbnail', 'image', false, 'thumbnail_path', 'articles/thumbnails'], ['status', 'Status', 'status', true], ['sort_order', 'Urutan', 'number', false], ['is_featured', 'Featured', 'boolean', false]
   ],
   skills: [['name', 'Nama', 'text', true], ['category', 'Kategori', 'text', false], ['description', 'Deskripsi', 'textarea', false], ['level', 'Level 0-100', 'number', false], ['status', 'Status', 'status', true], ['sort_order', 'Urutan', 'number', false]],
   experiences: [['company', 'Perusahaan', 'text', true], ['role_title', 'Jabatan', 'text', true], ['description', 'Deskripsi', 'textarea', false], ['location', 'Lokasi', 'text', false], ['start_date', 'Mulai', 'date', false], ['end_date', 'Selesai', 'date', false], ['is_current', 'Saat ini', 'boolean', false], ['logo_url', 'Logo perusahaan', 'image', false, 'logo_path', 'experiences/logos'], ['status', 'Status', 'status', true], ['sort_order', 'Urutan', 'number', false]],
   educations: [['institution', 'Institusi', 'text', true], ['degree', 'Gelar', 'text', false], ['field_of_study', 'Bidang studi', 'text', false], ['location', 'Lokasi', 'text', false], ['description', 'Deskripsi', 'textarea', false], ['start_date', 'Mulai', 'date', false], ['end_date', 'Selesai', 'date', false], ['is_current', 'Saat ini', 'boolean', false], ['logo_url', 'Logo institusi', 'image', false, 'logo_path', 'educations/logos'], ['is_featured', 'Featured', 'boolean', false], ['status', 'Status', 'status', true], ['sort_order', 'Urutan', 'number', false]],
-  certificates: [['title', 'Judul', 'text', true], ['issuer', 'Penerbit', 'text', false], ['issue_date', 'Tanggal', 'date', false], ['credential_url', 'URL credential', 'url', false], ['image_url', 'Gambar sertifikat', 'image', false, 'certificate_path', 'certificates'], ['status', 'Status', 'status', true], ['sort_order', 'Urutan', 'number', false]],
+  certificates: [['title', 'Judul', 'text', true], ['issuer', 'Penerbit', 'text', false], ['issue_date', 'Tanggal', 'date', false], ['credential_url', 'URL credential', 'url', false], ['certificate_url', 'Gambar sertifikat', 'image', false, 'certificate_path', 'certificates'], ['status', 'Status', 'status', true], ['sort_order', 'Urutan', 'number', false]],
   services: [['title', 'Judul', 'text', true], ['slug', 'Slug', 'text', true], ['description', 'Deskripsi', 'textarea', false], ['icon', 'Icon key', 'text', false], ['icon_url', 'Icon image', 'image', false, 'icon_path', 'services/icons'], ['status', 'Status', 'status', true], ['sort_order', 'Urutan', 'number', false], ['is_featured', 'Featured', 'boolean', false]],
   testimonials: [['author_name', 'Nama', 'text', true], ['author_role', 'Peran', 'text', false], ['quote', 'Kutipan', 'textarea', true], ['avatar_url', 'Avatar', 'image', false, 'avatar_path', 'testimonials/avatars'], ['status', 'Status', 'status', true], ['sort_order', 'Urutan', 'number', false], ['is_featured', 'Featured', 'boolean', false]],
   social_links: [['platform', 'Platform', 'text', true], ['label', 'Label', 'text', true], ['url', 'URL', 'url', true], ['username', 'Username', 'text', false], ['icon', 'Icon key', 'text', false], ['is_active', 'Aktif', 'boolean', false], ['open_in_new_tab', 'Buka tab baru', 'boolean', false], ['sort_order', 'Urutan', 'number', false]],
@@ -24,6 +24,14 @@ const contentFields = {
 }
 
 const profileFields = [['full_name', 'Nama lengkap', 'text', false], ['username', 'Username', 'text', false], ['phone', 'Telepon', 'text', false], ['bio', 'Bio publik', 'textarea', false], ['avatar_url', 'Avatar profile', 'image', false, 'avatar_path', 'avatars'], ['is_active', 'Aktif di publik', 'boolean', false]]
+
+const heroSettingFields = [
+  ['hero_badge', 'Label kecil', 'text'],
+  ['hero_title', 'Judul utama', 'text'],
+  ['hero_description', 'Deskripsi utama', 'textarea'],
+  ['professional_titles', 'Jabatan profesional', 'titles'],
+  ['availability_label', 'Label ketersediaan', 'text']
+]
 
 export async function initializeAdminRoute(route) {
   if (route.name === 'login') { await renderLoginPage(); return }
@@ -290,6 +298,7 @@ async function renderSettings(context) {
   const canManage = hasPermission(context, 'settings.update')
   const content = document.querySelector('#admin-content')
   content.innerHTML = `<div class="admin-page-heading"><div><p>{ Public configuration }</p><h1>Site settings.</h1><span>Nilai disimpan sebagai JSON agar tipe boolean dan angka tetap konsisten.</span></div>${canManage ? '<button class="admin-primary-button" data-setting-new>Tambah</button>' : ''}</div><div id="settings-form"></div><section class="admin-card"><div class="admin-section-heading"><div><p>Database</p><h2>Settings</h2></div><input class="admin-search" data-setting-search placeholder="Cari key..."></div><div id="settings-list">Memuat...</div></section>`
+  renderHeroSettings(context)
   renderSiteAssetUploader(context)
   const formContainer = document.querySelector('#settings-form'); const list = document.querySelector('#settings-list'); let rows = []
   const renderRows = () => { const term = document.querySelector('[data-setting-search]').value.toLowerCase(); const filtered = rows.filter(row => `${row.key} ${row.group_name}`.toLowerCase().includes(term)); list.innerHTML = filtered.length ? filtered.map(row => `<article class="admin-list-card"><div><p class="admin-list-kicker">${escapeHtml(row.group_name)} · ${row.is_public ? 'public' : 'private'}</p><h3>${escapeHtml(row.key)}</h3><p>${escapeHtml(parseSettingValue(row.value))}</p></div>${canManage ? `<div class="admin-row-actions"><button class="admin-secondary-button" data-setting-edit="${row.id}">Edit</button><button class="admin-danger-button" data-setting-delete="${row.id}">Hapus</button></div>` : ''}</article>`).join('') : '<p class="admin-empty">Belum ada setting.</p>' }
@@ -298,13 +307,74 @@ async function renderSettings(context) {
   document.querySelector('[data-setting-new]')?.addEventListener('click', () => openForm(null)); document.querySelector('[data-setting-search]').addEventListener('input', renderRows); list.addEventListener('click', async event => { const edit = event.target.closest('[data-setting-edit]'); if (edit) openForm(rows.find(row => row.id === edit.dataset.settingEdit)); const remove = event.target.closest('[data-setting-delete]'); if (remove && window.confirm('Hapus setting ini?')) { const { error } = await supabase.from('site_settings').delete().eq('id', remove.dataset.settingDelete); if (error) showToast('Setting tidak dapat dihapus.', 'error'); else { showToast('Setting dihapus.'); await load() } } }); await load()
 }
 
+function renderHeroSettingValue(key, value) {
+  if (key === 'professional_titles') {
+    let parsed = value
+    if (typeof parsed === 'string') {
+      try { parsed = JSON.parse(parsed) } catch { parsed = parsed.split(/\r?\n/) }
+    }
+    return Array.isArray(parsed) ? parsed.filter(Boolean).join('\n') : ''
+  }
+  return parseSettingValue(value)
+}
+
+async function renderHeroSettings(context) {
+  if (!hasPermission(context, 'settings.update')) return
+  const content = document.querySelector('#admin-content')
+  if (!content) return
+  content.insertAdjacentHTML('afterbegin', '<section class="admin-card admin-form-card"><div class="admin-section-heading"><div><p>Homepage · Section 1</p><h2>Hero content</h2><span>Konten ini tampil di bagian paling atas portfolio publik.</span></div></div><form id="hero-settings-form"><p>Memuat konten hero...</p></form></section>')
+  const form = document.querySelector('#hero-settings-form')
+  if (!form) return
+
+  const keys = heroSettingFields.map(field => field[0])
+  const result = await supabase.from('site_settings').select('key,value').in('key', keys)
+  if (result.error) {
+    form.innerHTML = '<p class="admin-form-error">Konten hero tidak dapat dimuat. Periksa permission settings.view.</p>'
+    return
+  }
+
+  const currentValues = new Map((result.data || []).map(row => [row.key, row.value]))
+  form.innerHTML = '<div class="admin-form-grid">' + heroSettingFields.map(([key, label, type]) => {
+    const value = escapeHtml(renderHeroSettingValue(key, currentValues.get(key)))
+    if (type === 'textarea' || type === 'titles') {
+      const hint = type === 'titles' ? '<small class="admin-field-help">Satu jabatan per baris, misalnya Full Stack Developer.</small>' : ''
+      return '<label class="admin-field admin-field-wide"><span>' + label + '</span><textarea name="' + key + '" rows="' + (type === 'titles' ? '3' : '4') + '" placeholder="' + (type === 'titles' ? 'Full Stack Developer&#10;Creative Developer' : '') + '">' + value + '</textarea>' + hint + '</label>'
+    }
+    return '<label class="admin-field"><span>' + label + '</span><input name="' + key + '" type="text" value="' + value + '"></label>'
+  }).join('') + '</div><div class="admin-form-actions"><button class="admin-primary-button" type="submit">Simpan Section 1</button></div><p class="admin-form-error" data-hero-settings-error></p>'
+
+  form.addEventListener('submit', async event => {
+    event.preventDefault()
+    const button = form.querySelector('button[type="submit"]')
+    const errorElement = form.querySelector('[data-hero-settings-error]')
+    const payload = heroSettingFields.map(([key]) => {
+      const rawValue = form.elements[key].value.trim()
+      const value = key === 'professional_titles'
+        ? rawValue.split(/\r?\n/).map(item => item.trim()).filter(Boolean)
+        : rawValue
+      return { key, group_name: 'identity', value, is_public: true, updated_by: context.user.id }
+    })
+
+    errorElement.textContent = ''
+    setBusy(button, true)
+    const saveResult = await supabase.from('site_settings').upsert(payload, { onConflict: 'key' })
+    setBusy(button, false, 'Simpan Section 1')
+    if (saveResult.error) {
+      console.error('Hero settings save error:', saveResult.error)
+      errorElement.textContent = 'Section 1 belum tersimpan. Periksa permission dan struktur tabel site_settings.'
+      return
+    }
+    showToast('Konten Section 1 berhasil diperbarui.')
+  })
+}
+
 function renderSiteAssetUploader(context) {
   if (!hasPermission(context, 'settings.update')) return
   const assetFields = [
-    ['hero_image', 'Hero image', 'site/hero'],
-    ['site_logo', 'Logo situs', 'site/logo'],
-    ['site_favicon', 'Favicon', 'site/favicon'],
-    ['og_image', 'Open Graph image', 'site/og']
+    ['hero_image', 'Hero image', 'site/hero', 'hero_image_url', 'hero_image_path'],
+    ['site_logo', 'Logo situs', 'site/logo', 'logo_url', 'logo_path'],
+    ['site_favicon', 'Favicon', 'site/favicon', 'favicon_url', 'favicon_path'],
+    ['og_image', 'Open Graph image', 'site/og', 'og_image_url', 'og_image_path']
   ]
   const content = document.querySelector('#admin-content')
   if (!content) return
@@ -312,12 +382,14 @@ function renderSiteAssetUploader(context) {
   const assetForm = document.querySelector('#site-assets-form')
   const assetRows = new Map()
   const load = async () => {
-    const { data, error } = await supabase.from('site_settings').select('id,key,value,asset_url,asset_path').in('key', assetFields.map(field => field[0]))
+    let result = await supabase.from('site_settings').select('id,key,value,asset_url,asset_path,hero_image_url,hero_image_path,logo_url,logo_path,favicon_url,favicon_path,og_image_url,og_image_path').in('key', assetFields.map(field => field[0]))
+    if (result.error?.code === '42703') result = await supabase.from('site_settings').select('id,key,value,asset_url,asset_path').in('key', assetFields.map(field => field[0]))
+    const { data, error } = result
     if (error) { assetForm.innerHTML = '<p class="admin-form-error">Asset situs tidak dapat dimuat.</p>'; return }
     ;(data || []).forEach(row => assetRows.set(row.key, row))
-    assetForm.innerHTML = assetFields.map(([key, label]) => {
+    assetForm.innerHTML = assetFields.map(([key, label, , urlName]) => {
       const row = assetRows.get(key)
-      const existingUrl = row?.asset_url || (typeof row?.value === 'string' ? row.value : '')
+      const existingUrl = row?.[urlName] || row?.asset_url || (typeof row?.value === 'string' ? row.value : '')
       return renderImageUploader({ name: 'asset_' + key, label, existingUrl })
     }).join('') + '<div class="admin-form-actions"><button class="admin-primary-button" type="submit">Simpan gambar situs</button></div><p class="admin-form-error" data-site-assets-error></p>'
     bindImageUploaders(assetForm)
@@ -329,23 +401,23 @@ function renderSiteAssetUploader(context) {
     const uploadedImages = []
     setBusy(button, true)
     try {
-      for (const [key, , folder] of assetFields) {
+      for (const [key, , folder, urlName, pathName] of assetFields) {
         const file = assetForm.elements['asset_' + key]?.files?.[0]
         if (!file) continue
         const oldRow = assetRows.get(key)
         const uploaded = await uploadPublicImage({ file, folder, userId: context.user.id })
-        uploadedImages.push({ key, uploaded, oldPath: oldRow?.asset_path, oldRow, saved: false })
-        const { error } = await supabase.from('site_settings').upsert({ key, group_name: 'assets', value: uploaded.publicUrl, asset_url: uploaded.publicUrl, asset_path: uploaded.path, is_public: true, updated_by: context.user.id }, { onConflict: 'key' })
+        uploadedImages.push({ key, uploaded, oldPath: oldRow?.[pathName] || oldRow?.asset_path, oldRow, urlName, pathName, saved: false })
+        const { error } = await supabase.from('site_settings').upsert({ key, group_name: 'assets', value: uploaded.publicUrl, [urlName]: uploaded.publicUrl, [pathName]: uploaded.path, asset_url: uploaded.publicUrl, asset_path: uploaded.path, is_public: true, updated_by: context.user.id }, { onConflict: 'key' })
         if (error) throw error
         uploadedImages[uploadedImages.length - 1].saved = true
-        assetRows.set(key, { asset_url: uploaded.publicUrl, asset_path: uploaded.path, value: uploaded.publicUrl })
+        assetRows.set(key, { asset_url: uploaded.publicUrl, asset_path: uploaded.path, [urlName]: uploaded.publicUrl, [pathName]: uploaded.path, value: uploaded.publicUrl })
       }
       await Promise.all(uploadedImages.filter(item => item.oldPath && item.oldPath !== item.uploaded.path).map(item => deletePublicImage(item.oldPath)))
       showToast('Gambar situs diperbarui.')
       await load()
     } catch (saveError) {
       for (const item of uploadedImages.filter(entry => entry.saved)) {
-        if (item.oldRow) await supabase.from('site_settings').update({ value: item.oldRow.value, asset_url: item.oldRow.asset_url || null, asset_path: item.oldRow.asset_path || null }).eq('key', item.key)
+        if (item.oldRow) await supabase.from('site_settings').update({ value: item.oldRow.value, [item.urlName]: item.oldRow[item.urlName] || null, [item.pathName]: item.oldRow[item.pathName] || null, asset_url: item.oldRow.asset_url || null, asset_path: item.oldRow.asset_path || null }).eq('key', item.key)
         else await supabase.from('site_settings').delete().eq('key', item.key)
       }
       await cleanupNewImages(uploadedImages.map(item => ({ newPath: item.uploaded.path })))

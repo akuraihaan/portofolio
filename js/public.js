@@ -10,6 +10,7 @@ export function initializePublic() {
   initializeTheme()
   initializeMobileMenu()
   initializeHeaderScroll()
+  initializeSectionNavigation()
   initializeRevealAnimations()
   initializeCopyEmail()
   initializeSmoothScroll()
@@ -74,21 +75,30 @@ async function loadPublicContent() {
 
   const settings = Object.fromEntries(settingsResult.data.map(row => [row.key, normalizeSettingValue(row.value)]))
   const profile = profileResult.data[0] ?? null
-  const projects = await resolveAssetRows(projectsResult.data, ['thumbnail_url', 'cover_image_url'])
+  const projects = await resolveAssetRows(projectsResult.data, ['thumbnail_url', 'cover_url', 'cover_image_url'])
   const articles = await resolveAssetRows(articlesResult.data, ['thumbnail_url', 'cover_image_url'])
+  const educations = await resolveAssetRows(educationsResult.data, ['logo_url'])
   const experiences = await resolveAssetRows(experiencesResult.data, ['logo_url'])
-  const certificates = await resolveAssetRows(certificatesResult.data, ['image_url'])
+  const certificates = await resolveAssetRows(certificatesResult.data, ['certificate_url', 'image_url'])
   const testimonials = await resolveAssetRows(testimonialsResult.data, ['avatar_url'])
   applySiteIdentity(settings, profile)
   renderDynamicCapabilities(skillsResult.data, servicesResult.data)
-  renderDynamicStats({ projects: projectsResult.data, skills: skillsResult.data, experiences: experiencesResult.data, certificates: certificatesResult.data })
-  renderDynamicEducations(educationsResult.data)
+  renderDynamicStats({ projects: projectsResult.data, skills: skillsResult.data, experiences: experiencesResult.data, certificates: certificatesResult.data, articles: articlesResult.data })
+  renderDynamicEducations(educations)
   renderDynamicExperiences(experiences)
   renderDynamicProjects(projects)
   renderDynamicArticles(articles)
   renderDynamicCertificates(certificates)
   renderDynamicTestimonials(testimonials)
   renderSocialLinks(socialResult.data)
+  updateNavigationVisibility({
+    capabilities: skillsResult.data.length > 0 || servicesResult.data.length > 0,
+    work: projectsResult.data.length > 0,
+    experience: experiencesResult.data.length > 0,
+    education: educations.length > 0,
+    notes: articlesResult.data.length > 0,
+    credentials: certificates.length > 0 || testimonials.length > 0
+  })
   bindProjectInteractions()
 
   if ([settingsResult, profileResult, projectsResult, articlesResult, skillsResult, servicesResult, educationsResult, socialResult, experiencesResult, certificatesResult, testimonialsResult].some(result => !result.ok)) {
@@ -100,8 +110,9 @@ async function resolveAssetRows(rows, fields) {
   return Promise.all(rows.map(async row => {
     const resolved = { ...row }
     for (const field of fields) {
-      const pathFields = field === 'cover_image_url' ? ['cover_path', 'thumbnail_path'] : field === 'image_url' ? ['certificate_path'] : [field.replace(/_url$/, '_path')]
-      const assetValue = row[field] || pathFields.map(pathField => row[pathField]).find(Boolean)
+      const aliases = field === 'cover_url' ? ['cover_image_url'] : field === 'certificate_url' ? ['image_url'] : []
+      const pathFields = field === 'cover_image_url' ? ['cover_path', 'thumbnail_path'] : field === 'certificate_url' || field === 'image_url' ? ['certificate_path'] : [field.replace(/_url$/, '_path')]
+      const assetValue = [field, ...aliases].map(valueField => row[valueField]).find(Boolean) || pathFields.map(pathField => row[pathField]).find(Boolean)
       resolved[field] = await resolveAssetUrl(assetValue)
     }
     return resolved
@@ -121,24 +132,24 @@ function applySiteIdentity(settings, profile) {
   const city = profile?.city || settings.city || ''
   const country = profile?.country || settings.country || ''
   const location = [city, country].filter(Boolean).join(', ')
-  const heroImage = settings.hero_image || profile?.avatar_url || ''
+  const heroImage = settings.hero_image_url || settings.hero_image || profile?.avatar_url || ''
 
   document.title = settings.default_meta_title || `${siteName} — Portfolio digital`
   document.querySelector('meta[name="description"]')?.setAttribute('content', settings.default_meta_description || description)
-  if (settings.og_image) document.querySelector('meta[property="og:image"]')?.setAttribute('content', settings.og_image)
-  if (settings.site_favicon) document.querySelector('link[rel="icon"]')?.setAttribute('href', settings.site_favicon)
+  if (settings.og_image_url || settings.og_image) document.querySelector('meta[property="og:image"]')?.setAttribute('content', settings.og_image_url || settings.og_image)
+  if (settings.favicon_url || settings.site_favicon) document.querySelector('link[rel="icon"]')?.setAttribute('href', settings.favicon_url || settings.site_favicon)
   const heroPortrait = document.querySelector('.hero__portrait')
-  if (heroPortrait && heroImage) heroPortrait.innerHTML = `<img src="${escapeHtml(heroImage)}" alt="${escapeHtml(displayName)}" loading="eager" decoding="async"><span class="hero__portrait-caption">Design<br />in motion</span>`
+  if (heroPortrait && heroImage) heroPortrait.innerHTML = '<img src="' + escapeHtml(heroImage) + '" alt="' + escapeHtml(displayName) + '" loading="eager" decoding="async" data-image-fallback data-fallback-label="' + escapeHtml(displayName.slice(0, 2).toUpperCase()) + '"><span class="hero__portrait-fallback" hidden>' + escapeHtml(displayName.slice(0, 2).toUpperCase()) + '</span><span class="hero__portrait-caption">Design<br />in motion</span>'
   document.querySelectorAll('[data-site-name]').forEach(element => { element.textContent = siteName })
   document.querySelectorAll('[data-site-mark]').forEach(element => { element.textContent = siteName.slice(0, 1).toUpperCase() })
   document.querySelector('[data-availability]')?.replaceChildren(document.createTextNode(settings.availability_label || siteName))
   document.querySelector('[data-hero-badge]')?.replaceChildren(document.createTextNode(settings.hero_badge || 'Portfolio digital'))
-  document.querySelector('#hero-title')?.replaceChildren(document.createTextNode(settings.hero_title || 'Konten belum tersedia.'))
+  document.querySelector('#hero-title')?.replaceChildren(document.createTextNode(settings.hero_title || 'Membangun pengalaman digital yang berarti.'))
   const heroIntro = document.querySelector('[data-hero-intro]')
-  if (heroIntro) heroIntro.innerHTML = `${escapeHtml(settings.hero_description || profile?.bio || 'Konten belum tersedia.')} <span class="accent-green" data-role data-roles='${escapeHtml(JSON.stringify(settings.professional_titles || []))}'></span>`
-  document.querySelector('[data-about-short]')?.replaceChildren(document.createTextNode(profile?.bio || 'Konten belum tersedia.'))
-  document.querySelector('[data-about-long]')?.replaceChildren(document.createTextNode(settings.about_text || 'Konten belum tersedia.'))
-  document.querySelector('[data-contact-description]')?.replaceChildren(document.createTextNode(settings.site_tagline || 'Konten belum tersedia.'))
+  if (heroIntro) heroIntro.innerHTML = `${escapeHtml(settings.hero_description || profile?.bio || 'Saya membangun aplikasi web yang dinamis, mudah digunakan, dan berorientasi pada pengalaman pengguna.')} <span class="accent-green" data-role data-roles='${escapeHtml(JSON.stringify(settings.professional_titles || []))}'></span>`
+  document.querySelector('[data-about-short]')?.replaceChildren(document.createTextNode(profile?.bio || 'Desain yang jelas, teknologi yang tepat, dan pengalaman yang terasa manusiawi.'))
+  document.querySelector('[data-about-long]')?.replaceChildren(document.createTextNode(settings.about_text || 'Dari ide pertama hingga produk yang siap digunakan, setiap detail dibangun dengan tujuan.'))
+  document.querySelector('[data-contact-description]')?.replaceChildren(document.createTextNode(settings.site_tagline || 'Ceritakan apa yang sedang Anda bangun dan mari temukan cara terbaik untuk membuatnya bergerak.'))
   document.querySelectorAll('[data-contact-email]').forEach(element => {
     if (!email) { element.hidden = true; return }
     element.hidden = false
@@ -149,12 +160,35 @@ function applySiteIdentity(settings, profile) {
   document.querySelector('[data-footer-name]')?.replaceChildren(document.createTextNode(displayName))
   document.querySelector('[data-footer-location]')?.replaceChildren(document.createTextNode(location))
   document.querySelectorAll('[data-copy-email]').forEach(button => { if (email) button.dataset.email = email })
-  const roles = settings.professional_titles || []
+  const roles = Array.isArray(settings.professional_titles) ? settings.professional_titles : []
   const roleElement = document.querySelector('[data-role]')
   if (roleElement && roles.length) {
     roleElement.dataset.roles = JSON.stringify(roles)
     initializeRoleTyping(roleElement, roles)
   }
+  bindImageFallbacks()
+}
+
+function setImageFallback(image, label = 'BW') {
+  image.addEventListener('error', () => {
+    image.hidden = true
+    const fallback = image.nextElementSibling
+    if (fallback) {
+      fallback.hidden = false
+      fallback.textContent = label
+    }
+  }, { once: true })
+}
+
+function bindImageFallbacks(root = document) {
+  root.querySelectorAll('[data-image-fallback]').forEach(image => {
+    setImageFallback(image, image.dataset.fallbackLabel || 'BW')
+  })
+}
+
+function getInitials(value = '') {
+  const words = String(value).trim().split(/\s+/).filter(Boolean)
+  return (words.length > 1 ? words.slice(0, 2).map(word => word[0]) : [words[0]?.[0] || 'B']).join('').toUpperCase()
 }
 
 function renderDynamicCapabilities(skills, services) {
@@ -172,10 +206,10 @@ function renderDynamicCapabilities(skills, services) {
   initializeRevealAnimations()
 }
 
-function renderDynamicStats({ projects = [], skills = [], experiences = [], certificates = [] } = {}) {
+function renderDynamicStats({ projects = [], skills = [], experiences = [], certificates = [], articles = [] } = {}) {
   const container = document.querySelector('[data-dynamic-stats]')
   if (!container) return
-  container.innerHTML = [['Projects', projects.length], ['Skills', skills.length], ['Experience', experiences.length], ['Certificates', certificates.length]].map(([label, value]) => '<span><strong>' + value + '</strong><small>' + label + '</small></span>').join('')
+  container.innerHTML = [['Projects', projects.length], ['Skills', skills.length], ['Experience', experiences.length], ['Certificates', certificates.length], ['Articles', articles.length]].map(([label, value]) => '<span><strong>' + value + '</strong><small>' + label + '</small></span>').join('')
 }
 
 function renderDynamicEducations(educations) {
@@ -187,7 +221,15 @@ function renderDynamicEducations(educations) {
     return
   }
 
-  container.innerHTML = educations.map(education => `<article class="education-card" data-reveal><div class="education-card__period">${escapeHtml(education.is_current ? `${formatDate(education.start_date)} — Sekarang` : `${formatDate(education.start_date)} — ${formatDate(education.end_date)}`)}</div><div><h3>${escapeHtml(education.degree || 'Pendidikan')}</h3><p class="education-card__institution">${escapeHtml(education.institution)}</p><p>${escapeHtml([education.field_of_study, education.location, education.description].filter(Boolean).join(' · '))}</p></div></article>`).join('')
+  container.innerHTML = educations.map(education => {
+    const initials = getInitials(education.institution)
+    const logo = education.logo_url
+      ? '<span class="education-card__brand"><img src="' + escapeHtml(education.logo_url) + '" alt="" loading="lazy" decoding="async" data-image-fallback data-fallback-label="' + initials + '"><span class="education-card__fallback" hidden>' + initials + '</span></span>'
+      : '<span class="education-card__brand education-card__brand--fallback" aria-hidden="true">' + initials + '</span>'
+    const period = education.is_current ? formatDate(education.start_date) + ' — Sekarang' : formatDate(education.start_date) + ' — ' + formatDate(education.end_date)
+    return '<article class="education-card" data-reveal><div class="education-card__period">' + logo + '<span>' + escapeHtml(period) + '</span></div><div><h3>' + escapeHtml(education.degree || 'Pendidikan') + '</h3><p class="education-card__institution">' + escapeHtml(education.institution) + '</p><p>' + escapeHtml([education.field_of_study, education.location, education.description].filter(Boolean).join(' · ')) + '</p></div></article>'
+  }).join('')
+  bindImageFallbacks(container)
   initializeRevealAnimations()
 }
 
@@ -198,7 +240,14 @@ function renderDynamicExperiences(experiences) {
     container.innerHTML = '<div class="public-empty-state">Belum ada pengalaman published.</div>'
     return
   }
-  container.innerHTML = experiences.map(item => '<article class="experience-card" data-reveal><div class="experience-card__period">' + (item.logo_url ? '<img class="experience-card__logo" src="' + escapeHtml(item.logo_url) + '" alt="" loading="lazy" decoding="async">' : '') + '<span>' + escapeHtml(item.is_current ? formatDate(item.start_date) + ' — Sekarang' : formatDate(item.start_date) + ' — ' + formatDate(item.end_date)) + '</span></div><div><p class="experience-card__company">' + escapeHtml(item.company) + '</p><h3>' + escapeHtml(item.role_title) + '</h3><p>' + escapeHtml([item.location, item.description].filter(Boolean).join(' · ')) + '</p></div></article>').join('')
+  container.innerHTML = experiences.map(item => {
+    const initials = getInitials(item.company)
+    const logo = item.logo_url
+      ? '<img class="experience-card__logo" src="' + escapeHtml(item.logo_url) + '" alt="" loading="lazy" decoding="async" data-image-fallback data-fallback-label="' + initials + '"><span class="experience-card__fallback" hidden>' + initials + '</span>'
+      : '<span class="experience-card__logo experience-card__logo--fallback" aria-hidden="true">' + initials + '</span>'
+    return '<article class="experience-card" data-reveal><div class="experience-card__period">' + logo + '<span>' + escapeHtml(item.is_current ? formatDate(item.start_date) + ' — Sekarang' : formatDate(item.start_date) + ' — ' + formatDate(item.end_date)) + '</span></div><div><p class="experience-card__company">' + escapeHtml(item.company) + '</p><h3>' + escapeHtml(item.role_title) + '</h3><p>' + escapeHtml([item.location, item.description].filter(Boolean).join(' · ')) + '</p></div></article>'
+  }).join('')
+  bindImageFallbacks(container)
   initializeRevealAnimations()
 }
 
@@ -214,7 +263,7 @@ function renderDynamicProjects(projects) {
   grid.innerHTML = projects.map((project, index) => {
     const category = (project.category || 'digital').toLowerCase().replace(/[^a-z0-9-]/g, '')
     const visual = palette[index % palette.length]
-    const image = project.thumbnail_url || project.cover_image_url
+    const image = project.thumbnail_url || project.cover_url || project.cover_image_url
     return `<button class="project-card ${index === 0 ? 'project-card--wide' : ''}" type="button" data-project data-category="${escapeHtml(category)}" data-title="${escapeHtml(project.title)}" data-type="${escapeHtml(project.category || 'Project')}" data-description="${escapeHtml(project.summary || project.description || '')}" data-reel="${escapeHtml(project.project_url || '')}" data-reveal><span class="project-card__visual project-card__visual--${visual}" ${image ? `style="background-image:url('${escapeHtml(image)}');background-size:cover;background-position:center"` : ''} aria-label="${escapeHtml(project.title)}"><strong>${escapeHtml(project.title.slice(0, 12))}</strong></span><span class="project-card__info"><span><b>${escapeHtml(project.title)}</b><small>${escapeHtml(project.category || 'Project')}</small></span><span class="project-card__arrow">↗</span></span></button>`
   }).join('')
   if (footer) footer.textContent = `${projects.length} published project${projects.length === 1 ? '' : 's'}`
@@ -228,7 +277,15 @@ function renderDynamicArticles(articles) {
     grid.innerHTML = '<div class="public-empty-state">Belum ada artikel published.</div>'
     return
   }
-  grid.innerHTML = articles.map(article => `<a class="note-card" href="#contact" data-reveal>${article.thumbnail_url || article.cover_image_url ? `<img class="note-card__image" src="${escapeHtml(article.thumbnail_url || article.cover_image_url)}" alt="${escapeHtml(article.title)}" loading="lazy" decoding="async">` : ''}<span class="note-card__date">${formatDate(article.published_at || article.created_at)}</span><h3>${escapeHtml(article.title)}</h3><span class="note-card__arrow">↗</span></a>`).join('')
+  grid.innerHTML = articles.map(article => {
+    const image = article.thumbnail_url || article.cover_image_url
+    const initials = getInitials(article.title)
+    const imageMarkup = image
+      ? '<img class="note-card__image" src="' + escapeHtml(image) + '" alt="' + escapeHtml(article.title) + '" loading="lazy" decoding="async" data-image-fallback data-fallback-label="' + initials + '"><span class="note-card__image-fallback" hidden>' + initials + '</span>'
+      : ''
+    return '<a class="note-card" href="#contact" data-reveal>' + imageMarkup + '<span class="note-card__date">' + formatDate(article.published_at || article.created_at) + '</span><h3>' + escapeHtml(article.title) + '</h3><span class="note-card__arrow">↗</span></a>'
+  }).join('')
+  bindImageFallbacks(grid)
   initializeRevealAnimations()
 }
 
@@ -239,7 +296,15 @@ function renderDynamicCertificates(certificates) {
     container.innerHTML = '<div class="public-empty-state">Belum ada sertifikat published.</div>'
     return
   }
-  container.innerHTML = certificates.map(item => '<article class="certificate-card" data-reveal>' + (item.image_url ? '<img src="' + escapeHtml(item.image_url) + '" alt="' + escapeHtml(item.title) + '" loading="lazy" decoding="async">' : '<div class="certificate-card__placeholder" aria-hidden="true">✦</div>') + '<div><p class="certificate-card__date">' + escapeHtml(formatDate(item.issue_date)) + '</p><h3>' + escapeHtml(item.title) + '</h3><p>' + escapeHtml(item.issuer || 'Certificate') + '</p>' + (item.credential_url ? '<a class="text-link" href="' + escapeHtml(item.credential_url) + '" target="_blank" rel="noreferrer">View credential ↗</a>' : '') + '</div></article>').join('')
+  container.innerHTML = certificates.map(item => {
+    const image = item.certificate_url || item.image_url
+    const initials = getInitials(item.title)
+    const imageMarkup = image
+      ? '<img src="' + escapeHtml(image) + '" alt="' + escapeHtml(item.title) + '" loading="lazy" decoding="async" data-image-fallback data-fallback-label="' + initials + '"><span class="certificate-card__fallback" hidden>' + initials + '</span>'
+      : '<div class="certificate-card__placeholder" aria-hidden="true">✦</div>'
+    return '<article class="certificate-card" data-reveal>' + imageMarkup + '<div><p class="certificate-card__date">' + escapeHtml(formatDate(item.issue_date)) + '</p><h3>' + escapeHtml(item.title) + '</h3><p>' + escapeHtml(item.issuer || 'Certificate') + '</p>' + (item.credential_url ? '<a class="text-link" href="' + escapeHtml(item.credential_url) + '" target="_blank" rel="noreferrer">View credential ↗</a>' : '') + '</div></article>'
+  }).join('')
+  bindImageFallbacks(container)
   initializeRevealAnimations()
 }
 
@@ -250,7 +315,14 @@ function renderDynamicTestimonials(testimonials) {
     container.innerHTML = '<div class="public-empty-state">Belum ada testimonial published.</div>'
     return
   }
-  container.innerHTML = testimonials.map(item => '<article class="testimonial-card" data-reveal><span class="testimonial-card__quote">“</span><blockquote>' + escapeHtml(item.quote) + '</blockquote><div class="testimonial-card__author">' + (item.avatar_url ? '<img src="' + escapeHtml(item.avatar_url) + '" alt="" loading="lazy" decoding="async">' : '<span class="testimonial-card__avatar" aria-hidden="true">' + escapeHtml((item.author_name || '?').slice(0, 1)) + '</span>') + '<span><strong>' + escapeHtml(item.author_name) + '</strong><small>' + escapeHtml(item.author_role || '') + '</small></span></div></article>').join('')
+  container.innerHTML = testimonials.map(item => {
+    const initials = getInitials(item.author_name)
+    const avatar = item.avatar_url
+      ? '<img src="' + escapeHtml(item.avatar_url) + '" alt="" loading="lazy" decoding="async" data-image-fallback data-fallback-label="' + initials + '"><span class="testimonial-card__avatar testimonial-card__avatar--fallback" hidden>' + initials + '</span>'
+      : '<span class="testimonial-card__avatar" aria-hidden="true">' + initials + '</span>'
+    return '<article class="testimonial-card" data-reveal><span class="testimonial-card__quote">“</span><blockquote>' + escapeHtml(item.quote) + '</blockquote><div class="testimonial-card__author">' + avatar + '<span><strong>' + escapeHtml(item.author_name) + '</strong><small>' + escapeHtml(item.author_role || '') + '</small></span></div></article>'
+  }).join('')
+  bindImageFallbacks(container)
   initializeRevealAnimations()
 }
 
@@ -296,6 +368,36 @@ function initializeHeaderScroll() {
   const update = () => header?.classList.toggle('is-scrolled', window.scrollY > 30)
   window.addEventListener('scroll', update, { passive: true })
   update()
+}
+
+function initializeSectionNavigation() {
+  const links = [...document.querySelectorAll('.desktop-nav a, .mobile-nav a')]
+  const sections = links
+    .map(link => document.querySelector(link.getAttribute('href')))
+    .filter(Boolean)
+  const updateActive = () => {
+    const marker = window.scrollY + 150
+    let activeId = sections[0]?.id || 'top'
+    sections.forEach(section => {
+      if (section.offsetTop <= marker) activeId = section.id
+    })
+    links.forEach(link => {
+      const active = link.getAttribute('href') === '#' + activeId
+      link.classList.toggle('is-active', active)
+      if (active) link.setAttribute('aria-current', 'page')
+      else link.removeAttribute('aria-current')
+    })
+  }
+  window.addEventListener('scroll', updateActive, { passive: true })
+  updateActive()
+}
+
+function updateNavigationVisibility(visibility = {}) {
+  Object.entries(visibility).forEach(([id, visible]) => {
+    document.querySelectorAll('a[href="#' + id + '"]').forEach(link => {
+      link.hidden = !visible
+    })
+  })
 }
 
 function initializeRevealAnimations() {
