@@ -1,7 +1,6 @@
 import { supabase, supabaseConfiguration } from '../supabase.js'
-import { normalizeSettingValue, escapeHtml, formatDate, showToast } from './utils.js'
-import { getPublishedEducations } from './educations.js'
-import { getPublicImageUrl } from './services/storage-service.js'
+import { escapeHtml, formatDate, showToast } from './utils.js'
+import { getPublicContent } from './services/public-content-service.js'
 
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 const palette = ['orange', 'pink', 'lilac', 'blue']
@@ -17,121 +16,113 @@ export function initializePublic() {
   initializeYear()
   initializeContactForm()
   setPublicLoadingState()
-  loadPublicContent()
+  loadDynamicPageContent()
 }
 
-async function readTable(table, configure = query => query) {
-  if (!supabaseConfiguration.ready || !supabase) return { ok: false, data: [], error: new Error('Supabase belum dikonfigurasi.') }
-  const { data, error } = await configure(supabase.from(table).select('*'))
-  if (error) {
-    console.error(`Gagal membaca ${table}:`, {
-      code: error.code || null,
-      message: error.message || 'Unknown Supabase error',
-      details: error.details || null,
-      hint: error.hint || null
-    })
-    return { ok: false, data: [], error }
-  }
-  return { ok: true, data: data ?? [], error: null }
-}
-
-async function readEducations() {
-  try {
-    return { ok: true, data: await getPublishedEducations(), error: null }
-  } catch (error) {
-    return { ok: false, data: [], error }
-  }
-}
-
-function publishedQuery(query) {
-  return query
-    .eq('status', 'published')
-    .or(`published_at.is.null,published_at.lte.${new Date().toISOString()}`)
-    .order('sort_order', { ascending: true })
-    .order('published_at', { ascending: false })
-}
-
-async function loadPublicContent() {
-  if (!supabaseConfiguration.ready || !supabase) {
-    showPublicConfigNotice()
-    return
-  }
-
-  const settledResults = await Promise.allSettled([
-    readTable('site_settings', query => query.eq('is_public', true).order('group_name').order('key')),
-    readTable('profiles', query => query.eq('is_active', true).limit(1)),
-    readTable('projects', publishedQuery),
-    readTable('articles', publishedQuery),
-    readTable('skills', publishedQuery),
-    readTable('services', publishedQuery),
-    readEducations(),
-    readTable('social_links', query => query.eq('is_active', true).order('sort_order').order('created_at')),
-    readTable('experiences', publishedQuery),
-    readTable('certificates', publishedQuery),
-    readTable('testimonials', publishedQuery)
-  ])
-  const normalizeSettled = result => result.status === 'fulfilled' ? result.value : { ok: false, data: [], error: result.reason }
-  const [settingsResult, profileResult, projectsResult, articlesResult, skillsResult, servicesResult, educationsResult, socialResult, experiencesResult, certificatesResult, testimonialsResult] = settledResults.map(normalizeSettled)
-
-  const settings = Object.fromEntries(settingsResult.data.map(row => [row.key, normalizeSettingValue(row.value)]))
-  const profile = profileResult.data[0] ?? null
-  const projects = await resolveAssetRows(projectsResult.data, ['thumbnail_url', 'cover_url', 'cover_image_url'])
-  const articles = await resolveAssetRows(articlesResult.data, ['thumbnail_url', 'cover_image_url'])
-  const educations = await resolveAssetRows(educationsResult.data, ['logo_url'])
-  const experiences = await resolveAssetRows(experiencesResult.data, ['logo_url'])
-  const certificates = await resolveAssetRows(certificatesResult.data, ['certificate_url', 'image_url'])
-  const testimonials = await resolveAssetRows(testimonialsResult.data, ['avatar_url'])
+async function loadDynamicPageContent() {
+  if (!supabaseConfiguration.ready || !supabase) { showPublicConfigNotice(); return }
+  const content = await getPublicContent()
+  const settings = content.settings.data
+  const profile = content.profile
+  const sections = content.sections.data
+  const hero = sections.find(section => section.section_key === 'hero')
   applySiteIdentity(settings, profile)
-  renderDynamicCapabilities(skillsResult.data, servicesResult.data)
-  renderDynamicStats({ projects: projectsResult.data, skills: skillsResult.data, experiences: experiencesResult.data, certificates: certificatesResult.data, articles: articlesResult.data })
-  renderDynamicEducations(educations)
-  renderDynamicExperiences(experiences)
-  renderDynamicProjects(projects)
-  renderDynamicArticles(articles)
-  renderDynamicCertificates(certificates)
-  renderDynamicTestimonials(testimonials)
-  renderSocialLinks(socialResult.data)
-  updateNavigationVisibility({
-    capabilities: skillsResult.data.length > 0 || servicesResult.data.length > 0,
-    work: projectsResult.data.length > 0,
-    experience: experiencesResult.data.length > 0,
-    education: educations.length > 0,
-    notes: articlesResult.data.length > 0,
-    credentials: certificates.length > 0 || testimonials.length > 0
-  })
+  applyDynamicSectionSettings(sections)
+  renderDynamicNavigation(content.navigation.data)
+  renderDynamicMarquee(settings, hero)
+  renderDynamicAbout(sections.find(section => section.section_key === 'about'))
+  renderDynamicCapabilities(content.skills.data, content.services.data)
+  renderDynamicStats(content.statistics.data, content.statistics.counts)
+  renderDynamicProcess(sections.find(section => section.section_key === 'process'))
+  renderDynamicEducations(content.educations.data)
+  renderDynamicExperiences(content.experiences.data)
+  renderDynamicProjects(content.projects.data)
+  renderDynamicArticles(content.articles.data)
+  renderDynamicCertificates(content.certificates.data)
+  renderDynamicTestimonials(content.testimonials.data)
+  renderSocialLinks(content.socialLinks.data)
+  initializeRoleTyping(document.querySelector('[data-role]'), hero?.custom_data?.roles || [])
   bindProjectInteractions()
-
-  if ([settingsResult, profileResult, projectsResult, articlesResult, skillsResult, servicesResult, educationsResult, socialResult, experiencesResult, certificatesResult, testimonialsResult].some(result => !result.ok)) {
-    showToast('Sebagian konten belum dapat dimuat. Silakan coba lagi nanti.', 'error')
-  }
+  updateNavigationVisibilityFromSections(sections, content)
+  document.documentElement.classList.add('content-ready')
+  const results = [content.settings, content.profile, content.sections, content.navigation, content.projects, content.articles, content.skills, content.services, content.educations, content.experiences, content.certificates, content.testimonials, content.socialLinks]
+  if (results.some(result => !result.ok)) showToast('Sebagian konten belum dapat dimuat. Silakan coba lagi nanti.', 'error')
 }
 
-async function resolveAssetRows(rows, fields) {
-  return Promise.all(rows.map(async row => {
-    const resolved = { ...row }
-    for (const field of fields) {
-      const aliases = field === 'cover_url' ? ['cover_image_url'] : field === 'certificate_url' ? ['image_url'] : []
-      const pathFields = field === 'cover_image_url' ? ['cover_path', 'thumbnail_path'] : field === 'certificate_url' || field === 'image_url' ? ['certificate_path'] : [field.replace(/_url$/, '_path')]
-      const assetValue = [field, ...aliases].map(valueField => row[valueField]).find(Boolean) || pathFields.map(pathField => row[pathField]).find(Boolean)
-      resolved[field] = await resolveAssetUrl(assetValue)
-    }
-    return resolved
-  }))
+function applyDynamicSectionSettings(sections = []) {
+  if (!sections.length) return
+  const sectionElements = { hero: '#top', about: '#about', statistics: '#about', skills: '#capabilities', services: '#capabilities', featured_projects: '#work', projects: '#work', experiences: '#experience', educations: '#education', articles: '#notes', certificates: '#credentials', testimonials: '#credentials', contact: '#contact', cta: '#contact', process: '#process' }
+  const titleSelectors = { hero: '[data-hero-title]', about: '#statement-title', skills: '#capabilities-title', services: '#capabilities-title', projects: '#work-title', featured_projects: '#work-title', experiences: '#experience-title', educations: '#education-title', articles: '#notes-title', certificates: '#credentials-title', testimonials: '#credentials-title', contact: '#contact-title', cta: '#contact-title', process: '#process-title' }
+  const visibleKeys = new Set(sections.map(section => section.section_key))
+  const uniqueElements = new Map()
+  sections.forEach(section => {
+    const selector = sectionElements[section.section_key]; const element = selector ? document.querySelector(selector) : null
+    if (!element) return
+    uniqueElements.set(selector, element)
+    const titleSelector = titleSelectors[section.section_key]
+    const title = titleSelector ? document.querySelector(titleSelector) : null
+    if (title && section.title) title.textContent = section.title
+    const eyebrow = element.querySelector('.eyebrow')
+    if (eyebrow && section.eyebrow) eyebrow.textContent = `{ ${section.eyebrow} }`
+    const description = element.querySelector('.section-heading > p') || element.querySelector('.statement__aside > p') || element.querySelector('[data-contact-description]')
+    if (description && section.description) description.textContent = section.description
+    const primary = element.querySelector('[data-section-primary]'); const secondary = element.querySelector('[data-section-secondary]')
+    if (primary) { primary.textContent = section.primary_button_label || primary.dataset.fallbackLabel || ''; primary.hidden = !section.primary_button_label; if (section.primary_button_url) primary.href = section.primary_button_url }
+    if (secondary) { secondary.textContent = section.secondary_button_label || secondary.dataset.fallbackLabel || ''; secondary.hidden = !section.secondary_button_label; if (section.secondary_button_url) secondary.href = section.secondary_button_url }
+    element.dataset.sectionLayout = section.layout_variant || 'default'
+    if (section.image_url) element.style.setProperty('--section-image', `url("${section.image_url}")`)
+    if (section.background_image_url) element.style.setProperty('--section-background-image', `url("${section.background_image_url}")`)
+  })
+  Object.entries(sectionElements).forEach(([key, selector]) => { const element = document.querySelector(selector); if (element && !uniqueElements.has(selector)) element.hidden = !visibleKeys.has(key) })
+  const main = document.querySelector('main'); if (!main) return
+  const originalChildren = [...main.children]; const ordered = []; const seen = new Set()
+  sections.sort((a, b) => a.sort_order - b.sort_order).forEach(section => { const selector = sectionElements[section.section_key]; const element = selector ? document.querySelector(selector) : null; if (element && element.parentElement === main && !seen.has(element)) { ordered.push(element); seen.add(element) } })
+  originalChildren.forEach(element => { if (!seen.has(element)) ordered.push(element) }); ordered.forEach(element => main.appendChild(element))
 }
 
-async function resolveAssetUrl(value) {
-  if (!value || /^https?:\/\//i.test(value)) return value || ''
-  return getPublicImageUrl(value)
+function renderDynamicNavigation(items = []) {
+  if (!items.length) return
+  const desktop = document.querySelector('.desktop-nav'); const mobile = document.querySelector('.mobile-nav')
+  const itemMarkup = (item, mobileMode = false, index = 0) => `<a href="${escapeHtml(item.href)}" target="${escapeHtml(item.target || '_self')}" ${item.target === '_blank' ? 'rel="noreferrer"' : ''}>${escapeHtml(item.label)}${mobileMode ? ` <span>${String(index + 1).padStart(2, '0')}</span>` : ''}</a>`
+  if (desktop) desktop.innerHTML = items.map(item => itemMarkup(item)).join('')
+  if (mobile) mobile.innerHTML = items.map((item, index) => itemMarkup(item, true, index)).join('')
+  initializeSectionNavigation()
+}
+
+function renderDynamicMarquee(settings, hero) {
+  const track = document.querySelector('[data-dynamic-marquee]'); if (!track) return
+  const items = hero?.custom_data?.marquee_items || settings.marquee_items || ['Desain', 'Kode', 'Produk', 'Sistem']
+  track.innerHTML = [...items, ...items].map(item => `<span>${escapeHtml(item)}</span><b aria-hidden="true">✳</b>`).join('')
+}
+
+function renderDynamicAbout(section) {
+  if (!section) return
+  const data = section.custom_data || {}
+  const short = document.querySelector('[data-about-short]'); const long = document.querySelector('[data-about-long]')
+  if (short && data.bio_short) short.textContent = data.bio_short
+  if (long && (data.bio_long || section.description)) long.textContent = data.bio_long || section.description
+  const facts = document.querySelector('[data-about-facts]')
+  if (facts) facts.innerHTML = (data.facts || []).map(fact => `<span><small>${escapeHtml(fact.label)}</small><strong>${escapeHtml(fact.value)}</strong></span>`).join('')
+}
+
+function renderDynamicProcess(section) {
+  const container = document.querySelector('[data-dynamic-process]'); if (!container || !section) return
+  const steps = section.custom_data?.steps || []
+  container.innerHTML = steps.map((step, index) => `<article data-reveal><span>${String(index + 1).padStart(2, '0')}</span><h3>${escapeHtml(step.title)}</h3><p>${escapeHtml(step.description)}</p></article>`).join('')
+  initializeRevealAnimations()
+}
+
+function updateNavigationVisibilityFromSections(sections, content) {
+  const visible = new Set(sections.map(section => section.section_key))
+  updateNavigationVisibility({ about: visible.has('about'), capabilities: visible.has('skills') || visible.has('services'), work: visible.has('projects') && content.projects.data.length > 0, experience: visible.has('experiences'), education: visible.has('educations'), notes: visible.has('articles'), credentials: visible.has('certificates') || visible.has('testimonials'), contact: visible.has('contact') })
 }
 
 function applySiteIdentity(settings, profile) {
   const siteName = settings.site_name || settings.studio_name || 'bworiey'
-  const displayName = profile?.full_name || siteName
+  const displayName = settings.owner_name || profile?.full_name || siteName
   const description = settings.site_description || 'Portfolio digital bworiey.'
-  const email = profile?.email || settings.public_email || settings.business_email || ''
-  const city = profile?.city || settings.city || ''
-  const country = profile?.country || settings.country || ''
-  const location = [city, country].filter(Boolean).join(', ')
+  const email = settings.owner_email || profile?.email || settings.public_email || settings.business_email || ''
+  const location = settings.owner_location || [profile?.city || settings.city, profile?.country || settings.country].filter(Boolean).join(', ') || 'Indonesia'
   const heroImage = settings.hero_image_url || settings.hero_image || profile?.avatar_url || ''
 
   document.title = settings.default_meta_title || `${siteName} — Portfolio digital`
@@ -139,10 +130,13 @@ function applySiteIdentity(settings, profile) {
   if (settings.og_image_url || settings.og_image) document.querySelector('meta[property="og:image"]')?.setAttribute('content', settings.og_image_url || settings.og_image)
   if (settings.favicon_url || settings.site_favicon) document.querySelector('link[rel="icon"]')?.setAttribute('href', settings.favicon_url || settings.site_favicon)
   const heroPortrait = document.querySelector('.hero__portrait')
-  if (heroPortrait && heroImage) heroPortrait.innerHTML = '<img src="' + escapeHtml(heroImage) + '" alt="' + escapeHtml(displayName) + '" loading="eager" decoding="async" data-image-fallback data-fallback-label="' + escapeHtml(displayName.slice(0, 2).toUpperCase()) + '"><span class="hero__portrait-fallback" hidden>' + escapeHtml(displayName.slice(0, 2).toUpperCase()) + '</span><span class="hero__portrait-caption">Design<br />in motion</span>'
+  if (heroPortrait && heroImage) heroPortrait.innerHTML = '<img src="' + escapeHtml(heroImage) + '" alt="' + escapeHtml(displayName) + '" loading="eager" decoding="async" data-image-fallback data-fallback-label="' + escapeHtml(displayName.slice(0, 2).toUpperCase()) + '"><span class="hero__portrait-fallback" hidden>' + escapeHtml(displayName.slice(0, 2).toUpperCase()) + '</span><span class="hero__portrait-caption">Ide<br />yang bergerak</span>'
   document.querySelectorAll('[data-site-name]').forEach(element => { element.textContent = siteName })
+  document.querySelectorAll('[data-site-owner-name]').forEach(element => { element.textContent = displayName })
   document.querySelectorAll('[data-site-mark]').forEach(element => { element.textContent = siteName.slice(0, 1).toUpperCase() })
-  document.querySelector('[data-availability]')?.replaceChildren(document.createTextNode(settings.availability_label || siteName))
+  document.querySelectorAll('[data-site-location]').forEach(element => { element.textContent = location })
+  document.querySelectorAll('[data-site-tagline]').forEach(element => { element.textContent = settings.site_tagline || description })
+  document.querySelector('[data-availability]')?.replaceChildren(document.createTextNode(settings.availability_label || 'Terbuka untuk kolaborasi pilihan'))
   document.querySelector('[data-hero-badge]')?.replaceChildren(document.createTextNode(settings.hero_badge || 'Portfolio digital'))
   document.querySelector('#hero-title')?.replaceChildren(document.createTextNode(settings.hero_title || 'Membangun pengalaman digital yang berarti.'))
   const heroIntro = document.querySelector('[data-hero-intro]')
@@ -156,16 +150,13 @@ function applySiteIdentity(settings, profile) {
     element.textContent = `${email} ↗`
     element.setAttribute('href', `mailto:${email}`)
   })
-  document.querySelector('[data-contact-location]')?.replaceChildren(document.createTextNode(location || 'Konten belum tersedia.'))
+  document.querySelector('[data-contact-location]')?.replaceChildren(document.createTextNode(location))
   document.querySelector('[data-footer-name]')?.replaceChildren(document.createTextNode(displayName))
   document.querySelector('[data-footer-location]')?.replaceChildren(document.createTextNode(location))
   document.querySelectorAll('[data-copy-email]').forEach(button => { if (email) button.dataset.email = email })
   const roles = Array.isArray(settings.professional_titles) ? settings.professional_titles : []
   const roleElement = document.querySelector('[data-role]')
-  if (roleElement && roles.length) {
-    roleElement.dataset.roles = JSON.stringify(roles)
-    initializeRoleTyping(roleElement, roles)
-  }
+  if (roleElement && roles.length) roleElement.dataset.roles = JSON.stringify(roles)
   bindImageFallbacks()
 }
 
@@ -196,20 +187,22 @@ function renderDynamicCapabilities(skills, services) {
   if (!container) return
   const records = skills.map(item => ({ title: item.name, description: item.description, type: item.category || 'Skill', level: item.level })).concat(services.map(item => ({ title: item.title, description: item.description, type: 'Service', image: item.icon_url })))
   if (!records.length) {
-    container.innerHTML = '<article class="capability capability--blue"><div class="capability__content"><h3>Konten belum tersedia.</h3><p>Tambahkan skills atau services dari panel admin.</p></div></article>'
+    container.innerHTML = '<article class="capability capability--blue"><div class="capability__content"><h3>Konten sedang disiapkan.</h3><p>Tambahkan keahlian atau layanan dari panel admin agar bagian ini tampil.</p></div></article>'
     return
   }
   container.innerHTML = records.map((record, index) => {
     const color = palette[index % palette.length]
-    return `<article class="capability capability--${color}" data-reveal><div class="capability__visual capability__visual--${color}" aria-hidden="true"><span>${String(index + 1).padStart(2, '0')}</span><i></i><i></i><i></i></div><div class="capability__content"><div class="capability__meta"><span class="category-label">${escapeHtml(record.type)}</span><span>${String(index + 1).padStart(2, '0')}</span></div><h3>${escapeHtml(record.title)}</h3><p>${escapeHtml(record.description || 'Konten belum tersedia.')}</p></div></article>`
+    return `<article class="capability capability--${color}" data-reveal><div class="capability__visual capability__visual--${color}" aria-hidden="true"><span>${String(index + 1).padStart(2, '0')}</span><i></i><i></i><i></i></div><div class="capability__content"><div class="capability__meta"><span class="category-label">${escapeHtml(record.type)}</span><span>${String(index + 1).padStart(2, '0')}</span></div><h3>${escapeHtml(record.title)}</h3><p>${escapeHtml(record.description || 'Deskripsi akan ditambahkan segera.')}</p></div></article>`
   }).join('')
   initializeRevealAnimations()
 }
 
-function renderDynamicStats({ projects = [], skills = [], experiences = [], certificates = [], articles = [] } = {}) {
+function renderDynamicStats(statistics = [], counts = {}) {
   const container = document.querySelector('[data-dynamic-stats]')
   if (!container) return
-  container.innerHTML = [['Projects', projects.length], ['Skills', skills.length], ['Experience', experiences.length], ['Certificates', certificates.length], ['Articles', articles.length]].map(([label, value]) => '<span><strong>' + value + '</strong><small>' + label + '</small></span>').join('')
+  if (!Array.isArray(statistics) && statistics) { counts = Object.fromEntries(['projects', 'skills', 'experiences', 'certificates', 'articles'].map(key => [key, statistics[key]?.length || 0])); statistics = [] }
+  const rows = Array.isArray(statistics) && statistics.length ? statistics : [['Proyek', counts.projects || 0], ['Keahlian', counts.skills || 0], ['Pengalaman', counts.experiences || 0], ['Sertifikat', counts.certificates || 0], ['Artikel', counts.articles || 0]].map(([label, value]) => ({ label, value }))
+  container.innerHTML = rows.map(row => '<span><strong>' + escapeHtml(String(row.value ?? 0)) + '</strong><small>' + escapeHtml(row.label) + escapeHtml(row.suffix || '') + '</small></span>').join('')
 }
 
 function renderDynamicEducations(educations) {
@@ -217,7 +210,7 @@ function renderDynamicEducations(educations) {
   if (!container) return
 
   if (!educations.length) {
-    container.innerHTML = '<div class="public-empty-state">Belum ada pendidikan published.</div>'
+    container.innerHTML = '<div class="public-empty-state">Belum ada data pendidikan yang dipublikasikan.</div>'
     return
   }
 
@@ -237,7 +230,7 @@ function renderDynamicExperiences(experiences) {
   const container = document.querySelector('[data-dynamic-experiences]')
   if (!container) return
   if (!experiences.length) {
-    container.innerHTML = '<div class="public-empty-state">Belum ada pengalaman published.</div>'
+    container.innerHTML = '<div class="public-empty-state">Belum ada data pengalaman yang dipublikasikan.</div>'
     return
   }
   container.innerHTML = experiences.map(item => {
@@ -256,8 +249,8 @@ function renderDynamicProjects(projects) {
   const footer = document.querySelector('[data-project-count]')
   if (!grid) return
   if (!projects.length) {
-    grid.innerHTML = '<div class="public-empty-state">Belum ada proyek published.</div>'
-    if (footer) footer.textContent = '0 published projects'
+    grid.innerHTML = '<div class="public-empty-state">Belum ada proyek yang dipublikasikan.</div>'
+    if (footer) footer.textContent = 'Belum ada proyek dipublikasikan'
     return
   }
   grid.innerHTML = projects.map((project, index) => {
@@ -266,7 +259,7 @@ function renderDynamicProjects(projects) {
     const image = project.thumbnail_url || project.cover_url || project.cover_image_url
     return `<button class="project-card ${index === 0 ? 'project-card--wide' : ''}" type="button" data-project data-category="${escapeHtml(category)}" data-title="${escapeHtml(project.title)}" data-type="${escapeHtml(project.category || 'Project')}" data-description="${escapeHtml(project.summary || project.description || '')}" data-reel="${escapeHtml(project.project_url || '')}" data-reveal><span class="project-card__visual project-card__visual--${visual}" ${image ? `style="background-image:url('${escapeHtml(image)}');background-size:cover;background-position:center"` : ''} aria-label="${escapeHtml(project.title)}"><strong>${escapeHtml(project.title.slice(0, 12))}</strong></span><span class="project-card__info"><span><b>${escapeHtml(project.title)}</b><small>${escapeHtml(project.category || 'Project')}</small></span><span class="project-card__arrow">↗</span></span></button>`
   }).join('')
-  if (footer) footer.textContent = `${projects.length} published project${projects.length === 1 ? '' : 's'}`
+  if (footer) footer.textContent = `${projects.length} proyek dipublikasikan`
   initializeRevealAnimations()
 }
 
@@ -274,7 +267,7 @@ function renderDynamicArticles(articles) {
   const grid = document.querySelector('[data-dynamic-articles]')
   if (!grid) return
   if (!articles.length) {
-    grid.innerHTML = '<div class="public-empty-state">Belum ada artikel published.</div>'
+    grid.innerHTML = '<div class="public-empty-state">Belum ada artikel yang dipublikasikan.</div>'
     return
   }
   grid.innerHTML = articles.map(article => {
@@ -293,7 +286,7 @@ function renderDynamicCertificates(certificates) {
   const container = document.querySelector('[data-dynamic-certificates]')
   if (!container) return
   if (!certificates.length) {
-    container.innerHTML = '<div class="public-empty-state">Belum ada sertifikat published.</div>'
+    container.innerHTML = '<div class="public-empty-state">Belum ada sertifikat yang dipublikasikan.</div>'
     return
   }
   container.innerHTML = certificates.map(item => {
@@ -302,7 +295,7 @@ function renderDynamicCertificates(certificates) {
     const imageMarkup = image
       ? '<img src="' + escapeHtml(image) + '" alt="' + escapeHtml(item.title) + '" loading="lazy" decoding="async" data-image-fallback data-fallback-label="' + initials + '"><span class="certificate-card__fallback" hidden>' + initials + '</span>'
       : '<div class="certificate-card__placeholder" aria-hidden="true">✦</div>'
-    return '<article class="certificate-card" data-reveal>' + imageMarkup + '<div><p class="certificate-card__date">' + escapeHtml(formatDate(item.issue_date)) + '</p><h3>' + escapeHtml(item.title) + '</h3><p>' + escapeHtml(item.issuer || 'Certificate') + '</p>' + (item.credential_url ? '<a class="text-link" href="' + escapeHtml(item.credential_url) + '" target="_blank" rel="noreferrer">View credential ↗</a>' : '') + '</div></article>'
+    return '<article class="certificate-card" data-reveal>' + imageMarkup + '<div><p class="certificate-card__date">' + escapeHtml(formatDate(item.issue_date)) + '</p><h3>' + escapeHtml(item.title) + '</h3><p>' + escapeHtml(item.issuer || 'Sertifikat') + '</p>' + (item.credential_url ? '<a class="text-link" href="' + escapeHtml(item.credential_url) + '" target="_blank" rel="noreferrer">Lihat kredensial ↗</a>' : '') + '</div></article>'
   }).join('')
   bindImageFallbacks(container)
   initializeRevealAnimations()
@@ -312,7 +305,7 @@ function renderDynamicTestimonials(testimonials) {
   const container = document.querySelector('[data-dynamic-testimonials]')
   if (!container) return
   if (!testimonials.length) {
-    container.innerHTML = '<div class="public-empty-state">Belum ada testimonial published.</div>'
+    container.innerHTML = '<div class="public-empty-state">Belum ada testimoni yang dipublikasikan.</div>'
     return
   }
   container.innerHTML = testimonials.map(item => {
@@ -328,7 +321,10 @@ function renderDynamicTestimonials(testimonials) {
 
 function renderSocialLinks(links) {
   document.querySelectorAll('[data-social-links]').forEach(container => {
-    container.innerHTML = links.map(link => `<a href="${escapeHtml(link.url)}" ${link.open_in_new_tab ? 'target="_blank" rel="noreferrer"' : ''}>${escapeHtml(link.label)} ↗</a>`).join('')
+    const scope = container.dataset.socialScope
+    const visibilityField = scope === 'hero' ? 'show_in_hero' : scope === 'contact' ? 'show_in_contact' : 'show_in_footer'
+    const visibleLinks = links.filter(link => link[visibilityField] !== false)
+    container.innerHTML = visibleLinks.map(link => `<a href="${escapeHtml(link.url)}" ${link.open_in_new_tab ? 'target="_blank" rel="noreferrer"' : ''}>${escapeHtml(link.label)} ↗</a>`).join('')
   })
 }
 
@@ -343,7 +339,7 @@ function setPublicLoadingState(message = 'Memuat konten Supabase...') {
     container.innerHTML = '<div class="public-empty-state">' + escapeHtml(message) + '</div>'
   })
   const stats = document.querySelector('[data-dynamic-stats]')
-  if (stats) stats.innerHTML = '<span><strong>—</strong><small>Loading</small></span>'
+  if (stats) stats.innerHTML = '<span><strong>—</strong><small>Memuat...</small></span>'
 }
 
 function initializeTheme() {

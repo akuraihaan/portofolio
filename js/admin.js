@@ -5,6 +5,7 @@ import { createEducation, deleteEducation, getAdminEducations, updateEducation }
 import { escapeHtml, formatDate, getValue, parseSettingValue, setBusy, showToast, slugify } from './utils.js'
 import { deletePublicImage, uploadPublicImage } from './services/storage-service.js'
 import { bindImageUploaders, renderImageUploader } from './components/image-uploader.js'
+import { renderNavigationAdmin, renderSectionEditorAdmin, renderSectionsAdmin, renderStatisticsAdmin } from './admin-sections.js'
 
 const contentFields = {
   projects: [
@@ -41,12 +42,19 @@ export async function initializeAdminRoute(route) {
 
   if (!authReady()) { renderConfigurationError(); return }
   const module = ADMIN_MODULES[route.name]
-  const requiredPermission = route.name === 'dashboard' ? 'dashboard.view' : module?.permission
+  const requiredPermission = route.name === 'dashboard' ? 'dashboard.view' : route.name === 'sectionEditor' ? 'settings.view' : module?.permission
   const context = await protectRoute(requiredPermission)
   if (!context) return
   renderAdminShell(context, context.user, route)
   startIdleSessionTimeout(async () => { await signOut(); window.location.replace('/login?expired=1') })
   if (route.name === 'dashboard') await renderDashboard(context)
+  else if (route.name === 'sectionEditor') await renderSectionEditorAdmin(context, route.sectionKey)
+  else if (route.name === 'sections') await renderSectionsAdmin(context)
+  else if (route.name === 'navigation') await renderNavigationAdmin(context)
+  else if (route.name === 'statistics') await renderStatisticsAdmin(context)
+  else if (route.name === 'sections') await renderSections(context)
+  else if (route.name === 'navigation') await renderNavigation(context)
+  else if (route.name === 'statistics') await renderStatistics(context)
   else await renderModule(route.name, context)
 }
 
@@ -147,7 +155,7 @@ function renderResetPasswordPage() {
 
 function renderAdminShell(context, user, route) {
   const menu = [
-    ['dashboard', 'Overview', 'dashboard.view'], ['projects', 'Projects', 'projects.view'], ['articles', 'Articles', 'articles.view'], ['skills', 'Skills', 'skills.manage'], ['experiences', 'Experiences', 'experiences.manage'], ['educations', 'Educations', 'educations.manage'], ['certificates', 'Certificates', 'certificates.manage'], ['services', 'Services', 'services.manage'], ['testimonials', 'Testimonials', 'testimonials.manage'], ['messages', 'Messages', 'messages.view'], ['media', 'Media', 'media.manage'], ['social_links', 'Social links', 'social_links.manage'], ['settings', 'Site settings', 'settings.view'], ['profile', 'Portfolio profile', 'users.update'], ['users', 'Users', 'users.view'], ['roles', 'Roles', 'roles.view'], ['permissions', 'Permissions', 'permissions.view'], ['security', 'Security', 'security.view'], ['login_history', 'Login history', 'login_history.view']
+    ['dashboard', 'Ikhtisar', 'dashboard.view'], ['sections', 'Editor section', 'settings.view'], ['navigation', 'Navigasi', 'settings.view'], ['statistics', 'Statistik', 'settings.view'], ['projects', 'Proyek', 'projects.view'], ['articles', 'Artikel', 'articles.view'], ['skills', 'Keahlian', 'skills.manage'], ['experiences', 'Pengalaman', 'experiences.manage'], ['educations', 'Pendidikan', 'educations.manage'], ['certificates', 'Sertifikat', 'certificates.manage'], ['services', 'Layanan', 'services.manage'], ['testimonials', 'Testimoni', 'testimonials.manage'], ['messages', 'Pesan', 'messages.view'], ['media', 'Media', 'media.manage'], ['social_links', 'Tautan sosial', 'social_links.manage'], ['settings', 'Pengaturan situs', 'settings.view'], ['profile', 'Profil portfolio', 'users.update'], ['users', 'Pengguna', 'users.view'], ['roles', 'Peran', 'roles.view'], ['permissions', 'Permission', 'permissions.view'], ['security', 'Keamanan', 'security.view'], ['login_history', 'Riwayat login', 'login_history.view']
   ].filter(item => item[0] === 'dashboard' ? hasPermission(context, item[2]) : hasPermission(context, item[2]))
   document.body.innerHTML = `<div class="admin-app"><aside class="admin-sidebar"><a class="admin-brand" href="/admin"><span class="admin-brand-mark">B</span><span><strong>bworiey</strong><small>Control room</small></span></a><nav class="admin-nav" aria-label="Admin navigation">${menu.map(([key, label]) => `<a class="${route.name === key ? 'is-active' : ''}" href="/admin${key === 'dashboard' ? '' : `/${key}`}" data-admin-nav="${key}">${escapeHtml(label)}<span>↗</span></a>`).join('')}</nav><button class="admin-logout-link" id="admin-logout" type="button">Keluar</button></aside><main class="admin-main"><header class="admin-topbar"><span>${formatDate(new Date())}</span><a href="/" target="_blank" rel="noopener">Lihat portfolio ↗</a></header><div id="admin-content"></div></main></div>`
   document.querySelector('#admin-logout').addEventListener('click', async () => { setBusy(document.querySelector('#admin-logout'), true, 'Keluar...'); await signOut(); window.location.replace('/login') })

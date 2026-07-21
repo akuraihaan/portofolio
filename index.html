@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="id">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -16,8 +16,8 @@
   <body>
     <div class="noise" aria-hidden="true"></div>
     <div class="announcement">
-      <span data-availability>Available for select collaborations in 2026</span>
-      <a href="#contact">Start a conversation <span aria-hidden="true">↗</span></a>
+      <span data-availability>Terbuka untuk kolaborasi pilihan</span>
+      <a href="#contact">Mari berbincang <span aria-hidden="true">↗</span></a>
     </div>
 
     <header class="site-header" data-header>
@@ -25,7 +25,7 @@
         <span class="brand__mark" data-site-mark>B</span>
         <span data-site-name>bworiey</span>
       </a>
-      <nav class="desktop-nav" aria-label="Primary navigation">
+      <nav class="desktop-nav" data-dynamic-navigation aria-label="Navigasi utama">
         <a href="#top">Beranda</a>
         <a href="#about">Tentang</a>
         <a href="#capabilities">Keahlian</a>
@@ -36,12 +36,12 @@
         <a href="#contact">Kontak</a>
       </nav>
       <div class="header-actions">
-        <button class="icon-button theme-toggle" type="button" data-theme-toggle aria-label="Switch to light mode" title="Switch theme">
+        <button class="icon-button theme-toggle" type="button" data-theme-toggle aria-label="Beralih ke mode terang" title="Ubah tema">
           <span class="theme-toggle__sun" aria-hidden="true">☼</span>
           <span class="theme-toggle__moon" aria-hidden="true">◐</span>
         </button>
-        <a class="button button--small button--gradient" href="#contact">Let's talk <span aria-hidden="true">↗</span></a>
-        <button class="icon-button menu-toggle" type="button" data-menu-toggle aria-label="Open menu" aria-expanded="false">
+        <a class="button button--small button--gradient" href="#contact" data-section-secondary data-fallback-label="Hubungi saya">Hubungi saya <span aria-hidden="true">↗</span></a>
+        <button class="icon-button menu-toggle" type="button" data-menu-toggle aria-label="Buka menu" aria-expanded="false">
           <span></span><span></span>
         </button>
       </div>
@@ -61,10 +61,11 @@
       <section class="hero section-shell" aria-labelledby="hero-title">
         <div class="hero__copy" data-reveal>
           <p class="eyebrow"><span class="eyebrow__braces">{</span> <span data-hero-badge>Creative developer</span> <span class="eyebrow__braces">}</span></p>
-          <h1 id="hero-title">Make<br /><span class="hero__outline">ideas</span><br />move<span class="hero__asterisk" aria-hidden="true">✳</span></h1>
+          <h1 id="hero-title" data-hero-title>Make<br /><span class="hero__outline">ideas</span><br />move<span class="hero__asterisk" aria-hidden="true">✳</span></h1>
           <div class="hero__bottom">
             <p class="hero__intro" data-hero-intro>I build distinct digital experiences where design, code, and <span class="accent-green" data-role>motion</span> feel like one language.</p>
-            <a class="button button--large" href="#work">Explore selected work <span aria-hidden="true">↘</span></a>
+            <a class="button button--large" href="#work" data-section-primary data-fallback-label="Lihat proyek">Lihat proyek <span aria-hidden="true">↘</span></a>
+            <div class="hero__socials" data-social-links data-social-scope="hero" aria-label="Media sosial"></div>
           </div>
         </div>
         <div class="hero__visual" data-reveal data-reveal-delay="150">
@@ -74,17 +75,16 @@
           <div class="hero__orb hero__orb--green" aria-hidden="true"></div>
           <div class="hero__portrait" aria-label="Abstract portrait placeholder">
             <span class="hero__portrait-initials">RP</span>
-            <span class="hero__portrait-caption">Design<br />in motion</span>
+            <span class="hero__portrait-caption">Ide<br />yang bergerak</span>
           </div>
-          <div class="hero__stamp"><span>Jakarta</span><span>—</span><span>GMT+7</span></div>
-          <div class="hero__scroll-cue"><span class="hero__scroll-line"></span> Scroll to explore</div>
+          <div class="hero__stamp"><span data-site-location>Indonesia</span><span>—</span><span>GMT+8</span></div>
+          <div class="hero__scroll-cue"><span class="hero__scroll-line"></span> Gulir untuk menjelajah</div>
         </div>
       </section>
 
       <div class="marquee" aria-label="Services">
-        <div class="marquee__track">
-          <span>Design</span><b>✳</b><span>Code</span><b>✳</b><span>Motion</span><b>✳</b><span>Systems</span><b>✳</b><span>Ship</span><b>✳</b>
-          <span>Design</span><b>✳</b><span>Code</span><b>✳</b><span>Motion</span><b>✳</b><span>Systems</span><b>✳</b><span>Ship</span><b>✳</b>
+        <div class="marquee__track" data-dynamic-marquee>
+          <span>Desain</span><b>✳</b><span>Kode</span><b>✳</b><span>Produk</span><b>✳</b><span>Sistem</span><b>✳</b>
         </div>
       </div>
 
@@ -98,7 +98,8 @@
           <div class="statement__aside">
             <p data-about-long>From first sketch to final interaction, I partner with teams who care about the details that make a product feel unmistakably theirs.</p>
             <div class="public-stats" data-dynamic-stats aria-label="Portfolio statistics"></div>
-            <a class="text-link" href="#contact">More about my approach <span aria-hidden="true">↗</span></a>
+            <div class="about-facts" data-about-facts></div>
+            <a class="text-link" href="#contact" data-section-primary data-fallback-label="Mari mengenal pendekatan saya">Mari mengenal pendekatan saya <span aria-hidden="true">↗</span></a>
           </div>
         </div>
       </section>
@@ -161,12 +162,7 @@
           <h2 id="education-title">Learning<br /><span class="accent-blue">in motion.</span></h2>
           <p>Perjalanan pendidikan yang membentuk cara saya berpikir, merancang, dan membangun produk.</p>
         </div>
-        <div class="education-grid" data-dynamic-educations>
-          <article class="education-card" data-reveal>
-            <div class="education-card__period">2022 — Sekarang</div>
-            <div><h3>Sarjana Pendidikan</h3><p class="education-card__institution">Tambahkan data pendidikan melalui panel admin.</p><p>Konten pendidikan akan dimuat dari Supabase setelah dipublikasikan.</p></div>
-          </article>
-        </div>
+        <div class="education-grid" data-dynamic-educations></div>
       </section>
 
       <section class="experience section-shell" id="experience" aria-labelledby="experience-title">
@@ -188,35 +184,22 @@
         </div>
         <div class="section-heading section-heading--work" data-reveal>
           <h2 id="work-title">Good ideas,<br /><span class="accent-blue">well made.</span></h2>
-          <div class="filter-row" role="group" aria-label="Filter selected work">
-            <input class="project-search" type="search" data-project-search placeholder="Search work..." aria-label="Search projects">
-            <button class="filter-button is-active" type="button" data-filter="all" aria-pressed="true">All work</button>
+          <div class="filter-row" role="group" aria-label="Filter proyek pilihan">
+            <input class="project-search" type="search" data-project-search placeholder="Cari proyek..." aria-label="Cari proyek">
+            <button class="filter-button is-active" type="button" data-filter="all" aria-pressed="true">Semua</button>
             <button class="filter-button" type="button" data-filter="digital" aria-pressed="false">Digital</button>
-            <button class="filter-button" type="button" data-filter="identity" aria-pressed="false">Identity</button>
+            <button class="filter-button" type="button" data-filter="identity" aria-pressed="false">Identitas</button>
             <button class="filter-button" type="button" data-filter="motion" aria-pressed="false">Motion</button>
           </div>
         </div>
-        <div class="project-grid" data-dynamic-projects>
-          <button class="project-card project-card--wide" type="button" data-project data-category="digital" data-title="Kota / A new way through" data-type="Digital product · 2025" data-description="A navigation system for the city that turns complex public data into a calmer, more human experience." data-reel="Strategy · Art direction · Product design" data-reveal>
-            <span class="project-card__visual project-card__visual--kota" aria-hidden="true"><span class="project-ui project-ui--map"></span><span class="project-ui project-ui--route"></span><strong>KOTA</strong></span>
-            <span class="project-card__info"><span><b>Kota</b><small>Digital product</small></span><span class="project-card__arrow">↗</span></span>
-          </button>
-          <button class="project-card" type="button" data-project data-category="identity" data-title="Sora / Soft power" data-type="Brand identity · 2025" data-description="A warm, flexible identity for a new generation of independent hospitality spaces." data-reel="Identity · Packaging · Digital" data-reveal data-reveal-delay="100">
-            <span class="project-card__visual project-card__visual--sora" aria-hidden="true"><span class="sora-sun"></span><span class="sora-word">sora</span><span class="sora-line"></span></span>
-            <span class="project-card__info"><span><b>Sora</b><small>Brand identity</small></span><span class="project-card__arrow">↗</span></span>
-          </button>
-          <button class="project-card" type="button" data-project data-category="motion" data-title="Orbit / In another light" data-type="Motion system · 2024" data-description="A launch film and motion language for a product that helps teams think in systems." data-reel="Concept · Direction · Motion" data-reveal data-reveal-delay="200">
-            <span class="project-card__visual project-card__visual--orbit" aria-hidden="true"><span class="orbit orbit--one"></span><span class="orbit orbit--two"></span><span class="orbit orbit--three"></span><b>ORBIT</b></span>
-            <span class="project-card__info"><span><b>Orbit</b><small>Motion system</small></span><span class="project-card__arrow">↗</span></span>
-          </button>
-        </div>
+        <div class="project-grid" data-dynamic-projects></div>
         <div class="work__footer" data-reveal>
-          <span data-project-count>03 projects / 2024—2025</span>
-          <a class="button button--small" href="#contact">View all work <span aria-hidden="true">↘</span></a>
+          <span data-project-count>Belum ada proyek dipublikasikan</span>
+          <a class="button button--small" href="#contact" data-section-primary data-fallback-label="Lihat semua proyek">Lihat semua proyek <span aria-hidden="true">↘</span></a>
         </div>
       </section>
 
-      <section class="process section-shell section-shell--narrow" aria-labelledby="process-title">
+      <section class="process section-shell section-shell--narrow" id="process" aria-labelledby="process-title">
         <div class="section-intro" data-reveal>
           <span class="section-number">07 / 10</span>
           <p class="eyebrow"><span class="eyebrow__braces">{</span> The process <span class="eyebrow__braces">}</span></p>
@@ -225,11 +208,7 @@
           <h2 id="process-title">Less theatre.<br /><span class="accent-orange">More making.</span></h2>
           <p>Clear thinking, fast feedback, and the right amount of momentum. Every project finds its own rhythm.</p>
         </div>
-        <div class="process-grid">
-          <article data-reveal><span>01</span><h3>Find the signal</h3><p>We get to the heart of the problem, define what matters, and make a plan that can breathe.</p></article>
-          <article data-reveal data-reveal-delay="100"><span>02</span><h3>Make it tangible</h3><p>Ideas become prototypes early. We test the feeling, sharpen the story, and keep moving.</p></article>
-          <article data-reveal data-reveal-delay="200"><span>03</span><h3>Make it real</h3><p>Polished design meets thoughtful code, with everything ready to live confidently in the world.</p></article>
-        </div>
+        <div class="process-grid" data-dynamic-process></div>
       </section>
 
       <section class="notes section-shell" id="notes" aria-labelledby="notes-title">
@@ -239,13 +218,9 @@
         </div>
         <div class="section-heading section-heading--split" data-reveal>
           <h2 id="notes-title">Thoughts<br /><span class="accent-pink">in progress.</span></h2>
-          <a class="text-link" href="#contact">Read all notes <span aria-hidden="true">↗</span></a>
+          <a class="text-link" href="#contact" data-section-primary data-fallback-label="Baca semua artikel">Baca semua artikel <span aria-hidden="true">↗</span></a>
         </div>
-        <div class="notes-grid" data-dynamic-articles>
-          <a class="note-card" href="#contact" data-reveal><span class="note-card__date">18.03.26 / 04 min</span><h3>Designing for the pause between states</h3><span class="note-card__arrow">↗</span></a>
-          <a class="note-card" href="#contact" data-reveal data-reveal-delay="100"><span class="note-card__date">04.02.26 / 06 min</span><h3>A little motion can say a lot</h3><span class="note-card__arrow">↗</span></a>
-          <a class="note-card" href="#contact" data-reveal data-reveal-delay="200"><span class="note-card__date">16.12.25 / 08 min</span><h3>What makes a digital product feel human?</h3><span class="note-card__arrow">↗</span></a>
-        </div>
+        <div class="notes-grid" data-dynamic-articles></div>
       </section>
 
       <section class="credentials section-shell" id="credentials" aria-labelledby="credentials-title">
@@ -265,19 +240,20 @@
         <span class="section-number">10 / 10</span>
         <div class="contact__glow" aria-hidden="true"></div>
         <div class="contact__content" data-reveal>
-          <p class="eyebrow"><span class="eyebrow__braces">{</span> Have a good one? <span class="eyebrow__braces">}</span></p>
-          <h2 id="contact-title">Let's make<br /><span class="hero__outline">something</span><br /><span class="accent-green">move.</span></h2>
-          <p class="contact__description" data-contact-description>Tell me a little about what you're building, where you're stuck, or where you want to go next.</p>
-          <a class="button button--large button--gradient" data-contact-email href="mailto:hello@bworiey.studio">hello@bworiey.studio <span aria-hidden="true">↗</span></a>
+          <p class="eyebrow"><span class="eyebrow__braces">{</span> Mari terhubung <span class="eyebrow__braces">}</span></p>
+          <h2 id="contact-title">Mari membuat<br /><span class="hero__outline">sesuatu</span><br /><span class="accent-green">bergerak.</span></h2>
+          <p class="contact__description" data-contact-description>Ceritakan apa yang sedang Anda bangun, tantangan yang sedang dihadapi, atau langkah berikutnya yang ingin diwujudkan.</p>
+          <a class="button button--large button--gradient" data-contact-email href="mailto:hello@bworiey.studio" data-section-primary data-fallback-label="Kirim email">hello@bworiey.studio <span aria-hidden="true">↗</span></a>
+          <div class="contact__socials" data-social-links data-social-scope="contact" aria-label="Media sosial"></div>
         </div>
         <form class="contact-form" data-contact-form data-reveal data-reveal-delay="150">
-          <div class="form-heading"><span>Or drop a note</span><span>Fields marked * are required</span></div>
+          <div class="form-heading"><span>Atau kirim pesan</span><span>* wajib diisi</span></div>
           <input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" class="contact-honeypot" />
-          <label>Name *<input type="text" name="name" autocomplete="name" placeholder="Your name" required /></label>
-          <label>Email *<input type="email" name="email" autocomplete="email" placeholder="you@company.com" required /></label>
-          <label>Subject<input type="text" name="subject" maxlength="180" placeholder="What are we making?" /></label>
-          <label>Project details *<textarea name="message" rows="4" maxlength="5000" placeholder="A sentence or two about the thing..." required></textarea></label>
-          <button class="button button--small" type="submit">Send message <span aria-hidden="true">↗</span></button>
+          <label>Nama *<input type="text" name="name" autocomplete="name" placeholder="Nama Anda" required /></label>
+          <label>Email *<input type="email" name="email" autocomplete="email" placeholder="nama@perusahaan.com" required /></label>
+          <label>Subjek<input type="text" name="subject" maxlength="180" placeholder="Apa yang ingin kita wujudkan?" /></label>
+          <label>Detail proyek *<textarea name="message" rows="4" maxlength="5000" placeholder="Ceritakan singkat tentang kebutuhan Anda..." required></textarea></label>
+          <button class="button button--small" type="submit">Kirim pesan <span aria-hidden="true">↗</span></button>
           <p class="form-status" data-form-status role="status" aria-live="polite"></p>
         </form>
       </section>
@@ -286,24 +262,24 @@
     <footer class="site-footer">
       <div class="footer__top section-shell">
         <a class="brand" href="#top" aria-label="Back to top"><span class="brand__mark" data-site-mark>B</span><span data-site-name>bworiey</span></a>
-        <p>Built with intent<br /><span data-footer-location>in Jakarta, Indonesia.</span></p>
+        <p><span data-site-tagline>Dibangun dengan niat</span><br /><span data-footer-location>di Indonesia.</span></p>
         <button class="text-link footer__email" type="button" data-copy-email data-email="hello@bworiey.studio">Copy email <span aria-hidden="true">↗</span></button>
       </div>
       <div class="footer__bottom section-shell">
         <span>© <span data-year></span> <span data-footer-name>bworiey</span></span>
-        <div><a href="#work">Work</a><a href="#about">About</a><a href="#contact">Contact</a></div>
-        <div data-social-links><a href="https://www.linkedin.com" target="_blank" rel="noreferrer">LinkedIn ↗</a><a href="https://www.instagram.com" target="_blank" rel="noreferrer">Instagram ↗</a></div>
+        <div><a href="#work">Proyek</a><a href="#about">Tentang</a><a href="#contact">Kontak</a></div>
+        <div data-social-links data-social-scope="footer"><a href="https://www.linkedin.com" target="_blank" rel="noreferrer">LinkedIn ↗</a><a href="https://www.instagram.com" target="_blank" rel="noreferrer">Instagram ↗</a></div>
       </div>
     </footer>
 
     <dialog class="project-dialog" data-project-dialog>
       <div class="project-dialog__inner">
-        <button class="icon-button project-dialog__close" type="button" data-dialog-close aria-label="Close project details">×</button>
-        <p class="eyebrow"><span class="eyebrow__braces">{</span> <span data-dialog-type>Selected project</span> <span class="eyebrow__braces">}</span></p>
+        <button class="icon-button project-dialog__close" type="button" data-dialog-close aria-label="Tutup detail proyek">×</button>
+        <p class="eyebrow"><span class="eyebrow__braces">{</span> <span data-dialog-type>Proyek pilihan</span> <span class="eyebrow__braces">}</span></p>
         <h2 data-dialog-title>Project title</h2>
         <p data-dialog-description></p>
-        <div class="project-dialog__reel"><span>Scope</span><strong data-dialog-reel></strong></div>
-        <a class="button button--small" href="#contact" data-dialog-contact>Discuss a similar project <span aria-hidden="true">↗</span></a>
+        <div class="project-dialog__reel"><span>Ruang lingkup</span><strong data-dialog-reel></strong></div>
+        <a class="button button--small" href="#contact" data-dialog-contact>Bicarakan proyek serupa <span aria-hidden="true">↗</span></a>
       </div>
     </dialog>
     <div class="toast" data-toast role="status" aria-live="polite"></div>
