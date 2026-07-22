@@ -9,15 +9,15 @@ export function renderImageUploader({ name, label = 'Gambar', existingUrl = '', 
   const preview = hasExisting
     ? '<img src="' + escapeHtml(existingUrl) + '" alt="Preview ' + safeName + '" loading="lazy">'
     : ''
-  return '<div class="admin-field admin-field-wide image-uploader" data-image-uploader="' + safeName + '" data-image-name="' + safeName + '">' +
+  return '<div class="admin-field admin-field-wide image-uploader" data-image-uploader="' + safeName + '" data-image-name="' + safeName + '" data-image-has-existing="' + (hasExisting ? 'true' : 'false') + '">' +
     '<span>' + escapeHtml(label) + '</span>' +
     '<label class="image-uploader__dropzone" data-image-dropzone>' +
       '<input class="image-uploader__input" name="' + safeName + '" type="file" accept="' + ACCEPT + '"' + (required && !hasExisting ? ' required' : '') + '>' +
-      '<span class="image-uploader__copy"><strong>Pilih gambar</strong><small>' + escapeHtml(help) + '</small></span>' +
+      '<span class="image-uploader__copy"><strong data-image-action>' + (hasExisting ? 'Ganti gambar' : 'Pilih gambar') + '</strong><small>Tarik file ke area ini atau pilih dari perangkat.</small><span class="image-uploader__state" data-image-state>' + (hasExisting ? 'Gambar tersimpan' : 'Belum ada gambar') + '</span><small>' + escapeHtml(help) + '</small></span>' +
       '<span class="image-uploader__preview" data-image-preview' + (hasExisting ? '' : ' hidden') + '>' + preview + '</span>' +
     '</label>' +
-    '<button class="admin-secondary-button image-uploader__clear" type="button" data-image-clear' + (hasExisting ? '' : ' hidden') + '>Hapus pilihan</button>' +
-    '<small class="image-uploader__filename" data-image-filename>' + (hasExisting ? 'Gambar tersimpan' : '') + '</small>' +
+    '<button class="admin-secondary-button image-uploader__clear" type="button" data-image-clear' + (hasExisting ? '' : ' hidden') + '>' + (hasExisting ? 'Hapus gambar' : 'Hapus pilihan') + '</button>' +
+    '<small class="image-uploader__filename" data-image-filename>' + (hasExisting ? 'Pilih file baru untuk mengganti gambar.' : '') + '</small>' +
   '</div>'
 }
 
@@ -28,6 +28,10 @@ export function bindImageUploader(root, { maxSize = MAX_IMAGE_SIZE, allowedTypes
   const preview = container.querySelector('[data-image-preview]')
   const fileName = container.querySelector('[data-image-filename]')
   const clearButton = container.querySelector('[data-image-clear]')
+  const actionLabel = container.querySelector('[data-image-action]')
+  const stateLabel = container.querySelector('[data-image-state]')
+  const hasExisting = container.dataset.imageHasExisting === 'true'
+  const existingPreview = preview?.innerHTML || ''
   let selectedFile = null
   let objectUrl = ''
 
@@ -36,11 +40,53 @@ export function bindImageUploader(root, { maxSize = MAX_IMAGE_SIZE, allowedTypes
     objectUrl = URL.createObjectURL(file)
     preview.innerHTML = '<img src="' + objectUrl + '" alt="Preview ' + escapeHtml(file.name) + '">'
     preview.hidden = false
-    fileName.textContent = file.name + ' · ' + Math.max(1, Math.round(file.size / 1024)) + ' KB'
+    fileName.textContent = file.name + ' · ' + Math.max(1, Math.round(file.size / 1024)) + ' KB · belum disimpan'
+    if (actionLabel) actionLabel.textContent = 'Gambar baru dipilih'
+    if (stateLabel) stateLabel.textContent = hasExisting ? 'Akan menggantikan gambar tersimpan' : 'Siap disimpan'
+    clearButton.textContent = hasExisting ? 'Batalkan penggantian' : 'Hapus pilihan'
     clearButton.hidden = false
     container.dataset.imageCleared = 'false'
   }
   const clear = () => {
+    if (selectedFile && hasExisting) {
+      selectedFile = null
+      if (objectUrl) URL.revokeObjectURL(objectUrl)
+      objectUrl = ''
+      input.value = ''
+      preview.innerHTML = existingPreview
+      preview.hidden = !existingPreview
+      fileName.textContent = 'Pilih file baru untuk mengganti gambar.'
+      if (actionLabel) actionLabel.textContent = 'Ganti gambar'
+      if (stateLabel) stateLabel.textContent = 'Gambar tersimpan'
+      clearButton.textContent = 'Hapus gambar'
+      clearButton.hidden = false
+      input.setCustomValidity('')
+      container.dataset.imageCleared = 'false'
+      return
+    }
+    if (!selectedFile && hasExisting && container.dataset.imageCleared !== 'true') {
+      input.value = ''
+      preview.innerHTML = ''
+      preview.hidden = true
+      fileName.textContent = 'Gambar akan dihapus saat formulir disimpan.'
+      if (actionLabel) actionLabel.textContent = 'Gambar dihapus'
+      if (stateLabel) stateLabel.textContent = 'Penghapusan menunggu disimpan'
+      clearButton.textContent = 'Batalkan penghapusan'
+      clearButton.hidden = false
+      input.setCustomValidity('')
+      container.dataset.imageCleared = 'true'
+      return
+    }
+    if (!selectedFile && hasExisting && container.dataset.imageCleared === 'true') {
+      preview.innerHTML = existingPreview
+      preview.hidden = !existingPreview
+      fileName.textContent = 'Pilih file baru untuk mengganti gambar.'
+      if (actionLabel) actionLabel.textContent = 'Ganti gambar'
+      if (stateLabel) stateLabel.textContent = 'Gambar tersimpan'
+      clearButton.textContent = 'Hapus gambar'
+      container.dataset.imageCleared = 'false'
+      return
+    }
     selectedFile = null
     if (objectUrl) URL.revokeObjectURL(objectUrl)
     objectUrl = ''
@@ -48,17 +94,41 @@ export function bindImageUploader(root, { maxSize = MAX_IMAGE_SIZE, allowedTypes
     preview.innerHTML = ''
     preview.hidden = true
     fileName.textContent = ''
+    if (actionLabel) actionLabel.textContent = 'Pilih gambar'
+    if (stateLabel) stateLabel.textContent = 'Belum ada gambar'
+    clearButton.textContent = 'Hapus pilihan'
     clearButton.hidden = true
     input.setCustomValidity('')
     container.dataset.imageCleared = 'true'
   }
   const receive = file => {
+    if (!file) return
     try {
       selectedFile = validateImageFile(file, { maxSize, allowedTypes })
+      try {
+        const transfer = new DataTransfer()
+        transfer.items.add(selectedFile)
+        input.files = transfer.files
+      } catch {
+        // Some browsers do not allow assigning a FileList; regular input changes still work.
+      }
       showPreview(selectedFile)
       input.setCustomValidity('')
     } catch (error) {
-      clear()
+      if (hasExisting) {
+        selectedFile = null
+        input.value = ''
+        preview.innerHTML = existingPreview
+        preview.hidden = !existingPreview
+        fileName.textContent = 'Gambar tersimpan tetap digunakan.'
+        if (actionLabel) actionLabel.textContent = 'Ganti gambar'
+        if (stateLabel) stateLabel.textContent = 'Gambar tersimpan'
+        clearButton.textContent = 'Hapus gambar'
+        clearButton.hidden = false
+        container.dataset.imageCleared = 'false'
+      } else {
+        clear()
+      }
       input.setCustomValidity(error.message)
       input.reportValidity()
     }

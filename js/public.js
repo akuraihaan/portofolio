@@ -51,7 +51,7 @@ async function loadDynamicPageContent() {
 
 function applyDynamicSectionSettings(sections = []) {
   if (!sections.length) return
-  const sectionElements = { hero: '#top', about: '#about', statistics: '#about', skills: '#capabilities', services: '#capabilities', featured_projects: '#work', projects: '#work', experiences: '#experience', educations: '#education', articles: '#notes', certificates: '#credentials', testimonials: '#credentials', contact: '#contact', cta: '#contact', process: '#process' }
+  const sectionElements = { hero: '#hero', about: '#about', statistics: '#about', skills: '#capabilities', services: '#capabilities', featured_projects: '#work', projects: '#work', experiences: '#experience', educations: '#education', articles: '#notes', certificates: '#credentials', testimonials: '#credentials', contact: '#contact', cta: '#contact', process: '#process' }
   const titleSelectors = { hero: '[data-hero-title]', about: '#statement-title', skills: '#capabilities-title', services: '#capabilities-title', projects: '#work-title', featured_projects: '#work-title', experiences: '#experience-title', educations: '#education-title', articles: '#notes-title', certificates: '#credentials-title', testimonials: '#credentials-title', contact: '#contact-title', cta: '#contact-title', process: '#process-title' }
   const visibleKeys = new Set(sections.map(section => section.section_key))
   const uniqueElements = new Map()
