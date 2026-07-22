@@ -25,6 +25,7 @@ export function renderImageUploader({ name, label = 'Gambar', existingUrl = '', 
 export function bindImageUploader(root, { maxSize = MAX_IMAGE_SIZE, allowedTypes = ALLOWED_IMAGE_TYPES } = {}) {
   const container = typeof root === 'string' ? document.querySelector(root) : root
   if (!container) return null
+  if (container._imageUploaderController) return container._imageUploaderController
   const input = container.querySelector('.image-uploader__input')
   const preview = container.querySelector('[data-image-preview]')
   const fileName = container.querySelector('[data-image-filename]')
@@ -49,6 +50,8 @@ export function bindImageUploader(root, { maxSize = MAX_IMAGE_SIZE, allowedTypes
     objectUrl = URL.createObjectURL(file)
     preview.innerHTML = '<img src="' + objectUrl + '" alt="Preview ' + escapeHtml(file.name) + '">'
     preview.hidden = false
+    container.classList.add('has-file')
+    container.classList.remove('has-error')
     fileName.textContent = file.name + ' · ' + Math.max(1, Math.round(file.size / 1024)) + ' KB · belum disimpan'
     imageMeta.textContent = file.type + ' · membaca dimensi...'
     if (actionLabel) actionLabel.textContent = 'Gambar baru dipilih'
@@ -76,6 +79,7 @@ export function bindImageUploader(root, { maxSize = MAX_IMAGE_SIZE, allowedTypes
       clearButton.hidden = false
       input.setCustomValidity('')
       container.dataset.imageCleared = 'false'
+      container.classList.remove('has-file', 'has-error')
       return
     }
     if (!selectedFile && hasExisting && container.dataset.imageCleared !== 'true') {
@@ -90,6 +94,7 @@ export function bindImageUploader(root, { maxSize = MAX_IMAGE_SIZE, allowedTypes
       clearButton.hidden = false
       input.setCustomValidity('')
       container.dataset.imageCleared = 'true'
+      container.classList.remove('has-file', 'has-error')
       return
     }
     if (!selectedFile && hasExisting && container.dataset.imageCleared === 'true') {
@@ -102,6 +107,7 @@ export function bindImageUploader(root, { maxSize = MAX_IMAGE_SIZE, allowedTypes
       if (stateLabel) stateLabel.textContent = 'Gambar tersimpan'
       clearButton.textContent = 'Hapus gambar'
       container.dataset.imageCleared = 'false'
+      container.classList.remove('has-file', 'has-error')
       return
     }
     selectedFile = null
@@ -118,6 +124,7 @@ export function bindImageUploader(root, { maxSize = MAX_IMAGE_SIZE, allowedTypes
     clearButton.hidden = true
     input.setCustomValidity('')
     container.dataset.imageCleared = 'true'
+    container.classList.remove('has-file', 'has-error')
   }
   const receive = file => {
     if (!file) return
@@ -133,6 +140,7 @@ export function bindImageUploader(root, { maxSize = MAX_IMAGE_SIZE, allowedTypes
       showPreview(selectedFile)
       input.setCustomValidity('')
     } catch (error) {
+      container.classList.add('has-error')
       if (hasExisting) {
         selectedFile = null
         input.value = ''
@@ -148,6 +156,7 @@ export function bindImageUploader(root, { maxSize = MAX_IMAGE_SIZE, allowedTypes
         container.dataset.imageCleared = 'false'
       } else {
         clear()
+        container.classList.add('has-error')
       }
       input.setCustomValidity(error.message)
       input.reportValidity()
@@ -157,14 +166,26 @@ export function bindImageUploader(root, { maxSize = MAX_IMAGE_SIZE, allowedTypes
   input?.addEventListener('change', () => receive(input.files?.[0]))
   clearButton?.addEventListener('click', clear)
   container.addEventListener('dragover', event => { event.preventDefault(); container.classList.add('is-dragging') })
-  container.addEventListener('dragleave', () => container.classList.remove('is-dragging'))
+  container.addEventListener('dragleave', event => { if (!container.contains(event.relatedTarget)) container.classList.remove('is-dragging') })
   container.addEventListener('drop', event => {
     event.preventDefault()
     container.classList.remove('is-dragging')
     receive(event.dataTransfer?.files?.[0])
   })
 
-  return { getFile: () => selectedFile, clear, destroy: () => { if (objectUrl) URL.revokeObjectURL(objectUrl) } }
+  const destroy = () => {
+    if (objectUrl) URL.revokeObjectURL(objectUrl)
+    objectUrl = ''
+    container._imageUploaderController = null
+    observer?.disconnect()
+  }
+  const observer = typeof MutationObserver === 'function'
+    ? new MutationObserver(() => { if (!document.documentElement.contains(container)) destroy() })
+    : null
+  observer?.observe(document.body, { childList: true, subtree: true })
+  const controller = { getFile: () => selectedFile, clear, destroy }
+  container._imageUploaderController = controller
+  return controller
 }
 
 export function bindImageUploaders(root = document) {

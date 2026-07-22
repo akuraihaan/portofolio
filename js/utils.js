@@ -16,6 +16,19 @@ export function formatDate(value) {
   }).format(date)
 }
 
+export function safeUrl(value, fallback = '#') {
+  const raw = String(value ?? '').trim()
+  if (!raw) return fallback
+  if (raw.startsWith('#') || raw.startsWith('/')) return raw
+  try {
+    const url = new URL(raw, window.location.origin)
+    if (!['http:', 'https:', 'mailto:'].includes(url.protocol)) return fallback
+    return url.href
+  } catch {
+    return fallback
+  }
+}
+
 export function slugify(value) {
   return String(value ?? '')
     .normalize('NFKD')
@@ -47,7 +60,20 @@ export function showToast(message, type = 'success') {
     toast.setAttribute('aria-live', 'polite')
     document.body.append(toast)
   }
-  toast.textContent = message
+  let messageNode = toast.querySelector('[data-toast-message]')
+  if (!messageNode) {
+    messageNode = document.createElement('span')
+    messageNode.dataset.toastMessage = ''
+    const close = document.createElement('button')
+    close.type = 'button'
+    close.className = 'toast__close'
+    close.dataset.toastClose = ''
+    close.setAttribute('aria-label', 'Tutup notifikasi')
+    close.textContent = '×'
+    toast.replaceChildren(messageNode, close)
+    close.addEventListener('click', () => toast.classList.remove('is-visible'))
+  }
+  messageNode.textContent = message
   toast.dataset.type = type
   toast.classList.add('is-visible')
   window.clearTimeout(showToast.timer)

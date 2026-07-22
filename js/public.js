@@ -1,17 +1,23 @@
 import { supabase, supabaseConfiguration } from '../supabase.js'
-import { escapeHtml, formatDate, showToast } from './utils.js'
+import { escapeHtml, formatDate, safeUrl, showToast } from './utils.js'
 import { getPublicContent } from './services/public-content-service.js'
+import { delegate, prefersReducedMotion } from './ui/jquery-ui.js'
+import { initializeNavigation as initializeNavigationUi, initializeHeaderScroll as initializeHeaderScrollUi, initializeSectionNavigation as initializeSectionNavigationUi, initializeSmoothScroll as initializeSmoothScrollUi } from './ui/navigation.js'
+import { closeModal, openModal } from './ui/modal.js'
+import { applyProjectFilter, createProjectSearchHandler } from './ui/filters.js'
+import { resetFormState, setFieldError, setFormSubmitting } from './ui/form-feedback.js'
+import { initializeRevealAnimations as initializeRevealUi } from './ui/scroll-effects.js'
 
-const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+const reduceMotion = prefersReducedMotion()
 
 export function initializePublic() {
   initializeTheme()
-  initializeMobileMenu()
-  initializeHeaderScroll()
-  initializeSectionNavigation()
-  initializeRevealAnimations()
+  initializeNavigationUi()
+  initializeHeaderScrollUi()
+  initializeSectionNavigationUi()
+  initializeRevealUi()
   initializeCopyEmail()
-  initializeSmoothScroll()
+  initializeSmoothScrollUi()
   initializeYear()
   initializeContactForm()
   setPublicLoadingState()
@@ -66,8 +72,8 @@ function applyDynamicSectionSettings(sections = []) {
     const description = element.querySelector('.section-heading > p') || element.querySelector('.statement__aside > p') || element.querySelector('[data-contact-description]')
     if (description && section.description) description.textContent = section.description
     const primary = element.querySelector('[data-section-primary]'); const secondary = element.querySelector('[data-section-secondary]')
-    if (primary) { primary.textContent = section.primary_button_label || primary.dataset.fallbackLabel || ''; primary.hidden = !section.primary_button_label; if (section.primary_button_url) primary.href = section.primary_button_url }
-    if (secondary) { secondary.textContent = section.secondary_button_label || secondary.dataset.fallbackLabel || ''; secondary.hidden = !section.secondary_button_label; if (section.secondary_button_url) secondary.href = section.secondary_button_url }
+    if (primary) { primary.textContent = section.primary_button_label || primary.dataset.fallbackLabel || ''; primary.hidden = !section.primary_button_label; if (section.primary_button_url) primary.href = safeUrl(section.primary_button_url) }
+    if (secondary) { secondary.textContent = section.secondary_button_label || secondary.dataset.fallbackLabel || ''; secondary.hidden = !section.secondary_button_label; if (section.secondary_button_url) secondary.href = safeUrl(section.secondary_button_url) }
     element.dataset.sectionLayout = section.layout_variant || 'default'
     const objectPosition = ['center', 'top', 'bottom', 'left', 'right'].includes(section.custom_data?.object_position) ? section.custom_data.object_position : 'center'
     element.style.setProperty('--section-image-position', objectPosition)
@@ -80,9 +86,18 @@ function applyDynamicSectionSettings(sections = []) {
       element.style.setProperty('--section-background-image', `url("${section.background_image_url}")`)
     }
   })
-  Object.entries(sectionElements).forEach(([key, selector]) => { const element = document.querySelector(selector); if (element && !uniqueElements.has(selector)) element.hidden = !visibleKeys.has(key) })
+  const configuredKeys = new Set(sections.map(section => section.section_key))
+  Object.entries(sectionElements).forEach(([key, selector]) => {
+    const element = document.querySelector(selector)
+    if (!element) return
+    if (configuredKeys.has(key)) element.hidden = !uniqueElements.has(selector)
+  })
   const main = document.querySelector('main'); if (!main) return
   const originalChildren = [...main.children]; const ordered = []; const seen = new Set()
+  const heroElement = document.querySelector('#hero')
+  const marqueeElement = main.querySelector('.marquee')
+  if (heroElement) { ordered.push(heroElement); seen.add(heroElement) }
+  if (marqueeElement) { ordered.push(marqueeElement); seen.add(marqueeElement) }
   sections.sort((a, b) => a.sort_order - b.sort_order).forEach(section => { const selector = sectionElements[section.section_key]; const element = selector ? document.querySelector(selector) : null; if (element && element.parentElement === main && !seen.has(element)) { ordered.push(element); seen.add(element) } })
   originalChildren.forEach(element => { if (!seen.has(element)) ordered.push(element) }); ordered.forEach(element => main.appendChild(element))
 }
@@ -90,10 +105,10 @@ function applyDynamicSectionSettings(sections = []) {
 function renderDynamicNavigation(items = []) {
   if (!items.length) return
   const desktop = document.querySelector('.desktop-nav'); const mobile = document.querySelector('.mobile-nav')
-  const itemMarkup = (item, mobileMode = false, index = 0) => `<a href="${escapeHtml(item.href)}" target="${escapeHtml(item.target || '_self')}" ${item.target === '_blank' ? 'rel="noreferrer"' : ''}>${escapeHtml(item.label)}${mobileMode ? ` <span>${String(index + 1).padStart(2, '0')}</span>` : ''}</a>`
+  const itemMarkup = (item, mobileMode = false, index = 0) => `<a href="${escapeHtml(safeUrl(item.href))}" target="${item.target === '_blank' ? '_blank' : '_self'}" ${item.target === '_blank' ? 'rel="noreferrer"' : ''}>${escapeHtml(item.label)}${mobileMode ? ` <span>${String(index + 1).padStart(2, '0')}</span>` : ''}</a>`
   if (desktop) desktop.innerHTML = items.map(item => itemMarkup(item)).join('')
   if (mobile) mobile.innerHTML = items.map((item, index) => itemMarkup(item, true, index)).join('')
-  initializeSectionNavigation()
+  initializeSectionNavigationUi()
 }
 
 function renderDynamicMarquee(settings, hero) {
@@ -125,7 +140,7 @@ function renderDynamicAbout(section, profile = null, settings = {}) {
   const resumeUrl = settings.resume_url || settings.resume || ''
   if (resume) {
     resume.hidden = !resumeUrl
-    if (resumeUrl) resume.href = resumeUrl
+    if (resumeUrl) resume.href = safeUrl(resumeUrl)
   }
 }
 
@@ -133,7 +148,7 @@ function renderDynamicProcess(section) {
   const container = document.querySelector('[data-dynamic-process]'); if (!container || !section) return
   const steps = section.custom_data?.steps || []
   container.innerHTML = steps.map((step, index) => `<article data-reveal><span>${String(index + 1).padStart(2, '0')}</span><h3>${escapeHtml(step.title)}</h3><p>${escapeHtml(step.description)}</p></article>`).join('')
-  initializeRevealAnimations()
+  initializeRevealUi()
 }
 
 function updateNavigationVisibilityFromSections(sections, content) {
@@ -230,7 +245,7 @@ function renderDynamicCapabilities(skills, services) {
     return '<article class="capability" data-reveal><div class="capability__visual" aria-hidden="true">' + visual + '</div><div class="capability__content"><div class="capability__meta"><span class="category-label">' + escapeHtml(record.type) + '</span><span>' + String(index + 1).padStart(2, '0') + '</span></div><h3>' + escapeHtml(record.title) + '</h3><p>' + escapeHtml(record.description || 'Deskripsi akan ditambahkan segera.') + '</p></div></article>'
   }).join('')
   bindImageFallbacks(container)
-  initializeRevealAnimations()
+  initializeRevealUi()
 }
 
 function renderDynamicStats(statistics = [], counts = {}) {
@@ -259,7 +274,7 @@ function renderDynamicEducations(educations) {
     return '<article class="education-card" data-reveal><div class="education-card__period">' + logo + '<span>' + escapeHtml(period) + '</span></div><div><h3>' + escapeHtml(education.degree || 'Pendidikan') + '</h3><p class="education-card__institution">' + escapeHtml(education.institution) + '</p><p>' + escapeHtml([education.field_of_study, education.location, education.description].filter(Boolean).join(' · ')) + '</p></div></article>'
   }).join('')
   bindImageFallbacks(container)
-  initializeRevealAnimations()
+  initializeRevealUi()
 }
 
 function renderDynamicExperiences(experiences) {
@@ -277,7 +292,7 @@ function renderDynamicExperiences(experiences) {
     return '<article class="experience-card" data-reveal><div class="experience-card__period">' + logo + '<span>' + escapeHtml(item.is_current ? formatDate(item.start_date) + ' — Sekarang' : formatDate(item.start_date) + ' — ' + formatDate(item.end_date)) + '</span></div><div><p class="experience-card__company">' + escapeHtml(item.company) + '</p><h3>' + escapeHtml(item.role_title) + '</h3><p>' + escapeHtml([item.location, item.description].filter(Boolean).join(' · ')) + '</p></div></article>'
   }).join('')
   bindImageFallbacks(container)
-  initializeRevealAnimations()
+  initializeRevealUi()
 }
 
 function renderDynamicProjects(projects, projectMedia = []) {
@@ -305,11 +320,11 @@ function renderDynamicProjects(projects, projectMedia = []) {
       ? '<img src="' + escapeHtml(image) + '" alt="' + escapeHtml(project.title) + '" loading="' + (index < 2 ? 'eager' : 'lazy') + '" decoding="async" width="1200" height="675" data-image-fallback data-fallback-label="' + initials + '"><strong class="project-card__image-fallback" hidden>' + initials + '</strong>'
       : '<strong class="project-card__image-fallback">' + escapeHtml(project.title.slice(0, 12)) + '</strong>'
     const tags = technologies.length ? '<span class="project-card__tags">' + technologies.map(technology => '<small>' + escapeHtml(technology) + '</small>').join('') + '</span>' : ''
-    return '<button class="project-card ' + (index === 0 ? 'project-card--wide' : '') + '" type="button" data-project data-category="' + escapeHtml(category) + '" data-title="' + escapeHtml(project.title) + '" data-type="' + escapeHtml(project.category || 'Project') + '" data-description="' + escapeHtml(project.summary || project.description || '') + '" data-reel="' + escapeHtml(project.project_url || '') + '" data-media="' + escapeHtml(media) + '" data-reveal><span class="project-card__visual" aria-label="' + escapeHtml(project.title) + '">' + imageMarkup + '</span><span class="project-card__info"><span><b>' + escapeHtml(project.title) + '</b><small>' + escapeHtml(project.category || 'Proyek') + '</small>' + tags + '</span><span class="project-card__arrow" aria-hidden="true">↗</span></span></button>'
+    return '<button class="project-card ' + (index === 0 ? 'project-card--wide' : '') + '" type="button" data-project data-category="' + escapeHtml(category) + '" data-title="' + escapeHtml(project.title) + '" data-type="' + escapeHtml(project.category || 'Project') + '" data-description="' + escapeHtml(project.summary || project.description || '') + '" data-technologies="' + escapeHtml(technologies.join(' ')) + '" data-reel="' + escapeHtml(safeUrl(project.project_url, '')) + '" data-media="' + escapeHtml(media) + '" data-reveal><span class="project-card__visual" aria-label="' + escapeHtml(project.title) + '">' + imageMarkup + '</span><span class="project-card__info"><span><b>' + escapeHtml(project.title) + '</b><small>' + escapeHtml(project.category || 'Proyek') + '</small>' + tags + '</span><span class="project-card__arrow" aria-hidden="true">↗</span></span></button>'
   }).join('')
   if (footer) footer.textContent = `${projects.length} proyek dipublikasikan`
   bindImageFallbacks(grid)
-  initializeRevealAnimations()
+  initializeRevealUi()
 }
 
 function renderDynamicArticles(articles) {
@@ -331,7 +346,7 @@ function renderDynamicArticles(articles) {
     return '<a class="note-card" href="#contact" data-reveal>' + imageMarkup + '<span class="note-card__date">' + formatDate(article.published_at || article.created_at) + '</span><h3>' + escapeHtml(article.title) + '</h3>' + (article.excerpt ? '<p class="note-card__excerpt">' + escapeHtml(article.excerpt) + '</p>' : '') + (meta.length ? '<span class="note-card__meta">' + meta.map(value => '<small>' + escapeHtml(value) + '</small>').join(' · ') + '</span>' : '') + tagMarkup + '<span class="note-card__arrow" aria-hidden="true">↗</span></a>'
   }).join('')
   bindImageFallbacks(grid)
-  initializeRevealAnimations()
+  initializeRevealUi()
 }
 
 function renderDynamicCertificates(certificates) {
@@ -347,10 +362,11 @@ function renderDynamicCertificates(certificates) {
     const imageMarkup = image
       ? '<img src="' + escapeHtml(image) + '" alt="' + escapeHtml(item.title) + '" loading="lazy" decoding="async" width="800" height="600" data-image-fallback data-fallback-label="' + initials + '"><span class="certificate-card__fallback" hidden>' + initials + '</span>'
       : '<div class="certificate-card__placeholder" aria-hidden="true">✦</div>'
-    return '<article class="certificate-card" data-reveal>' + imageMarkup + '<div><p class="certificate-card__date">' + escapeHtml(formatDate(item.issue_date)) + '</p><h3>' + escapeHtml(item.title) + '</h3><p>' + escapeHtml(item.issuer || 'Sertifikat') + '</p>' + (item.credential_url ? '<a class="text-link" href="' + escapeHtml(item.credential_url) + '" target="_blank" rel="noreferrer">Lihat kredensial ↗</a>' : '') + '</div></article>'
+    const mediaButton = '<button class="certificate-card__media" type="button" data-certificate data-title="' + escapeHtml(item.title) + '" data-issuer="' + escapeHtml(item.issuer || 'Sertifikat') + '" data-date="' + escapeHtml(formatDate(item.issue_date)) + '" data-image="' + escapeHtml(image || '') + '" aria-label="Preview ' + escapeHtml(item.title) + '">' + imageMarkup + '</button>'
+    return '<article class="certificate-card" data-reveal>' + mediaButton + '<div><p class="certificate-card__date">' + escapeHtml(formatDate(item.issue_date)) + '</p><h3>' + escapeHtml(item.title) + '</h3><p>' + escapeHtml(item.issuer || 'Sertifikat') + '</p>' + (item.credential_url ? '<a class="text-link" href="' + escapeHtml(safeUrl(item.credential_url)) + '" target="_blank" rel="noreferrer">Lihat kredensial ↗</a>' : '') + '</div></article>'
   }).join('')
   bindImageFallbacks(container)
-  initializeRevealAnimations()
+  initializeRevealUi()
 }
 
 function renderDynamicTestimonials(testimonials) {
@@ -368,7 +384,7 @@ function renderDynamicTestimonials(testimonials) {
     return '<article class="testimonial-card" data-reveal><span class="testimonial-card__quote">“</span><blockquote>' + escapeHtml(item.quote) + '</blockquote><div class="testimonial-card__author">' + avatar + '<span><strong>' + escapeHtml(item.author_name) + '</strong><small>' + escapeHtml(item.author_role || '') + '</small></span></div></article>'
   }).join('')
   bindImageFallbacks(container)
-  initializeRevealAnimations()
+  initializeRevealUi()
 }
 
 function renderSocialLinks(links) {
@@ -376,7 +392,7 @@ function renderSocialLinks(links) {
     const scope = container.dataset.socialScope
     const visibilityField = scope === 'hero' ? 'show_in_hero' : scope === 'contact' ? 'show_in_contact' : 'show_in_footer'
     const visibleLinks = links.filter(link => link[visibilityField] !== false)
-    container.innerHTML = visibleLinks.map(link => `<a href="${escapeHtml(link.url)}" ${link.open_in_new_tab ? 'target="_blank" rel="noreferrer"' : ''}>${escapeHtml(link.label)} ↗</a>`).join('')
+    container.innerHTML = visibleLinks.map(link => `<a href="${escapeHtml(safeUrl(link.url))}" ${link.open_in_new_tab ? 'target="_blank" rel="noreferrer"' : ''}>${escapeHtml(link.label)} ↗</a>`).join('')
   })
 }
 
@@ -397,48 +413,24 @@ function setPublicLoadingState(message = 'Memuat konten Supabase...') {
 function initializeTheme() {
   const root = document.documentElement
   const toggle = document.querySelector('[data-theme-toggle]')
+  if (!toggle || root.dataset.themeReady === 'true') return
   const storedTheme = localStorage.getItem('portfolio-theme')
-  if (storedTheme === 'light' || storedTheme === 'dark') root.dataset.theme = storedTheme
-  const update = () => toggle?.setAttribute('aria-label', root.dataset.theme === 'light' ? 'Aktifkan mode gelap' : 'Aktifkan mode terang')
-  update()
-  toggle?.addEventListener('click', () => { root.dataset.theme = root.dataset.theme === 'light' ? 'dark' : 'light'; localStorage.setItem('portfolio-theme', root.dataset.theme); update() })
-}
-
-function initializeMobileMenu() {
-  const button = document.querySelector('[data-menu-toggle]')
-  const nav = document.querySelector('[data-mobile-nav]')
-  const close = () => { button?.classList.remove('is-open'); nav?.classList.remove('is-open'); button?.setAttribute('aria-expanded', 'false') }
-  button?.addEventListener('click', () => { const open = nav?.classList.toggle('is-open'); button.classList.toggle('is-open', Boolean(open)); button.setAttribute('aria-expanded', String(Boolean(open))) })
-  nav?.querySelectorAll('a').forEach(link => link.addEventListener('click', close))
-}
-
-function initializeHeaderScroll() {
-  const header = document.querySelector('[data-header]')
-  const update = () => header?.classList.toggle('is-scrolled', window.scrollY > 30)
-  window.addEventListener('scroll', update, { passive: true })
-  update()
-}
-
-function initializeSectionNavigation() {
-  const links = [...document.querySelectorAll('.desktop-nav a, .mobile-nav a')]
-  const sections = links
-    .map(link => document.querySelector(link.getAttribute('href')))
-    .filter(Boolean)
-  const updateActive = () => {
-    const marker = window.scrollY + 150
-    let activeId = sections[0]?.id || 'top'
-    sections.forEach(section => {
-      if (section.offsetTop <= marker) activeId = section.id
-    })
-    links.forEach(link => {
-      const active = link.getAttribute('href') === '#' + activeId
-      link.classList.toggle('is-active', active)
-      if (active) link.setAttribute('aria-current', 'page')
-      else link.removeAttribute('aria-current')
-    })
+  const initialTheme = storedTheme === 'light' || storedTheme === 'dark'
+    ? storedTheme
+    : (window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+  root.dataset.theme = initialTheme
+  const update = () => {
+    const isDark = root.dataset.theme === 'dark'
+    toggle.setAttribute('aria-label', isDark ? 'Aktifkan mode terang' : 'Aktifkan mode gelap')
+    toggle.setAttribute('aria-pressed', String(isDark))
   }
-  window.addEventListener('scroll', updateActive, { passive: true })
-  updateActive()
+  update()
+  delegate(document, 'click', '[data-theme-toggle]', () => {
+    root.dataset.theme = root.dataset.theme === 'light' ? 'dark' : 'light'
+    localStorage.setItem('portfolio-theme', root.dataset.theme)
+    update()
+  }, 'bworieyTheme')
+  root.dataset.themeReady = 'true'
 }
 
 function updateNavigationVisibility(visibility = {}) {
@@ -449,90 +441,148 @@ function updateNavigationVisibility(visibility = {}) {
   })
 }
 
-function initializeRevealAnimations() {
-  const elements = document.querySelectorAll('[data-reveal]:not(.is-visible)')
-  if (reduceMotion || !('IntersectionObserver' in window)) { elements.forEach(element => element.classList.add('is-visible')); return }
-  const observer = new IntersectionObserver((entries, currentObserver) => entries.forEach(entry => { if (!entry.isIntersecting) return; const delay = entry.target.dataset.revealDelay; if (delay) entry.target.style.transitionDelay = `${delay}ms`; entry.target.classList.add('is-visible'); currentObserver.unobserve(entry.target) }), { rootMargin: '0px 0px -8% 0px', threshold: 0.08 })
-  elements.forEach(element => observer.observe(element))
-}
-
 function initializeRoleTyping(element = document.querySelector('[data-role]'), roles = null) {
   const roleElement = element
   let roleList = roles || []
   try { if (!roleList.length) roleList = roleElement?.dataset.roles ? JSON.parse(roleElement.dataset.roles) : [] } catch { roleList = [] }
-  if (!roleElement || !roleList.length || reduceMotion || roleElement.dataset.typingStarted) return
-  roleElement.dataset.typingStarted = 'true'
-  let roleIndex = 0; let characterIndex = 0; let deleting = false
-  const type = () => { const role = roleList[roleIndex] || ''; characterIndex += deleting ? -1 : 1; roleElement.textContent = role.slice(0, characterIndex); if (!deleting && characterIndex >= role.length) { deleting = true; window.setTimeout(type, 1700); return } if (deleting && characterIndex <= 0) { deleting = false; roleIndex = (roleIndex + 1) % roleList.length } window.setTimeout(type, deleting ? 45 : 80) }
-  type()
+  if (!roleElement || !roleList.length || roleElement.dataset.rotationStarted) return
+  roleElement.dataset.rotationStarted = 'true'
+  roleElement.textContent = roleList[0]
+  if (roleList.length === 1 || reduceMotion) return
+  let roleIndex = 0
+  const rotate = () => {
+    roleElement.classList.add('is-changing')
+    window.setTimeout(() => {
+      roleIndex = (roleIndex + 1) % roleList.length
+      roleElement.textContent = roleList[roleIndex]
+      roleElement.classList.remove('is-changing')
+    }, 180)
+  }
+  roleElement.dataset.rotationTimer = String(window.setInterval(rotate, 3200))
 }
 
 function bindProjectInteractions() {
-  const buttons = document.querySelectorAll('[data-filter]')
-  const cards = () => document.querySelectorAll('[data-project]')
-  const search = document.querySelector('[data-project-search]')
-  const applyProjectFilter = () => {
-    const filter = document.querySelector('[data-filter].is-active')?.dataset.filter || 'all'
-    const term = (search?.value || '').trim().toLowerCase()
-    cards().forEach(card => {
-      const matchesFilter = filter === 'all' || card.dataset.category === filter
-      const matchesSearch = !term || (card.dataset.title || '').toLowerCase().includes(term) || (card.dataset.type || '').toLowerCase().includes(term)
-      card.classList.toggle('is-hidden', !(matchesFilter && matchesSearch))
+  if (document.documentElement.dataset.projectInteractionsReady === 'true') {
+    applyProjectFilter({
+      category: document.querySelector('[data-filter].is-active')?.dataset.filter || 'all',
+      search: document.querySelector('[data-project-search]')?.value || ''
     })
+    return
   }
-  buttons.forEach(button => { if (button.dataset.bound) return; button.dataset.bound = 'true'; button.addEventListener('click', () => { buttons.forEach(item => { const active = item === button; item.classList.toggle('is-active', active); item.setAttribute('aria-pressed', String(active)) }); applyProjectFilter() }) })
-  search?.addEventListener('input', applyProjectFilter)
-  const dialog = document.querySelector('[data-project-dialog]')
-  cards().forEach(card => {
-    if (card.dataset.dialogBound) return
-    card.dataset.dialogBound = 'true'
-    card.addEventListener('click', () => {
-      if (!dialog) return
-      document.querySelector('[data-dialog-title]').textContent = card.dataset.title || ''
-      document.querySelector('[data-dialog-type]').textContent = card.dataset.type || ''
-      document.querySelector('[data-dialog-description]').textContent = card.dataset.description || ''
-      document.querySelector('[data-dialog-reel]').textContent = card.dataset.reel || '—'
-      const gallery = document.querySelector('[data-dialog-gallery]')
-      if (gallery) {
-        let media = []
-        try { media = JSON.parse(card.dataset.media || '[]') } catch { media = [] }
-        gallery.innerHTML = media.map(item => '<figure><img src="' + escapeHtml(item.url) + '" alt="' + escapeHtml(item.alt || card.dataset.title || 'Media proyek') + '" loading="lazy" decoding="async" width="1200" height="675"><figcaption>' + escapeHtml(item.caption || '') + '</figcaption></figure>').join('')
-        gallery.hidden = !media.length
-      }
-      dialog.showModal()
-    })
+  const search = document.querySelector('[data-project-search]')
+  const updateFilter = () => applyProjectFilter({
+    category: document.querySelector('[data-filter].is-active')?.dataset.filter || 'all',
+    search: search?.value || ''
   })
-  document.querySelector('[data-dialog-close]')?.addEventListener('click', () => dialog?.close())
-  dialog?.addEventListener('click', event => { if (event.target === dialog) dialog.close() })
+  const debouncedSearch = createProjectSearchHandler(updateFilter)
+  delegate(document, 'click', '[data-filter]', (event, button) => {
+    document.querySelectorAll('[data-filter]').forEach(item => {
+      const active = item === button
+      item.classList.toggle('is-active', active)
+      item.setAttribute('aria-pressed', String(active))
+    })
+    updateFilter()
+  }, 'bworieyFilter')
+  delegate(document, 'input', '[data-project-search]', () => debouncedSearch(), 'bworieyFilter')
+  delegate(document, 'click', '[data-project]', (event, card) => {
+    const dialog = document.querySelector('[data-project-dialog]')
+    if (!dialog) return
+    document.querySelector('[data-dialog-title]').textContent = card.dataset.title || ''
+    document.querySelector('[data-dialog-type]').textContent = card.dataset.type || ''
+    document.querySelector('[data-dialog-description]').textContent = card.dataset.description || ''
+    document.querySelector('[data-dialog-reel]').textContent = card.dataset.reel || '—'
+    const gallery = document.querySelector('[data-dialog-gallery]')
+    if (gallery) {
+      let media = []
+      try { media = JSON.parse(card.dataset.media || '[]') } catch { media = [] }
+      gallery.replaceChildren(...media.map(item => {
+        const figure = document.createElement('figure')
+        const image = document.createElement('img')
+        image.src = item.url
+        image.alt = item.alt || card.dataset.title || 'Media proyek'
+        image.loading = 'lazy'
+        image.decoding = 'async'
+        image.width = 1200
+        image.height = 675
+        const caption = document.createElement('figcaption')
+        caption.textContent = item.caption || ''
+        figure.append(image, caption)
+        return figure
+      }))
+      gallery.hidden = !media.length
+    }
+    openModal(dialog, card)
+  }, 'bworieyProject')
+  delegate(document, 'click', '[data-dialog-contact]', () => {
+    closeModal(document.querySelector('[data-project-dialog]'))
+  }, 'bworieyModal')
+  delegate(document, 'click', '[data-certificate]', (event, card) => {
+    const dialog = document.querySelector('[data-certificate-dialog]')
+    if (!dialog) return
+    document.querySelector('[data-certificate-dialog-title]').textContent = card.dataset.title || 'Sertifikat'
+    document.querySelector('[data-certificate-dialog-meta]').textContent = [card.dataset.issuer, card.dataset.date].filter(Boolean).join(' · ')
+    const image = document.querySelector('[data-certificate-dialog-image]')
+    if (image) {
+      image.hidden = !card.dataset.image
+      image.src = card.dataset.image || ''
+      image.alt = card.dataset.title || 'Preview sertifikat'
+    }
+    openModal(dialog, card)
+  }, 'bworieyCertificate')
+  document.documentElement.dataset.projectInteractionsReady = 'true'
+  updateFilter()
 }
 
 function initializeContactForm() {
   const form = document.querySelector('[data-contact-form]')
   const status = document.querySelector('[data-form-status]')
-  form?.addEventListener('submit', async event => {
+  if (!form || form.dataset.bound === 'true') return
+  form.dataset.bound = 'true'
+  const messageField = form.elements.message
+  const characterCount = form.querySelector('[data-character-count]')
+  const updateCharacterCount = () => { if (characterCount && messageField) characterCount.textContent = `${messageField.value.length}/${messageField.maxLength || 5000}` }
+  messageField?.addEventListener('input', updateCharacterCount)
+  updateCharacterCount()
+  form.addEventListener('submit', async event => {
     event.preventDefault()
+    resetFormState(form, status)
+    ;[form.elements.name, form.elements.email, form.elements.message].forEach(field => {
+      if (!field?.checkValidity()) setFieldError(field, field?.validationMessage || 'Periksa isian ini.')
+    })
     if (!form.checkValidity()) { form.reportValidity(); return }
-    const button = form.querySelector('button[type="submit"]')
-    button.disabled = true
-    status.textContent = 'Mengirim...'
-    if (!supabase) { status.textContent = 'Form kontak belum terhubung.'; button.disabled = false; return }
-    let response = await supabase.rpc('submit_contact_message', { message_name: form.elements.name.value, message_email: form.elements.email.value, message_subject: form.elements.subject?.value || '', message_body: form.elements.message.value, honeypot: form.elements.website?.value || '' })
-    if (response.error?.code === '42883') response = await supabase.rpc('submit_contact_message', { message_name: form.elements.name.value, message_email: form.elements.email.value, message_body: form.elements.message.value, honeypot: form.elements.website?.value || '' })
-    const { error } = response
-    button.disabled = false
-    if (error) { console.error('Gagal mengirim pesan:', error); status.textContent = 'Pesan belum dapat dikirim. Silakan coba lagi.'; return }
-    status.textContent = 'Pesan berhasil dikirim. Terima kasih.'
-    showToast('Pesan berhasil dikirim.')
-    form.reset()
+    setFormSubmitting(form, true)
+    status.textContent = 'Mengirim pesan…'
+    if (!supabase) {
+      status.textContent = 'Form kontak belum terhubung.'
+      setFormSubmitting(form, false)
+      return
+    }
+    try {
+      let response = await supabase.rpc('submit_contact_message', { message_name: form.elements.name.value.trim(), message_email: form.elements.email.value.trim(), message_subject: form.elements.subject?.value.trim() || '', message_body: form.elements.message.value.trim(), honeypot: form.elements.website?.value || '' })
+      if (response.error?.code === '42883') response = await supabase.rpc('submit_contact_message', { message_name: form.elements.name.value.trim(), message_email: form.elements.email.value.trim(), message_body: form.elements.message.value.trim(), honeypot: form.elements.website?.value || '' })
+      if (response.error) throw response.error
+      status.textContent = 'Pesan berhasil dikirim. Terima kasih.'
+      showToast('Pesan berhasil dikirim.')
+      form.reset()
+      updateCharacterCount()
+    } catch (error) {
+      console.error('Gagal mengirim pesan:', { code: error?.code || null, message: error?.message || 'Unknown error', details: error?.details || null, hint: error?.hint || null })
+      status.textContent = 'Pesan belum dapat dikirim. Coba lagi atau kirim email langsung.'
+      showToast('Pesan belum terkirim.', 'error')
+    } finally {
+      setFormSubmitting(form, false)
+    }
   })
 }
 
 function initializeCopyEmail() {
-  document.querySelectorAll('[data-copy-email]').forEach(button => button.addEventListener('click', async event => { const email = event.currentTarget.dataset.email; if (!email) return; try { await navigator.clipboard.writeText(email); showToast('Email disalin.') } catch { showToast(email) } }))
-}
-
-function initializeSmoothScroll() {
-  document.querySelectorAll('a[href^="#"]').forEach(link => link.addEventListener('click', event => { const target = document.querySelector(link.getAttribute('href')); if (!target) return; event.preventDefault(); target.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth' }) }))
+  if (document.documentElement.dataset.copyEmailReady === 'true') return
+  delegate(document, 'click', '[data-copy-email]', async (event, button) => {
+    const email = button.dataset.email
+    if (!email) return
+    try { await navigator.clipboard.writeText(email); showToast('Email disalin.') } catch { showToast(email, 'info') }
+  }, 'bworieyFeedback')
+  document.documentElement.dataset.copyEmailReady = 'true'
 }
 
 function initializeYear() {

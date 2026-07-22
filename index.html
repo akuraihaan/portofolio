@@ -7,6 +7,15 @@
     <meta property="og:image" content="" />
     <meta name="theme-color" content="#788086" />
     <title>bworiey — Portfolio digital</title>
+    <script>
+      (() => {
+        const stored = localStorage.getItem('portfolio-theme')
+        const theme = stored === 'light' || stored === 'dark'
+          ? stored
+          : (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+        document.documentElement.dataset.theme = theme
+      })()
+    </script>
     <link rel="stylesheet" href="/styles.css" />
     <link rel="icon" href="" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -40,11 +49,11 @@
           <span class="theme-toggle__moon" aria-hidden="true">◐</span>
         </button>
         <a class="button button--small" href="#contact" data-section-secondary data-fallback-label="Hubungi saya">Hubungi saya <span aria-hidden="true">↗</span></a>
-        <button class="icon-button menu-toggle" type="button" data-menu-toggle aria-label="Buka menu" aria-expanded="false">
+        <button class="icon-button menu-toggle" type="button" data-menu-toggle aria-label="Buka menu" aria-expanded="false" aria-controls="mobile-navigation">
           <span></span><span></span>
         </button>
       </div>
-      <nav class="mobile-nav" data-mobile-nav aria-label="Mobile navigation">
+      <nav class="mobile-nav" id="mobile-navigation" data-mobile-nav aria-label="Navigasi mobile">
         <a href="#top">Beranda <span>01</span></a>
         <a href="#about">Tentang <span>02</span></a>
         <a href="#capabilities">Keahlian <span>03</span></a>
@@ -213,7 +222,7 @@
           <div class="contact__socials" data-social-links data-social-scope="contact" aria-label="Media sosial"></div>
         </div>
         <form class="contact-form" data-contact-form data-reveal data-reveal-delay="150">
-          <div class="form-heading"><span>Atau kirim pesan</span><span>* wajib diisi</span></div>
+          <div class="form-heading"><span>Atau kirim pesan</span><span><b data-character-count>0/5000</b> · * wajib diisi</span></div>
           <input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" class="contact-honeypot" />
           <label>Nama *<input type="text" name="name" autocomplete="name" placeholder="Nama Anda" required /></label>
           <label>Email *<input type="email" name="email" autocomplete="email" placeholder="nama@perusahaan.com" required /></label>
@@ -247,6 +256,15 @@
         <div class="project-dialog__reel"><span>Ruang lingkup</span><strong data-dialog-reel></strong></div>
         <div class="project-dialog__gallery" data-dialog-gallery hidden></div>
         <a class="button button--small" href="#contact" data-dialog-contact>Bicarakan proyek serupa <span aria-hidden="true">↗</span></a>
+      </div>
+    </dialog>
+    <dialog class="media-dialog" data-certificate-dialog aria-labelledby="certificate-dialog-title">
+      <div class="media-dialog__inner">
+        <button class="icon-button media-dialog__close" type="button" data-dialog-close aria-label="Tutup preview sertifikat">×</button>
+        <p class="eyebrow">{ Preview sertifikat }</p>
+        <h2 id="certificate-dialog-title" data-certificate-dialog-title>Sertifikat</h2>
+        <p data-certificate-dialog-meta></p>
+        <img class="media-dialog__image" data-certificate-dialog-image alt="" hidden />
       </div>
     </dialog>
     <div class="toast" data-toast role="status" aria-live="polite"></div>
