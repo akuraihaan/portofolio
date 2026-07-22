@@ -16,20 +16,53 @@ function ensureStorageReady() {
 export function validateImageFile(file, { maxSize = MAX_IMAGE_SIZE, allowedTypes = ALLOWED_IMAGE_TYPES } = {}) {
   if (!file) throw new Error('Pilih file gambar terlebih dahulu.')
   if (!allowedTypes.includes(file.type)) throw new Error('Format gambar harus JPG, PNG, atau WebP.')
+  const extension = String(file.name || '').split('.').pop().toLowerCase()
+  const extensionTypes = { jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', webp: 'image/webp' }
+  if (extensionTypes[extension] && extensionTypes[extension] !== file.type) throw new Error('Ekstensi file tidak sesuai dengan MIME type gambar.')
   if (file.size > maxSize) throw new Error('Ukuran gambar maksimal ' + Math.round(maxSize / 1024 / 1024) + ' MB.')
   return file
 }
 
-export function createStoragePath(folder, fileName, userId = 'anonymous') {
+export async function readImageDimensions(file) {
+  validateImageFile(file)
+  if (typeof createImageBitmap === 'function') {
+    const bitmap = await createImageBitmap(file)
+    const dimensions = { width: bitmap.width, height: bitmap.height }
+    bitmap.close?.()
+    return dimensions
+  }
+  if (typeof Image === 'undefined' || typeof URL === 'undefined' || typeof URL.createObjectURL !== 'function') return null
+  return new Promise((resolve, reject) => {
+    const objectUrl = URL.createObjectURL(file)
+    const image = new Image()
+    image.onload = () => { URL.revokeObjectURL(objectUrl); resolve({ width: image.naturalWidth, height: image.naturalHeight }) }
+    image.onerror = () => { URL.revokeObjectURL(objectUrl); reject(new Error('Dimensi gambar tidak dapat dibaca.')) }
+    image.src = objectUrl
+  })
+}
+
+export async function validateImageDimensions(file, { minWidth = 1, minHeight = 1, aspectRatio = null, tolerance = 0.35 } = {}) {
+  const dimensions = await readImageDimensions(file)
+  if (!dimensions) return null
+  if (dimensions.width < minWidth || dimensions.height < minHeight) throw new Error(`Gambar minimal berukuran ${minWidth}×${minHeight} piksel.`)
+  if (aspectRatio && Math.abs((dimensions.width / dimensions.height) - aspectRatio) > tolerance) throw new Error('Rasio gambar tidak sesuai dengan kebutuhan field ini.')
+  return dimensions
+}
+
+export function generateObjectPath(folder, fileName, userId = 'anonymous') {
   const cleanFolder = String(folder || 'general').replace(/[^a-zA-Z0-9/_-]+/g, '-').replace(/^\/+|\/+$/g, '')
   const cleanUser = String(userId || 'anonymous').replace(/[^a-zA-Z0-9_-]+/g, '-')
-  return cleanFolder + '/' + cleanUser + '/' + crypto.randomUUID() + '-' + safeFileName(fileName)
+  const unique = globalThis.crypto?.randomUUID?.() || Date.now() + '-' + Math.random().toString(36).slice(2)
+  return cleanFolder + '/' + cleanUser + '/' + unique + '-' + safeFileName(fileName)
 }
+
+export const createStoragePath = generateObjectPath
 
 export async function uploadPublicImage({ file, folder = 'general', userId, maxSize, allowedTypes } = {}) {
   ensureStorageReady()
   validateImageFile(file, { maxSize, allowedTypes })
-  const path = createStoragePath(folder, file.name, userId)
+  const dimensions = await validateImageDimensions(file)
+  const path = generateObjectPath(folder, file.name, userId)
   const { error: uploadError } = await supabase.storage.from(PORTFOLIO_BUCKET).upload(path, file, {
     cacheControl: '31536000',
     contentType: file.type,
@@ -43,7 +76,28 @@ export async function uploadPublicImage({ file, folder = 'general', userId, maxS
     throw new Error('URL publik gambar tidak tersedia.')
   }
 
-  return { path, publicUrl: data.publicUrl, fileName: file.name, mimeType: file.type, sizeBytes: file.size }
+  return { path, publicUrl: data.publicUrl, fileName: file.name, mimeType: file.type, sizeBytes: file.size, width: dimensions?.width || null, height: dimensions?.height || null }
+}
+
+export async function replacePublicImage({ file, folder = 'general', userId, previousPath = '', cleanupPrevious = false, maxSize, allowedTypes } = {}) {
+  const uploaded = await uploadPublicImage({ file, folder, userId, maxSize, allowedTypes })
+  if (cleanupPrevious && previousPath && previousPath !== uploaded.path) await deletePublicImage(previousPath)
+  return uploaded
+}
+
+export async function saveMediaMetadata({ table = 'media_assets', record } = {}) {
+  ensureStorageReady()
+  if (!record || typeof record !== 'object') throw new Error('Metadata media tidak valid.')
+  const { data, error } = await supabase.from(table).insert(record).select().single()
+  if (error) throw new Error(describeError(error, 'Metadata media belum tersimpan.'))
+  return data
+}
+
+export async function removeMediaMetadata({ table = 'media_assets', id } = {}) {
+  ensureStorageReady()
+  if (!id) return
+  const { error } = await supabase.from(table).delete().eq('id', id)
+  if (error) throw new Error(describeError(error, 'Metadata media belum terhapus.'))
 }
 
 export async function deletePublicImage(path) {

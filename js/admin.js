@@ -9,22 +9,22 @@ import { renderNavigationAdmin, renderSectionEditorAdmin, renderSectionsAdmin, r
 
 const contentFields = {
   projects: [
-    ['title', 'Judul', 'text', true], ['slug', 'Slug', 'text', true], ['category', 'Kategori', 'text', false], ['summary', 'Ringkasan', 'textarea', false], ['description', 'Deskripsi', 'textarea', false], ['thumbnail_url', 'Thumbnail', 'image', false, 'thumbnail_path', 'projects/thumbnails'], ['cover_url', 'Cover image', 'image', false, 'cover_path', 'projects/covers'], ['project_url', 'URL proyek', 'url', false], ['status', 'Status', 'status', true], ['sort_order', 'Urutan', 'number', false], ['is_featured', 'Featured', 'boolean', false]
+    ['title', 'Judul', 'text', true], ['slug', 'Slug', 'text', true], ['category', 'Kategori', 'text', false], ['summary', 'Ringkasan', 'textarea', false], ['description', 'Deskripsi', 'textarea', false], ['technologies', 'Teknologi (satu per baris)', 'tags', false], ['thumbnail_url', 'Thumbnail', 'image', false, 'thumbnail_path', 'projects/thumbnails'], ['cover_url', 'Cover image', 'image', false, 'cover_path', 'projects/covers'], ['project_url', 'URL proyek', 'url', false], ['repository_url', 'URL repository', 'url', false], ['start_date', 'Tanggal mulai', 'date', false], ['completion_date', 'Tanggal selesai', 'date', false], ['status', 'Status', 'status', true], ['sort_order', 'Urutan', 'number', false], ['is_featured', 'Featured', 'boolean', false]
   ],
   articles: [
-    ['title', 'Judul', 'text', true], ['slug', 'Slug', 'text', true], ['excerpt', 'Excerpt', 'textarea', false], ['content', 'Konten', 'textarea', true], ['thumbnail_url', 'Thumbnail', 'image', false, 'thumbnail_path', 'articles/thumbnails'], ['status', 'Status', 'status', true], ['sort_order', 'Urutan', 'number', false], ['is_featured', 'Featured', 'boolean', false]
+    ['title', 'Judul', 'text', true], ['slug', 'Slug', 'text', true], ['category', 'Kategori', 'text', false], ['excerpt', 'Excerpt', 'textarea', false], ['content', 'Konten', 'textarea', true], ['tags', 'Tag (satu per baris)', 'tags', false], ['reading_time', 'Estimasi baca (menit)', 'number', false], ['thumbnail_url', 'Thumbnail', 'image', false, 'thumbnail_path', 'articles/thumbnails'], ['status', 'Status', 'status', true], ['sort_order', 'Urutan', 'number', false], ['is_featured', 'Featured', 'boolean', false]
   ],
   skills: [['name', 'Nama', 'text', true], ['category', 'Kategori', 'text', false], ['description', 'Deskripsi', 'textarea', false], ['level', 'Level 0-100', 'number', false], ['status', 'Status', 'status', true], ['sort_order', 'Urutan', 'number', false]],
   experiences: [['company', 'Perusahaan', 'text', true], ['role_title', 'Jabatan', 'text', true], ['description', 'Deskripsi', 'textarea', false], ['location', 'Lokasi', 'text', false], ['start_date', 'Mulai', 'date', false], ['end_date', 'Selesai', 'date', false], ['is_current', 'Saat ini', 'boolean', false], ['logo_url', 'Logo perusahaan', 'image', false, 'logo_path', 'experiences/logos'], ['status', 'Status', 'status', true], ['sort_order', 'Urutan', 'number', false]],
   educations: [['institution', 'Institusi', 'text', true], ['degree', 'Gelar', 'text', false], ['field_of_study', 'Bidang studi', 'text', false], ['location', 'Lokasi', 'text', false], ['description', 'Deskripsi', 'textarea', false], ['start_date', 'Mulai', 'date', false], ['end_date', 'Selesai', 'date', false], ['is_current', 'Saat ini', 'boolean', false], ['logo_url', 'Logo institusi', 'image', false, 'logo_path', 'educations/logos'], ['is_featured', 'Featured', 'boolean', false], ['status', 'Status', 'status', true], ['sort_order', 'Urutan', 'number', false]],
   certificates: [['title', 'Judul', 'text', true], ['issuer', 'Penerbit', 'text', false], ['issue_date', 'Tanggal', 'date', false], ['credential_url', 'URL credential', 'url', false], ['certificate_url', 'Gambar sertifikat', 'image', false, 'certificate_path', 'certificates'], ['status', 'Status', 'status', true], ['sort_order', 'Urutan', 'number', false]],
-  services: [['title', 'Judul', 'text', true], ['slug', 'Slug', 'text', true], ['description', 'Deskripsi', 'textarea', false], ['icon', 'Icon key', 'text', false], ['icon_url', 'Icon image', 'image', false, 'icon_path', 'services/icons'], ['status', 'Status', 'status', true], ['sort_order', 'Urutan', 'number', false], ['is_featured', 'Featured', 'boolean', false]],
+  services: [['title', 'Judul', 'text', true], ['slug', 'Slug', 'text', true], ['description', 'Deskripsi', 'textarea', false], ['icon', 'Icon key', 'text', false], ['icon_url', 'Icon image', 'image', false, 'icon_path', 'services'], ['status', 'Status', 'status', true], ['sort_order', 'Urutan', 'number', false], ['is_featured', 'Featured', 'boolean', false]],
   testimonials: [['author_name', 'Nama', 'text', true], ['author_role', 'Peran', 'text', false], ['quote', 'Kutipan', 'textarea', true], ['avatar_url', 'Avatar', 'image', false, 'avatar_path', 'testimonials/avatars'], ['status', 'Status', 'status', true], ['sort_order', 'Urutan', 'number', false], ['is_featured', 'Featured', 'boolean', false]],
   social_links: [['platform', 'Platform', 'text', true], ['label', 'Label', 'text', true], ['url', 'URL', 'url', true], ['username', 'Username', 'text', false], ['icon', 'Icon key', 'text', false], ['is_active', 'Aktif', 'boolean', false], ['open_in_new_tab', 'Buka tab baru', 'boolean', false], ['sort_order', 'Urutan', 'number', false]],
   roles: [['name', 'Name', 'text', true], ['label', 'Label', 'text', true], ['description', 'Deskripsi', 'textarea', false], ['is_system', 'System role', 'boolean', false]]
 }
 
-const profileFields = [['full_name', 'Nama lengkap', 'text', false], ['username', 'Username', 'text', false], ['phone', 'Telepon', 'text', false], ['bio', 'Bio publik', 'textarea', false], ['avatar_url', 'Avatar profile', 'image', false, 'avatar_path', 'avatars'], ['is_active', 'Aktif di publik', 'boolean', false]]
+const profileFields = [['full_name', 'Nama lengkap', 'text', false], ['username', 'Username', 'text', false], ['phone', 'Telepon', 'text', false], ['bio', 'Bio publik', 'textarea', false], ['avatar_url', 'Avatar profile', 'image', false, 'avatar_path', 'profiles/avatars'], ['is_active', 'Aktif di publik', 'boolean', false]]
 
 const heroSettingFields = [
   ['hero_badge', 'Label kecil', 'text'],
@@ -189,7 +189,7 @@ async function renderModule(key, context) {
   const formContainer = document.querySelector('#module-form'); const list = document.querySelector('#module-list'); const status = document.querySelector('#module-status'); const statusFilter = document.createElement('select'); statusFilter.className = 'admin-search'; statusFilter.dataset.statusFilter = ''; statusFilter.innerHTML = '<option value="all">Semua status</option><option value="draft">Draft</option><option value="published">Dipublikasikan</option><option value="archived">Diarsipkan</option>'; document.querySelector('[data-search]')?.after(statusFilter); let rows = []
   const load = async () => { status.textContent = 'Memuat data...'; try { rows = key === 'educations' ? await getAdminEducations() : (await supabase.from(config.table).select('*').order('created_at', { ascending: false }).limit(100)).data ?? []; status.textContent = `${rows.length} data`; renderRows() } catch (loadError) { status.innerHTML = `<span class="admin-form-error">Tidak dapat memuat data. Periksa policy RLS.</span>`; console.error('Admin module load failed:', { code: loadError?.code || null, message: loadError?.message || 'Unknown error', details: loadError?.details || null, hint: loadError?.hint || null }) } }
   const renderRows = () => { const term = document.querySelector('[data-search]').value.toLowerCase(); const filtered = rows.filter(row => JSON.stringify(row).toLowerCase().includes(term) && (statusFilter.value === 'all' || row.status === statusFilter.value)); list.innerHTML = filtered.length ? filtered.map(row => renderGenericRow(key, row, canManage)).join('') : '<p class="admin-empty">Belum ada data.</p>' }
-  const openForm = row => { formContainer.innerHTML = renderGenericForm(key, row, fields, canManage); bindImageUploaders(formContainer); formContainer.scrollIntoView({ behavior: 'smooth', block: 'start' }); const form = formContainer.querySelector('form'); form.addEventListener('submit', event => saveGeneric(event, key, row, context, load, formContainer)); form.querySelector('[data-cancel-form]')?.addEventListener('click', () => { formContainer.innerHTML = '' }) }
+  const openForm = row => { formContainer.innerHTML = renderGenericForm(key, row, fields, canManage); bindImageUploaders(formContainer); if (key === 'projects' && row) { loadProjectMediaEditor(row.id, formContainer); bindProjectMediaEditor(formContainer) } formContainer.scrollIntoView({ behavior: 'smooth', block: 'start' }); const form = formContainer.querySelector('form'); form.addEventListener('submit', event => saveGeneric(event, key, row, context, load, formContainer)); form.querySelector('[data-cancel-form]')?.addEventListener('click', () => { formContainer.innerHTML = '' }) }
   document.querySelector('[data-action="new"]')?.addEventListener('click', () => openForm(null))
   document.querySelector('[data-search]').addEventListener('input', renderRows)
   statusFilter.addEventListener('change', renderRows)
@@ -230,26 +230,35 @@ async function renderPortfolioProfile(context) {
 }
 
 function renderGenericForm(key, row, fields, canManage) {
-  return `<section class="admin-card admin-form-card"><div class="admin-section-heading"><div><p>${row ? 'Edit' : 'Create'}</p><h2>${row ? 'Perbarui' : 'Tambah'} ${escapeHtml(ADMIN_MODULES[key].label)}</h2></div></div><form data-generic-form><div class="admin-form-grid">${fields.map(([name, label, type, required, pathName, folder]) => renderField(name, label, type, row?.[name], required, pathName, folder)).join('')}</div><div class="admin-form-actions"><button type="submit" class="admin-primary-button" ${canManage ? '' : 'disabled'}>Simpan</button><button type="button" class="admin-secondary-button" data-cancel-form>Batal</button></div><p class="admin-form-error" data-form-error role="alert"></p></form></section>`
+  const projectMediaEditor = key === 'projects' ? renderProjectMediaEditor(row) : ''
+  return `<section class="admin-card admin-form-card"><div class="admin-section-heading"><div><p>${row ? 'Edit' : 'Create'}</p><h2>${row ? 'Perbarui' : 'Tambah'} ${escapeHtml(ADMIN_MODULES[key].label)}</h2></div></div><form data-generic-form><div class="admin-form-grid">${fields.map(([name, label, type, required, pathName, folder]) => renderField(name, label, type, row?.[name], required, pathName, folder)).join('')}</div>${projectMediaEditor}<div class="admin-form-actions"><button type="submit" class="admin-primary-button" ${canManage ? '' : 'disabled'}>Simpan</button><button type="button" class="admin-secondary-button" data-cancel-form>Batal</button></div><p class="admin-form-error" data-form-error role="alert"></p></form></section>`
 }
 
 function renderField(name, label, type, value, required, pathName, folder) {
   if (type === 'image') return renderImageUploader({ name, label, existingUrl: value, required })
   if (type === 'boolean') return `<label class="admin-checkbox"><input type="checkbox" name="${name}" ${value ? 'checked' : ''}><span>${escapeHtml(label)}</span></label>`
   if (type === 'status') return `<label class="admin-field"><span>${escapeHtml(label)}</span><select name="${name}" ${required ? 'required' : ''}><option value="draft" ${value === 'draft' || !value ? 'selected' : ''}>Draft</option><option value="published" ${value === 'published' ? 'selected' : ''}>Dipublikasikan</option><option value="archived" ${value === 'archived' ? 'selected' : ''}>Diarsipkan</option></select></label>`
+  if (type === 'tags') return `<label class="admin-field admin-field-wide"><span>${escapeHtml(label)}</span><textarea name="${name}" rows="3" placeholder="Contoh: Supabase&#10;Vite&#10;UI design">${escapeHtml(Array.isArray(value) ? value.join('\n') : value || '')}</textarea><small class="admin-field-help">Pisahkan dengan baris baru atau koma.</small></label>`
   const input = type === 'textarea' ? `<textarea name="${name}" rows="4" ${required ? 'required' : ''}>${escapeHtml(value)}</textarea>` : `<input name="${name}" type="${type}" value="${escapeHtml(value)}" ${required ? 'required' : ''}>`
   return `<label class="admin-field"><span>${escapeHtml(label)}</span>${input}</label>`
 }
 
+function renderProjectMediaEditor(row) {
+  if (!row) return '<div class="admin-field admin-field-wide project-media-editor"><span>Galeri proyek</span><small class="admin-field-help">Simpan proyek terlebih dahulu. Setelah itu, buka kembali untuk menambahkan gambar galeri.</small></div>'
+  return '<div class="admin-field admin-field-wide project-media-editor"><div class="admin-section-heading"><div><p>Project media</p><h3>Galeri proyek</h3><small class="admin-field-help">Tambahkan gambar tanpa menyalin URL. File akan disimpan ke Storage dan metadata ke project_media.</small></div></div>' + renderImageUploader({ name: 'project_media_file', label: 'Tambah gambar galeri' }) + '<div class="project-media-list" data-project-media-list>Memuat galeri...</div></div>'
+}
+
 async function saveGeneric(event, key, row, context, reload, formContainer) {
   event.preventDefault(); const form = event.currentTarget; const button = form.querySelector('button[type="submit"]'); if (button.disabled) return; const error = form.querySelector('[data-form-error]'); setBusy(button, true); error.textContent = ''
-  const payload = {}; for (const [name, , type] of contentFields[key]) if (type !== 'image') payload[name] = getValue(form, name, type === 'boolean' ? 'boolean' : type === 'number' ? 'number' : 'text')
+  const payload = {}; for (const [name, , type] of contentFields[key]) if (type !== 'image') payload[name] = type === 'tags' ? getTagValue(form, name) : getValue(form, name, type === 'boolean' ? 'boolean' : type === 'number' ? 'number' : 'text')
   if ((key === 'projects' || key === 'articles' || key === 'services') && !payload.slug) payload.slug = slugify(payload.title)
   if (!['roles', 'permissions'].includes(key)) {
     if (!row) payload.created_by = context.user.id
     payload.updated_by = context.user.id
   }
   let saveError = null
+  let savedRow = row
+  let projectMediaError = null
   let imageChanges = []
   try {
     imageChanges = await prepareImageUploads(form, contentFields[key], payload, row, context.user.id)
@@ -259,9 +268,10 @@ async function saveGeneric(event, key, row, context, reload, formContainer) {
       const saved = row ? updateEducation(row.id, payload) : createEducation(payload)
       await saved
     } else {
-      const request = row ? supabase.from(ADMIN_MODULES[key].table).update(payload).eq('id', row.id) : supabase.from(ADMIN_MODULES[key].table).insert(payload)
+      const request = row ? supabase.from(ADMIN_MODULES[key].table).update(payload).eq('id', row.id).select().single() : supabase.from(ADMIN_MODULES[key].table).insert(payload).select().single()
       const result = await request
       saveError = result.error
+      savedRow = result.data || row
     }
     if (!saveError) await cleanupReplacedImages(imageChanges)
   } catch (error) {
@@ -270,7 +280,57 @@ async function saveGeneric(event, key, row, context, reload, formContainer) {
   }
   setBusy(button, false, 'Simpan')
   if (saveError) { console.error(saveError); error.textContent = saveError.code === '42501' ? 'Operasi ditolak oleh permission/RLS.' : 'Data belum tersimpan. Periksa field dan coba lagi.'; return }
-  showToast('Data berhasil disimpan.'); formContainer.innerHTML = ''; await reload()
+  if (key === 'projects' && savedRow?.id) {
+    try { await saveProjectMedia(form, savedRow.id, context.user.id) } catch (mediaError) { projectMediaError = mediaError; console.error('Project media save failed:', mediaError) }
+  }
+  if (projectMediaError) showToast('Proyek tersimpan, tetapi gambar galeri belum berhasil disimpan.', 'error')
+  else showToast('Data berhasil disimpan.')
+  formContainer.innerHTML = ''; await reload()
+}
+
+function getTagValue(form, name) {
+  const value = getValue(form, name)
+  return String(value || '').split(/[\n,]+/).map(item => item.trim()).filter(Boolean)
+}
+
+async function saveProjectMedia(form, projectId, userId) {
+  const file = form.elements.project_media_file?.files?.[0]
+  if (!file) return
+  const uploaded = await uploadPublicImage({ file, folder: 'projects/gallery', userId })
+  try {
+    const { data: latest } = await supabase.from('project_media').select('sort_order').eq('project_id', projectId).order('sort_order', { ascending: false }).limit(1).maybeSingle()
+    const { error } = await supabase.from('project_media').insert({ project_id: projectId, media_url: uploaded.publicUrl, media_path: uploaded.path, alt_text: form.elements.title?.value?.trim() || 'Media proyek', sort_order: Number(latest?.sort_order || 0) + 1 })
+    if (error) throw error
+  } catch (error) {
+    await deletePublicImage(uploaded.path)
+    throw error
+  }
+}
+
+async function loadProjectMediaEditor(projectId, container) {
+  const list = container.querySelector('[data-project-media-list]')
+  if (!list) return
+  const { data, error } = await supabase.from('project_media').select('id,media_url,media_path,alt_text,caption,sort_order').eq('project_id', projectId).order('sort_order').order('created_at')
+  if (error) { list.innerHTML = '<span class="admin-form-error">Galeri belum dapat dimuat. Periksa permission project media.</span>'; return }
+  list.innerHTML = data?.length ? data.map(item => '<article class="project-media-item"><span class="project-media-thumb"><img src="' + escapeHtml(item.media_url) + '" alt="' + escapeHtml(item.alt_text || 'Media proyek') + '" width="320" height="180" loading="lazy"><span class="project-media-thumb-fallback" hidden>BW</span></span><div><p>' + escapeHtml(item.caption || item.alt_text || 'Media proyek') + '</p><button type="button" class="admin-danger-button" data-project-media-delete="' + item.id + '" data-project-media-path="' + escapeHtml(item.media_path) + '">Hapus gambar</button></div></article>').join('') : '<p class="admin-empty">Belum ada gambar galeri.</p>'
+  list.querySelectorAll('.project-media-thumb img').forEach(image => image.addEventListener('error', () => { image.hidden = true; image.nextElementSibling.hidden = false }, { once: true }))
+}
+
+function bindProjectMediaEditor(container) {
+  const list = container.querySelector('[data-project-media-list]')
+  if (!list || list.dataset.bound) return
+  list.dataset.bound = 'true'
+  list.addEventListener('click', async event => {
+    const button = event.target.closest('[data-project-media-delete]')
+    if (!button || !window.confirm('Hapus gambar galeri ini?')) return
+    button.disabled = true
+    const { error } = await supabase.from('project_media').delete().eq('id', button.dataset.projectMediaDelete)
+    if (error) { button.disabled = false; showToast('Gambar galeri tidak dapat dihapus.', 'error'); return }
+    await deletePublicImage(button.dataset.projectMediaPath)
+    button.closest('.project-media-item')?.remove()
+    if (!list.children.length) list.innerHTML = '<p class="admin-empty">Belum ada gambar galeri.</p>'
+    showToast('Gambar galeri dihapus.')
+  })
 }
 
 async function prepareImageUploads(form, fields, payload, row, userId) {
@@ -446,10 +506,11 @@ function renderGenericRow(key, row, canManage) {
 async function deleteRecord(table, id, context, reload, key = '') {
   if (!window.confirm('Hapus data ini?')) return
   const existing = key ? (await supabase.from(table).select('*').eq('id', id).maybeSingle()).data : null
+  const projectMedia = key === 'projects' ? (await supabase.from('project_media').select('media_path').eq('project_id', id)).data || [] : []
   const { error } = await supabase.from(table).delete().eq('id', id)
   if (error) { console.error(error); showToast('Data tidak dapat dihapus oleh policy/RLS.', 'error'); return }
   const imagePaths = (contentFields[key] || []).filter(field => field[2] === 'image').map(field => existing?.[field[4]]).filter(Boolean)
-  await Promise.all(imagePaths.map(path => deletePublicImage(path)))
+  await Promise.all([...imagePaths, ...projectMedia.map(item => item.media_path).filter(Boolean)].map(path => deletePublicImage(path)))
   showToast('Data dihapus.'); await reload()
 }
 

@@ -1,5 +1,5 @@
 import { escapeHtml } from '../utils.js'
-import { ALLOWED_IMAGE_TYPES, MAX_IMAGE_SIZE, validateImageFile } from '../services/storage-service.js'
+import { ALLOWED_IMAGE_TYPES, MAX_IMAGE_SIZE, readImageDimensions, validateImageFile } from '../services/storage-service.js'
 
 const ACCEPT = ALLOWED_IMAGE_TYPES.join(',')
 
@@ -7,7 +7,7 @@ export function renderImageUploader({ name, label = 'Gambar', existingUrl = '', 
   const safeName = escapeHtml(name || 'image')
   const hasExisting = Boolean(existingUrl)
   const preview = hasExisting
-    ? '<img src="' + escapeHtml(existingUrl) + '" alt="Preview ' + safeName + '" loading="lazy">'
+    ? '<img src="' + escapeHtml(existingUrl) + '" alt="Preview ' + safeName + '" loading="lazy" data-image-existing><span class="image-uploader__preview-fallback" hidden>Preview tidak tersedia</span>'
     : ''
   return '<div class="admin-field admin-field-wide image-uploader" data-image-uploader="' + safeName + '" data-image-name="' + safeName + '" data-image-has-existing="' + (hasExisting ? 'true' : 'false') + '">' +
     '<span>' + escapeHtml(label) + '</span>' +
@@ -18,6 +18,7 @@ export function renderImageUploader({ name, label = 'Gambar', existingUrl = '', 
     '</label>' +
     '<button class="admin-secondary-button image-uploader__clear" type="button" data-image-clear' + (hasExisting ? '' : ' hidden') + '>' + (hasExisting ? 'Hapus gambar' : 'Hapus pilihan') + '</button>' +
     '<small class="image-uploader__filename" data-image-filename>' + (hasExisting ? 'Pilih file baru untuk mengganti gambar.' : '') + '</small>' +
+    '<small class="image-uploader__meta" data-image-meta>' + (hasExisting ? 'Gambar saat ini' : '') + '</small>' +
   '</div>'
 }
 
@@ -27,6 +28,7 @@ export function bindImageUploader(root, { maxSize = MAX_IMAGE_SIZE, allowedTypes
   const input = container.querySelector('.image-uploader__input')
   const preview = container.querySelector('[data-image-preview]')
   const fileName = container.querySelector('[data-image-filename]')
+  const imageMeta = container.querySelector('[data-image-meta]')
   const clearButton = container.querySelector('[data-image-clear]')
   const actionLabel = container.querySelector('[data-image-action]')
   const stateLabel = container.querySelector('[data-image-state]')
@@ -35,17 +37,27 @@ export function bindImageUploader(root, { maxSize = MAX_IMAGE_SIZE, allowedTypes
   let selectedFile = null
   let objectUrl = ''
 
-  const showPreview = file => {
+  const bindExistingPreview = () => {
+    const existingImage = preview?.querySelector('[data-image-existing]')
+    const fallback = preview?.querySelector('.image-uploader__preview-fallback')
+    existingImage?.addEventListener('error', () => { existingImage.hidden = true; if (fallback) fallback.hidden = false }, { once: true })
+  }
+  bindExistingPreview()
+
+  const showPreview = async file => {
     if (objectUrl) URL.revokeObjectURL(objectUrl)
     objectUrl = URL.createObjectURL(file)
     preview.innerHTML = '<img src="' + objectUrl + '" alt="Preview ' + escapeHtml(file.name) + '">'
     preview.hidden = false
     fileName.textContent = file.name + ' · ' + Math.max(1, Math.round(file.size / 1024)) + ' KB · belum disimpan'
+    imageMeta.textContent = file.type + ' · membaca dimensi...'
     if (actionLabel) actionLabel.textContent = 'Gambar baru dipilih'
     if (stateLabel) stateLabel.textContent = hasExisting ? 'Akan menggantikan gambar tersimpan' : 'Siap disimpan'
     clearButton.textContent = hasExisting ? 'Batalkan penggantian' : 'Hapus pilihan'
     clearButton.hidden = false
     container.dataset.imageCleared = 'false'
+    const dimensions = await readImageDimensions(file).catch(() => null)
+    if (selectedFile === file) imageMeta.textContent = dimensions ? file.type + ' · ' + dimensions.width + ' × ' + dimensions.height + ' px' : file.type
   }
   const clear = () => {
     if (selectedFile && hasExisting) {
@@ -55,7 +67,9 @@ export function bindImageUploader(root, { maxSize = MAX_IMAGE_SIZE, allowedTypes
       input.value = ''
       preview.innerHTML = existingPreview
       preview.hidden = !existingPreview
+      bindExistingPreview()
       fileName.textContent = 'Pilih file baru untuk mengganti gambar.'
+      imageMeta.textContent = hasExisting ? 'Gambar saat ini' : ''
       if (actionLabel) actionLabel.textContent = 'Ganti gambar'
       if (stateLabel) stateLabel.textContent = 'Gambar tersimpan'
       clearButton.textContent = 'Hapus gambar'
@@ -69,6 +83,7 @@ export function bindImageUploader(root, { maxSize = MAX_IMAGE_SIZE, allowedTypes
       preview.innerHTML = ''
       preview.hidden = true
       fileName.textContent = 'Gambar akan dihapus saat formulir disimpan.'
+      imageMeta.textContent = 'Preview dihapus setelah penyimpanan.'
       if (actionLabel) actionLabel.textContent = 'Gambar dihapus'
       if (stateLabel) stateLabel.textContent = 'Penghapusan menunggu disimpan'
       clearButton.textContent = 'Batalkan penghapusan'
@@ -80,7 +95,9 @@ export function bindImageUploader(root, { maxSize = MAX_IMAGE_SIZE, allowedTypes
     if (!selectedFile && hasExisting && container.dataset.imageCleared === 'true') {
       preview.innerHTML = existingPreview
       preview.hidden = !existingPreview
+      bindExistingPreview()
       fileName.textContent = 'Pilih file baru untuk mengganti gambar.'
+      imageMeta.textContent = 'Gambar saat ini'
       if (actionLabel) actionLabel.textContent = 'Ganti gambar'
       if (stateLabel) stateLabel.textContent = 'Gambar tersimpan'
       clearButton.textContent = 'Hapus gambar'
@@ -94,6 +111,7 @@ export function bindImageUploader(root, { maxSize = MAX_IMAGE_SIZE, allowedTypes
     preview.innerHTML = ''
     preview.hidden = true
     fileName.textContent = ''
+    imageMeta.textContent = ''
     if (actionLabel) actionLabel.textContent = 'Pilih gambar'
     if (stateLabel) stateLabel.textContent = 'Belum ada gambar'
     clearButton.textContent = 'Hapus pilihan'
@@ -120,7 +138,9 @@ export function bindImageUploader(root, { maxSize = MAX_IMAGE_SIZE, allowedTypes
         input.value = ''
         preview.innerHTML = existingPreview
         preview.hidden = !existingPreview
+        bindExistingPreview()
         fileName.textContent = 'Gambar tersimpan tetap digunakan.'
+        imageMeta.textContent = 'Gambar saat ini'
         if (actionLabel) actionLabel.textContent = 'Ganti gambar'
         if (stateLabel) stateLabel.textContent = 'Gambar tersimpan'
         clearButton.textContent = 'Hapus gambar'

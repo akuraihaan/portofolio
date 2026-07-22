@@ -3,7 +3,6 @@ import { escapeHtml, formatDate, showToast } from './utils.js'
 import { getPublicContent } from './services/public-content-service.js'
 
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-const palette = ['orange', 'pink', 'lilac', 'blue']
 
 export function initializePublic() {
   initializeTheme()
@@ -30,13 +29,13 @@ async function loadDynamicPageContent() {
   applyDynamicSectionSettings(sections)
   renderDynamicNavigation(content.navigation.data)
   renderDynamicMarquee(settings, hero)
-  renderDynamicAbout(sections.find(section => section.section_key === 'about'))
+  renderDynamicAbout(sections.find(section => section.section_key === 'about'), profile, settings)
   renderDynamicCapabilities(content.skills.data, content.services.data)
   renderDynamicStats(content.statistics.data, content.statistics.counts)
   renderDynamicProcess(sections.find(section => section.section_key === 'process'))
   renderDynamicEducations(content.educations.data)
   renderDynamicExperiences(content.experiences.data)
-  renderDynamicProjects(content.projects.data)
+  renderDynamicProjects(content.projects.data, content.projectMedia.data)
   renderDynamicArticles(content.articles.data)
   renderDynamicCertificates(content.certificates.data)
   renderDynamicTestimonials(content.testimonials.data)
@@ -45,7 +44,7 @@ async function loadDynamicPageContent() {
   bindProjectInteractions()
   updateNavigationVisibilityFromSections(sections, content)
   document.documentElement.classList.add('content-ready')
-  const results = [content.settings, content.profile, content.sections, content.navigation, content.projects, content.articles, content.skills, content.services, content.educations, content.experiences, content.certificates, content.testimonials, content.socialLinks]
+  const results = [content.settings, content.sections, content.navigation, content.projects, content.projectMedia, content.articles, content.skills, content.services, content.educations, content.experiences, content.certificates, content.testimonials, content.socialLinks]
   if (results.some(result => !result.ok)) showToast('Sebagian konten belum dapat dimuat. Silakan coba lagi nanti.', 'error')
 }
 
@@ -70,8 +69,16 @@ function applyDynamicSectionSettings(sections = []) {
     if (primary) { primary.textContent = section.primary_button_label || primary.dataset.fallbackLabel || ''; primary.hidden = !section.primary_button_label; if (section.primary_button_url) primary.href = section.primary_button_url }
     if (secondary) { secondary.textContent = section.secondary_button_label || secondary.dataset.fallbackLabel || ''; secondary.hidden = !section.secondary_button_label; if (section.secondary_button_url) secondary.href = section.secondary_button_url }
     element.dataset.sectionLayout = section.layout_variant || 'default'
-    if (section.image_url) element.style.setProperty('--section-image', `url("${section.image_url}")`)
-    if (section.background_image_url) element.style.setProperty('--section-background-image', `url("${section.background_image_url}")`)
+    const objectPosition = ['center', 'top', 'bottom', 'left', 'right'].includes(section.custom_data?.object_position) ? section.custom_data.object_position : 'center'
+    element.style.setProperty('--section-image-position', objectPosition)
+    if (section.image_url) {
+      element.dataset.sectionImage = 'true'
+      element.style.setProperty('--section-image', `url("${section.image_url}")`)
+    }
+    if (section.background_image_url) {
+      element.dataset.sectionBackground = 'true'
+      element.style.setProperty('--section-background-image', `url("${section.background_image_url}")`)
+    }
   })
   Object.entries(sectionElements).forEach(([key, selector]) => { const element = document.querySelector(selector); if (element && !uniqueElements.has(selector)) element.hidden = !visibleKeys.has(key) })
   const main = document.querySelector('main'); if (!main) return
@@ -95,7 +102,7 @@ function renderDynamicMarquee(settings, hero) {
   track.innerHTML = [...items, ...items].map(item => `<span>${escapeHtml(item)}</span><b aria-hidden="true">✳</b>`).join('')
 }
 
-function renderDynamicAbout(section) {
+function renderDynamicAbout(section, profile = null, settings = {}) {
   if (!section) return
   const data = section.custom_data || {}
   const short = document.querySelector('[data-about-short]'); const long = document.querySelector('[data-about-long]')
@@ -103,6 +110,23 @@ function renderDynamicAbout(section) {
   if (long && (data.bio_long || section.description)) long.textContent = data.bio_long || section.description
   const facts = document.querySelector('[data-about-facts]')
   if (facts) facts.innerHTML = (data.facts || []).map(fact => `<span><small>${escapeHtml(fact.label)}</small><strong>${escapeHtml(fact.value)}</strong></span>`).join('')
+  const image = section.image_url || profile?.avatar_url || ''
+  const imageContainer = document.querySelector('[data-about-image]')
+  if (imageContainer) {
+    const initials = getInitials(profile?.full_name || settings.owner_name || 'BW')
+    imageContainer.innerHTML = image
+      ? '<img src="' + escapeHtml(image) + '" alt="' + escapeHtml(profile?.full_name || settings.owner_name || 'Profil BWORIEY') + '" loading="lazy" decoding="async" width="900" height="600" data-image-fallback data-fallback-label="' + initials + '"><span class="hero__portrait-fallback" hidden>' + initials + '</span>'
+      : '<span class="hero__portrait-fallback">' + initials + '</span>'
+    bindImageFallbacks(imageContainer)
+  }
+  const caption = document.querySelector('[data-about-caption]')
+  if (caption && (data.caption || section.subtitle)) caption.textContent = data.caption || section.subtitle
+  const resume = document.querySelector('[data-resume-link]')
+  const resumeUrl = settings.resume_url || settings.resume || ''
+  if (resume) {
+    resume.hidden = !resumeUrl
+    if (resumeUrl) resume.href = resumeUrl
+  }
 }
 
 function renderDynamicProcess(section) {
@@ -124,16 +148,25 @@ function applySiteIdentity(settings, profile) {
   const email = settings.owner_email || profile?.email || settings.public_email || settings.business_email || ''
   const location = settings.owner_location || [profile?.city || settings.city, profile?.country || settings.country].filter(Boolean).join(', ') || 'Indonesia'
   const heroImage = settings.hero_image_url || settings.hero_image || profile?.avatar_url || ''
+  const siteLogo = settings.site_logo || settings.logo_url || ''
 
   document.title = settings.default_meta_title || `${siteName} — Portfolio digital`
   document.querySelector('meta[name="description"]')?.setAttribute('content', settings.default_meta_description || description)
   if (settings.og_image_url || settings.og_image) document.querySelector('meta[property="og:image"]')?.setAttribute('content', settings.og_image_url || settings.og_image)
   if (settings.favicon_url || settings.site_favicon) document.querySelector('link[rel="icon"]')?.setAttribute('href', settings.favicon_url || settings.site_favicon)
   const heroPortrait = document.querySelector('.hero__portrait')
-  if (heroPortrait && heroImage) heroPortrait.innerHTML = '<img src="' + escapeHtml(heroImage) + '" alt="' + escapeHtml(displayName) + '" loading="eager" decoding="async" data-image-fallback data-fallback-label="' + escapeHtml(displayName.slice(0, 2).toUpperCase()) + '"><span class="hero__portrait-fallback" hidden>' + escapeHtml(displayName.slice(0, 2).toUpperCase()) + '</span><span class="hero__portrait-caption">Ide<br />yang bergerak</span>'
+  if (heroPortrait) {
+    const initials = escapeHtml(getInitials(displayName))
+    heroPortrait.setAttribute('aria-label', 'Foto profil ' + escapeHtml(displayName))
+    heroPortrait.innerHTML = heroImage
+      ? '<img src="' + escapeHtml(heroImage) + '" alt="' + escapeHtml(displayName) + '" loading="eager" decoding="async" width="900" height="1125" data-image-fallback data-fallback-label="' + initials + '"><span class="hero__portrait-fallback" hidden>' + initials + '</span><span class="hero__portrait-caption">Ide<br />yang bergerak</span>'
+      : '<span class="hero__portrait-fallback">' + initials + '</span><span class="hero__portrait-caption">Ide<br />yang bergerak</span>'
+  }
   document.querySelectorAll('[data-site-name]').forEach(element => { element.textContent = siteName })
   document.querySelectorAll('[data-site-owner-name]').forEach(element => { element.textContent = displayName })
   document.querySelectorAll('[data-site-mark]').forEach(element => { element.textContent = siteName.slice(0, 1).toUpperCase() })
+  const logoElement = document.querySelector('[data-site-logo]')
+  if (logoElement && siteLogo) logoElement.innerHTML = '<img src="' + escapeHtml(siteLogo) + '" alt="Logo ' + escapeHtml(siteName) + '" loading="eager" decoding="async" width="54" height="54" data-image-fallback data-fallback-label="' + escapeHtml(siteName.slice(0, 1).toUpperCase()) + '"><span hidden>' + escapeHtml(siteName.slice(0, 1).toUpperCase()) + '</span>'
   document.querySelectorAll('[data-site-location]').forEach(element => { element.textContent = location })
   document.querySelectorAll('[data-site-tagline]').forEach(element => { element.textContent = settings.site_tagline || description })
   document.querySelector('[data-availability]')?.replaceChildren(document.createTextNode(settings.availability_label || 'Terbuka untuk kolaborasi pilihan'))
@@ -185,15 +218,18 @@ function getInitials(value = '') {
 function renderDynamicCapabilities(skills, services) {
   const container = document.querySelector('[data-dynamic-capabilities]')
   if (!container) return
-  const records = skills.map(item => ({ title: item.name, description: item.description, type: item.category || 'Skill', level: item.level })).concat(services.map(item => ({ title: item.title, description: item.description, type: 'Service', image: item.icon_url })))
+  const records = skills.map(item => ({ title: item.name, description: item.description, type: item.category || 'Keahlian', level: item.level })).concat(services.map(item => ({ title: item.title, description: item.description, type: 'Layanan', image: item.icon_url })))
   if (!records.length) {
-    container.innerHTML = '<article class="capability capability--blue"><div class="capability__content"><h3>Konten sedang disiapkan.</h3><p>Tambahkan keahlian atau layanan dari panel admin agar bagian ini tampil.</p></div></article>'
+    container.innerHTML = '<div class="public-empty-state">Konten keahlian dan layanan belum tersedia. Tambahkan dari panel admin agar bagian ini tampil.</div>'
     return
   }
   container.innerHTML = records.map((record, index) => {
-    const color = palette[index % palette.length]
-    return `<article class="capability capability--${color}" data-reveal><div class="capability__visual capability__visual--${color}" aria-hidden="true"><span>${String(index + 1).padStart(2, '0')}</span><i></i><i></i><i></i></div><div class="capability__content"><div class="capability__meta"><span class="category-label">${escapeHtml(record.type)}</span><span>${String(index + 1).padStart(2, '0')}</span></div><h3>${escapeHtml(record.title)}</h3><p>${escapeHtml(record.description || 'Deskripsi akan ditambahkan segera.')}</p></div></article>`
+    const visual = record.image
+      ? '<img src="' + escapeHtml(record.image) + '" alt="Ikon ' + escapeHtml(record.title) + '" loading="lazy" decoding="async" width="96" height="96" data-image-fallback data-fallback-label="' + getInitials(record.title) + '"><span class="capability__visual-fallback" hidden>' + getInitials(record.title) + '</span>'
+      : '<span>' + String(index + 1).padStart(2, '0') + '</span>'
+    return '<article class="capability" data-reveal><div class="capability__visual" aria-hidden="true">' + visual + '</div><div class="capability__content"><div class="capability__meta"><span class="category-label">' + escapeHtml(record.type) + '</span><span>' + String(index + 1).padStart(2, '0') + '</span></div><h3>' + escapeHtml(record.title) + '</h3><p>' + escapeHtml(record.description || 'Deskripsi akan ditambahkan segera.') + '</p></div></article>'
   }).join('')
+  bindImageFallbacks(container)
   initializeRevealAnimations()
 }
 
@@ -217,7 +253,7 @@ function renderDynamicEducations(educations) {
   container.innerHTML = educations.map(education => {
     const initials = getInitials(education.institution)
     const logo = education.logo_url
-      ? '<span class="education-card__brand"><img src="' + escapeHtml(education.logo_url) + '" alt="" loading="lazy" decoding="async" data-image-fallback data-fallback-label="' + initials + '"><span class="education-card__fallback" hidden>' + initials + '</span></span>'
+      ? '<span class="education-card__brand"><img src="' + escapeHtml(education.logo_url) + '" alt="Logo ' + escapeHtml(education.institution) + '" loading="lazy" decoding="async" width="88" height="88" data-image-fallback data-fallback-label="' + initials + '"><span class="education-card__fallback" hidden>' + initials + '</span></span>'
       : '<span class="education-card__brand education-card__brand--fallback" aria-hidden="true">' + initials + '</span>'
     const period = education.is_current ? formatDate(education.start_date) + ' — Sekarang' : formatDate(education.start_date) + ' — ' + formatDate(education.end_date)
     return '<article class="education-card" data-reveal><div class="education-card__period">' + logo + '<span>' + escapeHtml(period) + '</span></div><div><h3>' + escapeHtml(education.degree || 'Pendidikan') + '</h3><p class="education-card__institution">' + escapeHtml(education.institution) + '</p><p>' + escapeHtml([education.field_of_study, education.location, education.description].filter(Boolean).join(' · ')) + '</p></div></article>'
@@ -236,7 +272,7 @@ function renderDynamicExperiences(experiences) {
   container.innerHTML = experiences.map(item => {
     const initials = getInitials(item.company)
     const logo = item.logo_url
-      ? '<img class="experience-card__logo" src="' + escapeHtml(item.logo_url) + '" alt="" loading="lazy" decoding="async" data-image-fallback data-fallback-label="' + initials + '"><span class="experience-card__fallback" hidden>' + initials + '</span>'
+      ? '<img class="experience-card__logo" src="' + escapeHtml(item.logo_url) + '" alt="Logo ' + escapeHtml(item.company) + '" loading="lazy" decoding="async" width="88" height="88" data-image-fallback data-fallback-label="' + initials + '"><span class="experience-card__fallback" hidden>' + initials + '</span>'
       : '<span class="experience-card__logo experience-card__logo--fallback" aria-hidden="true">' + initials + '</span>'
     return '<article class="experience-card" data-reveal><div class="experience-card__period">' + logo + '<span>' + escapeHtml(item.is_current ? formatDate(item.start_date) + ' — Sekarang' : formatDate(item.start_date) + ' — ' + formatDate(item.end_date)) + '</span></div><div><p class="experience-card__company">' + escapeHtml(item.company) + '</p><h3>' + escapeHtml(item.role_title) + '</h3><p>' + escapeHtml([item.location, item.description].filter(Boolean).join(' · ')) + '</p></div></article>'
   }).join('')
@@ -244,7 +280,7 @@ function renderDynamicExperiences(experiences) {
   initializeRevealAnimations()
 }
 
-function renderDynamicProjects(projects) {
+function renderDynamicProjects(projects, projectMedia = []) {
   const grid = document.querySelector('[data-dynamic-projects]')
   const footer = document.querySelector('[data-project-count]')
   if (!grid) return
@@ -253,13 +289,26 @@ function renderDynamicProjects(projects) {
     if (footer) footer.textContent = 'Belum ada proyek dipublikasikan'
     return
   }
+  const mediaByProject = new Map()
+  projectMedia.forEach(item => {
+    if (!mediaByProject.has(item.project_id)) mediaByProject.set(item.project_id, [])
+    mediaByProject.get(item.project_id).push(item)
+  })
   grid.innerHTML = projects.map((project, index) => {
     const category = (project.category || 'digital').toLowerCase().replace(/[^a-z0-9-]/g, '')
-    const visual = palette[index % palette.length]
     const image = project.thumbnail_url || project.cover_url || project.cover_image_url
-    return `<button class="project-card ${index === 0 ? 'project-card--wide' : ''}" type="button" data-project data-category="${escapeHtml(category)}" data-title="${escapeHtml(project.title)}" data-type="${escapeHtml(project.category || 'Project')}" data-description="${escapeHtml(project.summary || project.description || '')}" data-reel="${escapeHtml(project.project_url || '')}" data-reveal><span class="project-card__visual project-card__visual--${visual}" ${image ? `style="background-image:url('${escapeHtml(image)}');background-size:cover;background-position:center"` : ''} aria-label="${escapeHtml(project.title)}"><strong>${escapeHtml(project.title.slice(0, 12))}</strong></span><span class="project-card__info"><span><b>${escapeHtml(project.title)}</b><small>${escapeHtml(project.category || 'Project')}</small></span><span class="project-card__arrow">↗</span></span></button>`
+    const initials = getInitials(project.title)
+    const gallery = mediaByProject.get(project.id) || []
+    const media = JSON.stringify(gallery.map(item => ({ url: item.media_url, alt: item.alt_text || project.title, caption: item.caption || '' })))
+    const technologies = Array.isArray(project.technologies) ? project.technologies.filter(Boolean).slice(0, 3) : []
+    const imageMarkup = image
+      ? '<img src="' + escapeHtml(image) + '" alt="' + escapeHtml(project.title) + '" loading="' + (index < 2 ? 'eager' : 'lazy') + '" decoding="async" width="1200" height="675" data-image-fallback data-fallback-label="' + initials + '"><strong class="project-card__image-fallback" hidden>' + initials + '</strong>'
+      : '<strong class="project-card__image-fallback">' + escapeHtml(project.title.slice(0, 12)) + '</strong>'
+    const tags = technologies.length ? '<span class="project-card__tags">' + technologies.map(technology => '<small>' + escapeHtml(technology) + '</small>').join('') + '</span>' : ''
+    return '<button class="project-card ' + (index === 0 ? 'project-card--wide' : '') + '" type="button" data-project data-category="' + escapeHtml(category) + '" data-title="' + escapeHtml(project.title) + '" data-type="' + escapeHtml(project.category || 'Project') + '" data-description="' + escapeHtml(project.summary || project.description || '') + '" data-reel="' + escapeHtml(project.project_url || '') + '" data-media="' + escapeHtml(media) + '" data-reveal><span class="project-card__visual" aria-label="' + escapeHtml(project.title) + '">' + imageMarkup + '</span><span class="project-card__info"><span><b>' + escapeHtml(project.title) + '</b><small>' + escapeHtml(project.category || 'Proyek') + '</small>' + tags + '</span><span class="project-card__arrow" aria-hidden="true">↗</span></span></button>'
   }).join('')
   if (footer) footer.textContent = `${projects.length} proyek dipublikasikan`
+  bindImageFallbacks(grid)
   initializeRevealAnimations()
 }
 
@@ -274,9 +323,12 @@ function renderDynamicArticles(articles) {
     const image = article.thumbnail_url || article.cover_image_url
     const initials = getInitials(article.title)
     const imageMarkup = image
-      ? '<img class="note-card__image" src="' + escapeHtml(image) + '" alt="' + escapeHtml(article.title) + '" loading="lazy" decoding="async" data-image-fallback data-fallback-label="' + initials + '"><span class="note-card__image-fallback" hidden>' + initials + '</span>'
+      ? '<img class="note-card__image" src="' + escapeHtml(image) + '" alt="' + escapeHtml(article.title) + '" loading="lazy" decoding="async" width="1200" height="675" data-image-fallback data-fallback-label="' + initials + '"><span class="note-card__image-fallback" hidden>' + initials + '</span>'
       : ''
-    return '<a class="note-card" href="#contact" data-reveal>' + imageMarkup + '<span class="note-card__date">' + formatDate(article.published_at || article.created_at) + '</span><h3>' + escapeHtml(article.title) + '</h3><span class="note-card__arrow">↗</span></a>'
+    const meta = [article.category, article.reading_time ? article.reading_time + ' menit' : ''].filter(Boolean)
+    const tags = Array.isArray(article.tags) ? article.tags.filter(Boolean).slice(0, 3) : []
+    const tagMarkup = tags.length ? '<span class="note-card__meta">' + tags.map(tag => '<small>' + escapeHtml(tag) + '</small>').join('') + '</span>' : ''
+    return '<a class="note-card" href="#contact" data-reveal>' + imageMarkup + '<span class="note-card__date">' + formatDate(article.published_at || article.created_at) + '</span><h3>' + escapeHtml(article.title) + '</h3>' + (article.excerpt ? '<p class="note-card__excerpt">' + escapeHtml(article.excerpt) + '</p>' : '') + (meta.length ? '<span class="note-card__meta">' + meta.map(value => '<small>' + escapeHtml(value) + '</small>').join(' · ') + '</span>' : '') + tagMarkup + '<span class="note-card__arrow" aria-hidden="true">↗</span></a>'
   }).join('')
   bindImageFallbacks(grid)
   initializeRevealAnimations()
@@ -293,7 +345,7 @@ function renderDynamicCertificates(certificates) {
     const image = item.certificate_url || item.image_url
     const initials = getInitials(item.title)
     const imageMarkup = image
-      ? '<img src="' + escapeHtml(image) + '" alt="' + escapeHtml(item.title) + '" loading="lazy" decoding="async" data-image-fallback data-fallback-label="' + initials + '"><span class="certificate-card__fallback" hidden>' + initials + '</span>'
+      ? '<img src="' + escapeHtml(image) + '" alt="' + escapeHtml(item.title) + '" loading="lazy" decoding="async" width="800" height="600" data-image-fallback data-fallback-label="' + initials + '"><span class="certificate-card__fallback" hidden>' + initials + '</span>'
       : '<div class="certificate-card__placeholder" aria-hidden="true">✦</div>'
     return '<article class="certificate-card" data-reveal>' + imageMarkup + '<div><p class="certificate-card__date">' + escapeHtml(formatDate(item.issue_date)) + '</p><h3>' + escapeHtml(item.title) + '</h3><p>' + escapeHtml(item.issuer || 'Sertifikat') + '</p>' + (item.credential_url ? '<a class="text-link" href="' + escapeHtml(item.credential_url) + '" target="_blank" rel="noreferrer">Lihat kredensial ↗</a>' : '') + '</div></article>'
   }).join('')
@@ -311,7 +363,7 @@ function renderDynamicTestimonials(testimonials) {
   container.innerHTML = testimonials.map(item => {
     const initials = getInitials(item.author_name)
     const avatar = item.avatar_url
-      ? '<img src="' + escapeHtml(item.avatar_url) + '" alt="" loading="lazy" decoding="async" data-image-fallback data-fallback-label="' + initials + '"><span class="testimonial-card__avatar testimonial-card__avatar--fallback" hidden>' + initials + '</span>'
+      ? '<img src="' + escapeHtml(item.avatar_url) + '" alt="Foto ' + escapeHtml(item.author_name) + '" loading="lazy" decoding="async" width="96" height="96" data-image-fallback data-fallback-label="' + initials + '"><span class="testimonial-card__avatar testimonial-card__avatar--fallback" hidden>' + initials + '</span>'
       : '<span class="testimonial-card__avatar" aria-hidden="true">' + initials + '</span>'
     return '<article class="testimonial-card" data-reveal><span class="testimonial-card__quote">“</span><blockquote>' + escapeHtml(item.quote) + '</blockquote><div class="testimonial-card__author">' + avatar + '<span><strong>' + escapeHtml(item.author_name) + '</strong><small>' + escapeHtml(item.author_role || '') + '</small></span></div></article>'
   }).join('')
@@ -345,8 +397,9 @@ function setPublicLoadingState(message = 'Memuat konten Supabase...') {
 function initializeTheme() {
   const root = document.documentElement
   const toggle = document.querySelector('[data-theme-toggle]')
-  if (localStorage.getItem('portfolio-theme') === 'light') root.dataset.theme = 'light'
-  const update = () => toggle?.setAttribute('aria-label', root.dataset.theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode')
+  const storedTheme = localStorage.getItem('portfolio-theme')
+  if (storedTheme === 'light' || storedTheme === 'dark') root.dataset.theme = storedTheme
+  const update = () => toggle?.setAttribute('aria-label', root.dataset.theme === 'light' ? 'Aktifkan mode gelap' : 'Aktifkan mode terang')
   update()
   toggle?.addEventListener('click', () => { root.dataset.theme = root.dataset.theme === 'light' ? 'dark' : 'light'; localStorage.setItem('portfolio-theme', root.dataset.theme); update() })
 }
@@ -430,7 +483,25 @@ function bindProjectInteractions() {
   buttons.forEach(button => { if (button.dataset.bound) return; button.dataset.bound = 'true'; button.addEventListener('click', () => { buttons.forEach(item => { const active = item === button; item.classList.toggle('is-active', active); item.setAttribute('aria-pressed', String(active)) }); applyProjectFilter() }) })
   search?.addEventListener('input', applyProjectFilter)
   const dialog = document.querySelector('[data-project-dialog]')
-  cards().forEach(card => { if (card.dataset.dialogBound) return; card.dataset.dialogBound = 'true'; card.addEventListener('click', () => { if (!dialog) return; document.querySelector('[data-dialog-title]').textContent = card.dataset.title || ''; document.querySelector('[data-dialog-type]').textContent = card.dataset.type || ''; document.querySelector('[data-dialog-description]').textContent = card.dataset.description || ''; document.querySelector('[data-dialog-reel]').textContent = card.dataset.reel || '—'; dialog.showModal() }) })
+  cards().forEach(card => {
+    if (card.dataset.dialogBound) return
+    card.dataset.dialogBound = 'true'
+    card.addEventListener('click', () => {
+      if (!dialog) return
+      document.querySelector('[data-dialog-title]').textContent = card.dataset.title || ''
+      document.querySelector('[data-dialog-type]').textContent = card.dataset.type || ''
+      document.querySelector('[data-dialog-description]').textContent = card.dataset.description || ''
+      document.querySelector('[data-dialog-reel]').textContent = card.dataset.reel || '—'
+      const gallery = document.querySelector('[data-dialog-gallery]')
+      if (gallery) {
+        let media = []
+        try { media = JSON.parse(card.dataset.media || '[]') } catch { media = [] }
+        gallery.innerHTML = media.map(item => '<figure><img src="' + escapeHtml(item.url) + '" alt="' + escapeHtml(item.alt || card.dataset.title || 'Media proyek') + '" loading="lazy" decoding="async" width="1200" height="675"><figcaption>' + escapeHtml(item.caption || '') + '</figcaption></figure>').join('')
+        gallery.hidden = !media.length
+      }
+      dialog.showModal()
+    })
+  })
   document.querySelector('[data-dialog-close]')?.addEventListener('click', () => dialog?.close())
   dialog?.addEventListener('click', event => { if (event.target === dialog) dialog.close() })
 }

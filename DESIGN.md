@@ -1,51 +1,46 @@
-# Gsap — Style Reference
-> animated chalkboard in a design studio. A near-black wall, warm cream chalk, and five color-coded highlighters — one for each animation discipline.
+# Playdate — Style Reference
+> A yellow Game Boy under museum lights. Playdate's whole identity is that single bright product held against neutral gray, with one violet spark doing all the interactive work.
 
-**Theme:** dark
+**Theme:** mixed
 
-GSAP is a dark-canvas design language built for a motion library: a near-black stage where massive cream type, thin outlined pill buttons, and individually color-coded category labels create a typographic showcase rather than a traditional marketing site. The system runs on a single warm cream surface color (#fffce1) against an almost-black background, with category words each wearing their own vivid hue (green for the brand mark, orange for SVG, pink for Scroll, violet for Text, blue for UI) — color functions as taxonomy, not decoration. Typography is the hero: a single sans-serif (Mori) at six weights, pushing to 224px for the main headline with aggressive negative tracking and near-1.0 line-height, so words feel carved rather than laid out. Buttons are almost exclusively ghost-pills with 100px radius and hairline cream borders; there are no filled CTAs, which lets the gradient hero flourish and keeps every interactive element weightless.
+Playdate reads like a sunlit toy-store catalog: saturated yellow bands alternate with cool gray and white sections, each one a stage for the bright handheld itself. A single violet accent does all the talking — buttons, links, the nav buy-pill — while the rest of the UI stays quiet on warm charcoal text and bone-white cards. Roobert carries the tone: an oversized lowercase wordmark in sunflower yellow is the brand's signature, body copy sits at a confident 22px in a humanist geometric, and line-height is generous enough to feel handmade. Components are intentionally weightless: 2.85px corners on game cards, no decorative borders, and CTAs that float as purple pills with soft drop-shadows. The rhythm is full-bleed sections stacked vertically, each one swapping palette so the page reads like a printed product brochure rather than a typical SaaS landing.
 
 ## Tokens — Colors
 
 | Name | Value | Token | Role |
 |------|-------|-------|------|
-| Just Black | `#0e100f` | `--color-just-black` | Page canvas, footer surface, deep section backgrounds |
-| Surface Cream | `#fffce1` | `--color-surface-cream` | Primary text, outlined button borders, nav links, card text, the default surface-light used for ghost controls and headings |
-| Surface 50 | `#7c7c6f` | `--color-surface-50` | Muted secondary text, icon fills at rest, subhead annotations, disabled-state labels |
-| Surface 25 | `#42433d` | `--color-surface-25` | Hairline borders, dividers, low-contrast outlines against the black canvas |
-| Off Black | `#191919` | `--color-off-black` | Alternative dark surface for nested panels and code blocks |
-| Shockingly Green | `linear-gradient(114.41deg, #0ae448 20.74%, #abff84 65.5%)` | `--color-shockingly-green` | Green text accent for links, tags, and emphasized short phrases. Do not promote it to the primary CTA color |
-| Light Green | `#abff84` | `--color-light-green` | Green text accent for links, tags, and emphasized short phrases. Do not promote it to the primary CTA color |
-| Orangey | `#ff8709` | `--color-orangey` | SVG category label, orange-tool icon fills, gradient endpoint in Orange Crush |
-| Pink | `#fec5fb` | `--color-pink` | Scroll category label, decorative splashes, gradient endpoint in Summer Fair |
-| Lilac | `#9d95ff` | `--color-lilac` | Text category label, thin illustrative strokes, gradient endpoint in Purple Haze |
-| Blue | `#00bae2` | `--color-blue` | UI category label, gradient endpoint in Skyfall and Emerald City |
-| Core Green | `#dfffd1` | `--color-core-green` | Subtle brand-tinted background washes for feature cards tied to the GSAP core |
-| Lipstick Pink | `#f100cb` | `--color-lipstick-pink` | Deep gradient stop for expressive decorative gradients, not used for text or UI |
+| Sunbeam Yellow | `#ffc500` | `--color-sunbeam-yellow` | Section backgrounds, the product itself, display wordmarks — the page's primary brand canvas and the loudest single color in the system |
+| Electric Violet | `linear-gradient(180deg, rgb(148, 0, 255), rgb(92, 0, 255))` | `--color-electric-violet` | Violet supporting accent for decorative details and low-frequency emphasis. Do not promote it to the primary CTA color |
+| Carbon | `#312f27` | `--color-carbon` | Body text, heading text, icon strokes, form labels — a warm near-black chosen over pure #000 to sit comfortably against yellow and white without vibrating |
+| Paper White | `#ffffff` | `--color-paper-white` | Card surfaces, text on violet buttons, text on dark bands — the default light surface |
+| Slate Gray | `#788086` | `--color-slate-gray` | Hero section background — a desaturated mid-gray that lets the yellow product pop without competing with it |
+| Fog | `#efefef` | `--color-fog` | Light alternate surface, input fill on white sections, subtle dividers |
+| Sand | `#e9e4d9` | `--color-sand` | Input backgrounds, callout bubbles, warm light surface — bridges between the cool neutrals and the yellow brand |
+| Ash | `#b1afa7` | `--color-ash` | Muted helper text, secondary borders, subdued metadata — the quietest visible neutral |
 
 ## Tokens — Typography
 
-### Mori — Single-family system. Mori weight 600 at 224px with lh 0.9 and -0.02em tracking is the hero display; the same family at weight 400 body sizes carries every paragraph, label, and nav item. The custom face carries a slightly humanist warmth in the cream rendering that a geometric grotesque (Inter, Manrope) cannot replicate, so substitute with a humanist sans (e.g. Inter Tight or Söhne) and accept a tighter, colder fallback. · `--font-mori`
-- **Substitute:** Inter Tight, Söhne, or DM Sans
-- **Weights:** 400, 600
-- **Sizes:** 14px, 16px, 17px, 18px, 19px, 20px, 21px, 23px, 24px, 32px, 33px, 34px, 40px, 44px, 66px, 76px, 89px, 101px, 224px
-- **Line height:** 0.90–1.40
-- **Letter spacing:** -0.02em at 224px display, -0.011em at 101px and below for headings, -0.01em for body and UI
-- **Role:** Single-family system. Mori weight 600 at 224px with lh 0.9 and -0.02em tracking is the hero display; the same family at weight 400 body sizes carries every paragraph, label, and nav item. The custom face carries a slightly humanist warmth in the cream rendering that a geometric grotesque (Inter, Manrope) cannot replicate, so substitute with a humanist sans (e.g. Inter Tight or Söhne) and accept a tighter, colder fallback.
+### Roobert — Sole typeface across the system — a humanist geometric that handles the 68px 'playdate' wordmark and 22px body copy in the same family. Weight 400 carries UI and running text; weight 700/800 anchors display words, prices, and CTAs. The custom -0.007em tracking is applied globally so even body text sits a touch tighter than system defaults. · `--font-roobert`
+- **Substitute:** Manrope, Inter, or DM Sans at matching weights
+- **Weights:** 400, 700, 800
+- **Sizes:** 19, 21, 22, 24, 29, 33, 34, 40, 51, 57, 68
+- **Line height:** 1.0–2.0 (display 1.0, body 1.3, generous blocks 2.0)
+- **Letter spacing:** -0.0070em
+- **Role:** Sole typeface across the system — a humanist geometric that handles the 68px 'playdate' wordmark and 22px body copy in the same family. Weight 400 carries UI and running text; weight 700/800 anchors display words, prices, and CTAs. The custom -0.007em tracking is applied globally so even body text sits a touch tighter than system defaults.
 
 ### Type Scale
 
 | Role | Size | Line Height | Letter Spacing | Token |
 |------|------|-------------|----------------|-------|
-| caption | 14px | 1.4 | -0.14px | `--text-caption` |
-| body-sm | 16px | 1.15 | — | `--text-body-sm` |
-| body | 19px | 1.15 | — | `--text-body` |
-| body-lg | 23px | 1.38 | -0.23px | `--text-body-lg` |
-| subheading | 34px | 1.2 | -0.34px | `--text-subheading` |
-| heading-sm | 44px | 1.2 | -0.44px | `--text-heading-sm` |
-| heading | 66px | 1.2 | -0.66px | `--text-heading` |
-| heading-lg | 101px | 1 | -1.11px | `--text-heading-lg` |
-| display | 224px | 0.9 | -4.48px | `--text-display` |
+| caption | 19px | 25 | -0.13px | `--text-caption` |
+| body-sm | 21px | 27 | -0.15px | `--text-body-sm` |
+| subheading | 24px | 29 | -0.17px | `--text-subheading` |
+| heading-sm | 29px | 35 | -0.2px | `--text-heading-sm` |
+| heading | 34px | 41 | -0.24px | `--text-heading` |
+| heading-lg | 40px | 44 | -0.28px | `--text-heading-lg` |
+| display | 51px | 56 | -0.36px | `--text-display` |
+| display-lg | 57px | 63 | -0.4px | `--text-display-lg` |
+| hero | 68px | 68 | -0.48px | `--text-hero` |
 
 ## Tokens — Spacing & Shapes
 
@@ -57,163 +52,162 @@ GSAP is a dark-canvas design language built for a motion library: a near-black s
 
 | Name | Value | Token |
 |------|-------|-------|
-| 8 | 8px | `--spacing-8` |
 | 12 | 12px | `--spacing-12` |
-| 16 | 16px | `--spacing-16` |
 | 20 | 20px | `--spacing-20` |
 | 24 | 24px | `--spacing-24` |
-| 32 | 32px | `--spacing-32` |
-| 76 | 76px | `--spacing-76` |
-| 96 | 96px | `--spacing-96` |
-| 108 | 108px | `--spacing-108` |
+| 28 | 28px | `--spacing-28` |
+| 40 | 40px | `--spacing-40` |
+| 60 | 60px | `--spacing-60` |
+| 100 | 100px | `--spacing-100` |
+| 120 | 120px | `--spacing-120` |
+| 232 | 232px | `--spacing-232` |
 
 ### Border Radius
 
 | Element | Value |
 |---------|-------|
-| cards | 8px |
-| pills | 9999px |
-| buttons | 100px |
-| smallTags | 8px |
+| tags | 28.5px |
+| cards | 2.85px |
+| inputs | 6px |
+| buttons | 28.5px |
+| navButtons | 22px |
+| heroButtons | 34.2px |
 
 ### Layout
 
-- **Page max-width:** 1280px
-- **Section gap:** 80px
+- **Page max-width:** 1200px
+- **Section gap:** 60px
 - **Card padding:** 24px
-- **Element gap:** 16px
+- **Element gap:** 11-19px
 
 ## Components
 
-### Outlined Cream Pill Button
-**Role:** Default interactive control — navigation entry points, secondary actions, explore links
+### Primary CTA Pill (Order Now)
+**Role:** Main purchase action on hero and landing sections
 
-Transparent background, #fffce1 text and 1px cream border, 100px border-radius, 15px vertical and 24px horizontal padding, Mori 18px weight 600 lh 1.05. Used for 'Tools', 'Explore Scroll', 'Explore SVG', 'Explore Text', 'Explore UI', 'Explore All Showcases'. The 100px radius plus thin border gives a high-tech, minimal-control feel; never fill these with color.
+Violet #7700ff background, white text, 28-34px border-radius (fully pill-shaped), 14px 28px padding, 21-22px Roobert weight 700, subtle 0 2px 8px rgba(0,0,0,0.15) drop shadow. The shadow lifts the pill off whatever section color it sits on — yellow, white, or gray — without darkening the page.
 
-### Ghost Nav Link
-**Role:** Top navigation items, footer text links
+### Nav Buy Pill (Buy Now)
+**Role:** Persistent purchase action in the top navigation
 
-No background, no border, #fffce1 or #7c7c6f text at 16px Mori 400 lh 1.15. Underline on hover via color shift to #fffce1. Nav row gap 6px, vertical padding 10px. Group spacing tight (6–16px) to keep the nav bar compact and editorial.
+Compact version of the primary CTA: violet #7700ff fill, white text, 22px radius, 8px 16px padding, 19-21px Roobert weight 700. Sits in the rightmost nav slot on a light background.
 
-### Gradient-Stroked CTA Pill
-**Role:** Primary download action — the 'Get GSAP' call-to-action
+### Game Card
+**Role:** Individual game tile in the seasonal showcase grid
 
-Ghost button (transparent fill) with a 1.5–2px gradient border from #0ae448 to #abff84 along 114.41deg, cream text, 100px radius, 15px/24px padding. Implemented via the --color-core-button-gradient token on the border or as a border-image. This is the only chromatic control in the system; it carries the brand green and reads as 'actionable' without violating the outlined-only rule.
+White #ffffff surface, 2.85px border-radius (almost square — the 1-bit game art fills edge-to-edge), no border, no shadow. Aspect ratio follows the source art; 3 columns on desktop, stacking to 1 column on mobile.
 
-### Borderless Icon Button
-**Role:** Close, menu, utility toggle in the nav row
+### Yellow Section Band
+**Role:** Full-bleed content section with the brand yellow as canvas
 
-Fully round (50% radius), no background, cream icon, 0px padding. Used sparingly for icon-only controls like the mobile menu trigger.
+#ffc500 fills the full viewport width with no internal border. Body text inside reverts to Carbon #312f27. Used for the 'We made Playdate just for fun' wordmark band and the game showcase section.
 
-### Category Color Label
-**Role:** Naming convention for each animation discipline — Scroll, SVG, Text, UI
+### Hero Display Wordmark
+**Role:** Headline-scale brand statement on the landing hero
 
-Mori 19–24px weight 400, single-word, rendered in a discipline-specific hue: Scroll #fec5fb, SVG #ff8709, Text #9d95ff, UI #00bae2, GSAP #0ae448, Other #abff84. Functions as the visual anchor for each section and appears as both a heading label and a nav item in the same hue. The color-to-discipline mapping is the site's signature taxonomy.
+Renders 'playdate' in lowercase Roobert at 68px, weight 800, line-height 1.0, color Sunbeam Yellow #ffc500 on the gray hero. Fills nearly the full content width; the lowercase + extra-bold combo is the brand's most recognizable typographic moment.
 
-### Announcement Banner
-**Role:** Top-of-page site-wide notice (e.g. 'GSAP is now free')
+### Hero Subhead
+**Role:** White-text tagline under the hero product image
 
-Full-bleed band, cream text on near-black, centered single line at 14px Mori 400. Optional inline link rendered in Shockingly Green #0ae448. Sits at 0–40px from the top of the viewport and never carries a background tint.
+34-40px Roobert weight 700, color #ffffff, sits on the Slate Gray #788086 hero band. One line, sentence-case, no punctuation — the band itself carries the weight.
 
-### Hero Display Headline
-**Role:** The 224px 'Animate Anything' statement on the landing hero
+### Inline Body Copy
+**Role:** Standard running paragraph text on yellow and white sections
 
-Mori weight 600, 224px, line-height 0.9, letter-spacing -0.02em (-4.48px), color #fffce1. The headline wraps across two lines and is allowed to bleed into the viewport edge; no max-width container. Decorative organic splashes (pinks, oranges, greens) overlap the type rather than sitting beside it.
+22px Roobert weight 400, line-height ~1.3, color Carbon #312f27. Paragraphs are short (2-3 sentences), centered or left-aligned to a ~640px measure.
 
-### Curly-Bracket Annotation
-**Role:** Section eyebrows: '{ Why GSAP® }', '{ GSAP® Tools }', footer taglines
+### Inline Link
+**Role:** In-prose hyperlinks and emphasized phrases
 
-Small 16–19px Mori 400 cream text wrapped in literal curly braces `{ }`. Functions as a typographic signature — every section is introduced by this bracket pair. No background, no border; the brackets are the visual system.
+Electric Violet #7700ff at body weight 400, no underline at rest, underline appears on hover. Used sparingly — most emphasis is achieved through weight changes instead.
 
-### Tool Feature Block
-**Role:** Discipline sections (Scroll, SVG, Text, UI) — one per animation tool
+### Speech-Bubble Callout
+**Role:** Conversational annotation boxes (e.g. 'Wait! No spoilers, please!')
 
-Two-column row inside the Tools section: left side holds a large soft-rendered 3D-style shape in the tool's accent color (with internal gradient and ambient lighting); right side holds the category label in its hue, a 34–44px cream subhead, body copy at 23px, and an outlined cream pill 'Explore' button. Divided from the next block by a 1px #42433d hairline that spans the section width.
+Light Sand #e9e4d9 fill, Carbon #312f27 text, 6-10px border-radius, small triangular tail. 19-21px Roobert weight 400, bold spans inside for emphasis. Acts as a playful UI voice — the only place where the warm neutral appears as a fill.
 
-### 3D Organic Illustration
-**Role:** Decorative hero and tool-section visual
+### Input Field
+**Role:** Form input on light and yellow sections
 
-Soft 3D shapes (pill, dome, liquid blob) rendered with multi-stop gradients — typically a tool's accent color graduating into a lighter tint (e.g. blue-to-pink for Scroll, orange-to-amber for SVG). No drop shadows on the canvas; the shapes are lit from within via gradient. Containment is loose; they overlap adjacent type rather than respecting a frame.
+Fog #efefef or Sand #e9e4d9 background, 6px border-radius, 1px subtle border, Carbon text. Padding ~12px 16px, 21px Roobert. No visible focus ring color — focus state uses a 2px violet outline.
+
+### Top Navigation Bar
+**Role:** Persistent site navigation
+
+Sits at top of every page. Left: white 'playdate' wordmark in Roobert weight 700. Center/right: icon-prefixed text links in Carbon, evenly spaced. Far right: the violet Buy Now pill. No background fill — the nav is transparent over whatever section color is behind it.
 
 ### Footer
-**Role:** Closing navigation and legal block
+**Role:** Bottom-of-page utility links and brand mark
 
-Off-black #191919 background, 1px #42433d top divider, multi-column nav with cream links at 16px Mori 400, generous 60–80px vertical padding. Includes the GSAP wordmark, link columns, and social/secondary nav. The footer shifts one surface step lighter than the page, creating a subtle terminator.
-
-### Showcase Card
-**Role:** Grid item in the Showcase section
-
-Near-black surface with 8px corner radius, cream heading at 24–33px, no visible border, and a contained 16:9 or 1:1 preview area. Sits in a 2–3 column grid with 24px gaps. Padding 24px on all sides; preview art overflows the card slightly to suggest motion.
+Full-width band, typically Carbon or violet background depending on the previous section. White or violet text, small 19px Roobert, grouped links separated by thin dividers.
 
 ## Do's and Don'ts
 
 ### Do
-- Set body text and all primary UI in Mori weight 400 at 16–19px with line-height 1.15; this is the system's resting rhythm.
-- Use the five-discipline color mapping (Green = GSAP, Orange = SVG, Pink = Scroll, Violet = Text, Blue = UI) for every category label — never reuse a color for a different discipline.
-- Render every button as a 100px-radius ghost pill with a 1px cream border and #fffce1 text at Mori 600 18px; the only exception is the primary CTA, which uses a 1.5px green-to-light-green gradient stroke.
-- Push the hero headline to 224px weight 600 with line-height 0.9 and -0.02em tracking; let it bleed to the viewport edge rather than centering it inside a max-width container.
-- Introduce every section with a curly-bracket annotation in `{ }` at 16–19px Mori 400 — this bracket pair is the site's recurring signature.
-- Place a 1px #42433d hairline divider between tool feature blocks, full section width, with no padding around it.
+- Use Electric Violet #7700ff exclusively for interactive elements — buttons, links, and the nav pill. Never apply it to body text or decorative shapes.
+- Apply 28-34px pill radii to all primary CTAs; use 2.85px for game cards and content tiles. These two radius values define the system's contrast between bold action and quiet content.
+- Render the brand wordmark 'playdate' in lowercase Roobert at display sizes (51-68px), weight 800, in Sunbeam Yellow on neutral backgrounds.
+- Set body copy at 22px Roobert weight 400 in Carbon #312f27 with line-height ~1.3. Apply the global -0.007em tracking to all Roobert usage.
+- Alternate section backgrounds vertically: Slate Gray hero → yellow band → white band → yellow band. Each section is full-bleed with no borders between them.
+- Use Sunbeam Yellow #ffc500 as a full-bleed section background, never as a small accent fill on a card or button.
+- Keep game cards flat and borderless — the 1-bit game art is the content; adding shadows or borders would compete with it.
 
 ### Don't
-- Don't add filled, solid-color CTA buttons — the system is outlined-only; the gradient-stroked pill is the maximum chromatic escalation allowed.
-- Don't use pure white (#ffffff) for text or #000000 for the background — the warmth of #fffce1 cream and #0e100f off-black is what gives the system its character.
-- Don't set body type below 14px or above 23px; the type scale is binary between editorial display (66–224px) and compact UI (14–23px).
-- Don't introduce new category colors beyond the five-discipline palette; adding a sixth color dilutes the taxonomy that makes the system legible.
-- Don't apply drop shadows to cards or illustrations — depth is communicated only through gradient washes and surface-step shifts, never via box-shadow.
-- Don't break the cream-on-black pairing with reversed (cream background, black text) cards unless the design calls for a deliberate callout; the dark canvas should remain unbroken across the scroll.
-- Don't use Inter, Roboto, or system sans defaults; the Mori humanist warmth is load-bearing, and a geometric substitute collapses the editorial tone.
+- Don't use Electric Violet for body text, headings, or background fills larger than a button — its role is interactive punctuation, not chrome.
+- Don't apply heavy drop shadows to cards, images, or text. The single 0 2px 8px rgba(0,0,0,0.15) belongs only on CTA pills.
+- Don't mix in additional accent hues. The system is intentionally bichromatic (yellow + violet) on a warm-neutral base.
+- Don't use pure #000000 for text — Carbon #312f27 is warmer and sits correctly on both yellow and white without edge vibration.
+- Don't render the brand wordmark in uppercase, serif, or non-Roobert faces. The lowercase geometric is the signature.
+- Don't add borders or backgrounds to game cards. The 2.85px radius alone is the only frame the art needs.
+- Don't apply letter-spacing wider than the global -0.007em — the type is designed tight, and opening it up breaks the geometric rhythm.
 
 ## Surfaces
 
 | Level | Name | Value | Purpose |
 |-------|------|-------|---------|
-| 0 | Canvas | `#0e100f` | Page background, all sections sit on this single dark stage |
-| 1 | Nested Panel | `#191919` | Footer and code-block backgrounds, one step lifted from the canvas |
-| 2 | Cream Surface | `#fffce1` | Light surface used sparingly for callout cards or promotional panels |
+| 1 | Slate Gray Hero Canvas | `#788086` | Full-bleed hero section background, lets the yellow product and white text read with maximum contrast |
+| 2 | Sunbeam Yellow Band | `#ffc500` | Primary brand section background, alternates with white bands to create a catalog-style rhythm |
+| 3 | Paper White Card | `#ffffff` | Card surfaces on yellow and gray backgrounds — the lightest surface, used for game tiles and content blocks |
+| 4 | Sand Callout | `#e9e4d9` | Warm neutral fill for speech-bubble annotations and softer content surfaces |
+| 5 | Fog Alternate | `#efefef` | Coolest neutral, used for input fills and the most recessed surface treatment |
 
 ## Elevation
 
-- **Tool Feature Illustration:** `none — depth comes from internal multi-stop gradients, not box-shadow`
-- **Showcase Card:** `none — separation is achieved with 8px radius and 24px gap, not elevation`
-- **CTA Pill:** `none — the gradient border is the only 'lift' indicator`
+- **Primary CTA Pill:** `0 2px 8px rgba(0, 0, 0, 0.15)`
+- **Nav Buy Pill:** `0 1px 4px rgba(0, 0, 0, 0.2)`
 
 ## Imagery
 
-Imagery is dominated by soft 3D-rendered organic shapes — pills, domes, liquid blobs, abstract splashes — rendered with multi-stop gradients in the discipline accent colors (e.g. pink-to-blue for Scroll, orange-to-amber for SVG). No photography of people or places appears. The shapes are loosely contained and intentionally overlap adjacent type to suggest motion, which aligns with the product's purpose. Icons in the nav are monochrome cream and stroked at roughly 1.5px. Backgrounds are always the flat dark canvas; visual richness comes from foreground shapes and gradient typography, not from photographic content.
+Product photography dominates: the yellow handheld is shot on a neutral gray background, framed large and centered, with no lifestyle context — the object itself is the hero. Game showcase cards use high-contrast 1-bit black-and-white pixel art at native resolution, giving a deliberately retro/Game Boy feel. The device appears as both a photograph and a 3D render (you can see the smooth shading and crisp edges on the hero shot), with the crank handle and button details rendered in vector-clean precision. No lifestyle photography, no human subjects, no environmental scenes — the visual language is 'product on a stage' across the board. Icon style is minimal mono-stroke line icons in nav (search, games, dev, education, help, sign-in) at 1.5-2px stroke weight.
 
 ## Layout
 
-The page is full-bleed against a single dark canvas, with content generally respecting a ~1280px max-width and generous 80–120px section gaps. The hero is intentionally edge-bleeding: a 224px headline wraps across two lines, decorative 3D shapes overlap the type, and a curly-bracket annotation plus a single outlined CTA sit in the lower third. Subsequent sections follow a repeating pattern: a curly-bracket eyebrow, then either a centered two-to-three-line headline or a two-column row (large organic illustration left, category label + subhead + body + pill button right). Sections are separated by 1px #42433d hairlines that span the full content width. The Tools section stacks four such two-column blocks vertically. The Showcase section introduces a 2–3 column card grid with 24px gaps. Navigation is a single top bar with tight 6–16px link spacing, cream 16px Mori 400 text, and the wordmark on the far left. The footer shifts to a slightly lighter #191916 surface with multi-column link lists and 60–80px vertical padding.
+Full-bleed vertical sections, each one swapping background color (Slate Gray → Sunbeam Yellow → Paper White → Sunbeam Yellow). The hero is a centered stack: product image at the visual center, white subhead beneath, then the page scrolls into the giant yellow 'playdate' wordmark with a violet order pill directly below it. Content max-width sits around 1200px, centered. The game showcase uses a strict 3-column card grid (3×3 visible) with no gutters between cards — they tile edge-to-edge as a single image wall. Body paragraphs are centered or left-aligned to a ~640px measure within the wider container. Navigation is a thin transparent top bar, not a heavy header. No sticky elements, no sidebars, no mega-menus — the layout is brochure-flat from top to bottom.
 
 ## Agent Prompt Guide
 
-## Quick Color Reference
-- Background: #0e100f
-- Text: #fffce1 (primary), #7c7c6f (muted)
-- Border: #42433d (hairline dividers), #fffce1 (outlined buttons)
-- Accent (GSAP brand): #0ae448
-- Accent (discipline labels): #fec5fb Scroll, #ff8709 SVG, #9d95ff Text, #00bae2 UI
+**Quick Color Reference**
+- text: #312f27 (Carbon)
+- background: #ffc500 (yellow bands) / #ffffff (cards) / #788086 (hero gray)
+- border: #b1afa7 (Ash, muted dividers only)
+- accent: #7700ff (Electric Violet)
 - primary action: no distinct CTA color
+- font: Roobert (substitute: Manrope or Inter), weights 400/700/800, global -0.007em tracking
 
-## Example Component Prompts
-1. **Hero Headline**: Create a full-bleed section on #0e100f with a two-line headline at 224px Mori weight 600, line-height 0.9, letter-spacing -4.48px, color #fffce1. A soft pink-to-blue gradient 3D blob overlaps the right edge of the second line. No max-width container; let the type breathe to the viewport edge.
-
-2. **Outlined Explore Button**: A pill button with 100px border-radius, 1px solid #fffce1 border, transparent fill, text 'Explore Scroll' at 18px Mori 600 lh 1.05 in #fffce1, padding 15px vertical / 24px horizontal. No hover fill — only a 1px shift to opacity 0.8 on the border.
-
+**Example Component Prompts**
 No distinct primary action color was observed; use the extracted neutral button treatments instead of inventing a filled CTA color.
-
-4. **Tool Feature Block**: Two-column row at 1280px max-width, 80px vertical gap. Left column holds a 480px soft 3D dome with a linear gradient from #fec5fb to #00bae2. Right column starts with '{ GSAP® Tools }' in 16px Mori 400 #fffce1, then 'Scroll' at 19px Mori 400 #fec5fb, then a 44px Mori 600 #fffce1 subhead, then a 23px Mori 400 #fffce1 body paragraph, then the outlined explore button.
-
-5. **Category Label Pill**: A single word 'SVG' at 34px Mori 600 lh 1.0 in #ff8709, no background, no border. Functions as the section anchor — appears identically sized in both the section header and the corresponding nav item.
+2. **Game showcase card** — White #ffffff surface, 2.85px border-radius, no border, no shadow. The 1-bit black-and-white game art fills edge-to-edge. Tile 3 across with no gutter.
+3. **Hero display wordmark** — 'playdate' in lowercase Roobert at 68px, weight 800, line-height 1.0, color #ffc500. Sits on a #788086 gray background.
+4. **Speech-bubble callout** — #e9e4d9 fill, #312f27 text, 6-10px border-radius, small triangular tail pointing to the subject. 19-21px Roobert weight 400 with bold spans for emphasized words.
+5. **Section background band** — Full-bleed #ffc500 yellow with no internal borders. 60px vertical padding. Body text inside is #312f27 at 22px, centered or left-aligned to ~640px.
 
 ## Similar Brands
 
-- **Framer** — Same single-dark-canvas treatment with massive display headlines and outlined ghost controls; both lean on typographic scale rather than color to create hierarchy.
-- **Linear** — Dark UI with a single chromatic accent reserved for the primary action, and category-level color coding for navigation items.
-- **Vercel** — Near-black canvas, cream/off-white type, hairline section dividers, and an outlined-only button system that never uses solid fills.
-- **Webflow** — Shares the editorial-display headline scale (100–200px) and the warm cream-on-dark palette, plus the sponsor-bys relationship GSAP has with Webflow.
-- **Spline** — Both feature soft 3D organic shapes as primary imagery, rendered with internal multi-stop gradients that simulate ambient lighting rather than drop shadows.
+- **Teenage Engineering** — Same playful colored product-as-hero approach, with bold lowercase wordmarks, generous whitespace, and bichromatic product photography on neutral backgrounds
+- **Analogue** — Retro gaming hardware presentation — the device floats on a neutral stage, with sparse UI and 1-bit-era visual references in supporting artwork
+- **Nothing (nothing.tech)** — Bichromatic brand identity built on a single vivid accent color against monochrome surfaces, with confident display type and minimal chrome
+- **Bored Ape / Yuga Labs** — Yellow-and-purple playful tech branding, oversized lowercase display type, and an overall toy-aisle energy applied to a digital product
 
 ## Quick Start
 
@@ -222,89 +216,96 @@ No distinct primary action color was observed; use the extracted neutral button 
 ```css
 :root {
   /* Colors */
-  --color-just-black: #0e100f;
-  --color-surface-cream: #fffce1;
-  --color-surface-50: #7c7c6f;
-  --color-surface-25: #42433d;
-  --color-off-black: #191919;
-  --color-shockingly-green: #0ae448;
-  --gradient-shockingly-green: linear-gradient(114.41deg, #0ae448 20.74%, #abff84 65.5%);
-  --color-light-green: #abff84;
-  --color-orangey: #ff8709;
-  --color-pink: #fec5fb;
-  --color-lilac: #9d95ff;
-  --color-blue: #00bae2;
-  --color-core-green: #dfffd1;
-  --color-lipstick-pink: #f100cb;
+  --color-sunbeam-yellow: #ffc500;
+  --color-electric-violet: #7700ff;
+  --gradient-electric-violet: linear-gradient(180deg, rgb(148, 0, 255), rgb(92, 0, 255));
+  --color-carbon: #312f27;
+  --color-paper-white: #ffffff;
+  --color-slate-gray: #788086;
+  --color-fog: #efefef;
+  --color-sand: #e9e4d9;
+  --color-ash: #b1afa7;
 
   /* Typography — Font Families */
-  --font-mori: 'Mori', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-roobert: 'Roobert', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 
   /* Typography — Scale */
-  --text-caption: 14px;
-  --leading-caption: 1.4;
-  --tracking-caption: -0.14px;
-  --text-body-sm: 16px;
-  --leading-body-sm: 1.15;
-  --text-body: 19px;
-  --leading-body: 1.15;
-  --text-body-lg: 23px;
-  --leading-body-lg: 1.38;
-  --tracking-body-lg: -0.23px;
-  --text-subheading: 34px;
-  --leading-subheading: 1.2;
-  --tracking-subheading: -0.34px;
-  --text-heading-sm: 44px;
-  --leading-heading-sm: 1.2;
-  --tracking-heading-sm: -0.44px;
-  --text-heading: 66px;
-  --leading-heading: 1.2;
-  --tracking-heading: -0.66px;
-  --text-heading-lg: 101px;
-  --leading-heading-lg: 1;
-  --tracking-heading-lg: -1.11px;
-  --text-display: 224px;
-  --leading-display: 0.9;
-  --tracking-display: -4.48px;
+  --text-caption: 19px;
+  --leading-caption: 25;
+  --tracking-caption: -0.13px;
+  --text-body-sm: 21px;
+  --leading-body-sm: 27;
+  --tracking-body-sm: -0.15px;
+  --text-subheading: 24px;
+  --leading-subheading: 29;
+  --tracking-subheading: -0.17px;
+  --text-heading-sm: 29px;
+  --leading-heading-sm: 35;
+  --tracking-heading-sm: -0.2px;
+  --text-heading: 34px;
+  --leading-heading: 41;
+  --tracking-heading: -0.24px;
+  --text-heading-lg: 40px;
+  --leading-heading-lg: 44;
+  --tracking-heading-lg: -0.28px;
+  --text-display: 51px;
+  --leading-display: 56;
+  --tracking-display: -0.36px;
+  --text-display-lg: 57px;
+  --leading-display-lg: 63;
+  --tracking-display-lg: -0.4px;
+  --text-hero: 68px;
+  --leading-hero: 68;
+  --tracking-hero: -0.48px;
 
   /* Typography — Weights */
   --font-weight-regular: 400;
-  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
 
   /* Spacing */
   --spacing-unit: 4px;
-  --spacing-8: 8px;
   --spacing-12: 12px;
-  --spacing-16: 16px;
   --spacing-20: 20px;
   --spacing-24: 24px;
-  --spacing-32: 32px;
-  --spacing-76: 76px;
-  --spacing-96: 96px;
-  --spacing-108: 108px;
+  --spacing-28: 28px;
+  --spacing-40: 40px;
+  --spacing-60: 60px;
+  --spacing-100: 100px;
+  --spacing-120: 120px;
+  --spacing-232: 232px;
 
   /* Layout */
-  --page-max-width: 1280px;
-  --section-gap: 80px;
+  --page-max-width: 1200px;
+  --section-gap: 60px;
   --card-padding: 24px;
-  --element-gap: 16px;
+  --element-gap: 11-19px;
 
   /* Border Radius */
-  --radius-sm: 1px;
-  --radius-lg: 8px;
-  --radius-full: 100px;
-  --radius-full-2: 9999px;
+  --radius-sm: 2.85px;
+  --radius-md: 6px;
+  --radius-lg: 10px;
+  --radius-2xl: 21.945px;
+  --radius-3xl: 28.5px;
+  --radius-3xl-2: 34.2px;
+  --radius-3xl-3: 37.3065px;
+  --radius-3xl-4: 39.9px;
+  --radius-full: 152.19px;
 
   /* Named Radii */
-  --radius-cards: 8px;
-  --radius-pills: 9999px;
-  --radius-buttons: 100px;
-  --radius-smalltags: 8px;
+  --radius-tags: 28.5px;
+  --radius-cards: 2.85px;
+  --radius-inputs: 6px;
+  --radius-buttons: 28.5px;
+  --radius-navbuttons: 22px;
+  --radius-herobuttons: 34.2px;
 
   /* Surfaces */
-  --surface-canvas: #0e100f;
-  --surface-nested-panel: #191919;
-  --surface-cream-surface: #fffce1;
+  --surface-slate-gray-hero-canvas: #788086;
+  --surface-sunbeam-yellow-band: #ffc500;
+  --surface-paper-white-card: #ffffff;
+  --surface-sand-callout: #e9e4d9;
+  --surface-fog-alternate: #efefef;
 }
 ```
 
@@ -313,65 +314,67 @@ No distinct primary action color was observed; use the extracted neutral button 
 ```css
 @theme {
   /* Colors */
-  --color-just-black: #0e100f;
-  --color-surface-cream: #fffce1;
-  --color-surface-50: #7c7c6f;
-  --color-surface-25: #42433d;
-  --color-off-black: #191919;
-  --color-shockingly-green: #0ae448;
-  --color-light-green: #abff84;
-  --color-orangey: #ff8709;
-  --color-pink: #fec5fb;
-  --color-lilac: #9d95ff;
-  --color-blue: #00bae2;
-  --color-core-green: #dfffd1;
-  --color-lipstick-pink: #f100cb;
+  --color-sunbeam-yellow: #ffc500;
+  --color-electric-violet: #7700ff;
+  --color-carbon: #312f27;
+  --color-paper-white: #ffffff;
+  --color-slate-gray: #788086;
+  --color-fog: #efefef;
+  --color-sand: #e9e4d9;
+  --color-ash: #b1afa7;
 
   /* Typography */
-  --font-mori: 'Mori', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-roobert: 'Roobert', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 
   /* Typography — Scale */
-  --text-caption: 14px;
-  --leading-caption: 1.4;
-  --tracking-caption: -0.14px;
-  --text-body-sm: 16px;
-  --leading-body-sm: 1.15;
-  --text-body: 19px;
-  --leading-body: 1.15;
-  --text-body-lg: 23px;
-  --leading-body-lg: 1.38;
-  --tracking-body-lg: -0.23px;
-  --text-subheading: 34px;
-  --leading-subheading: 1.2;
-  --tracking-subheading: -0.34px;
-  --text-heading-sm: 44px;
-  --leading-heading-sm: 1.2;
-  --tracking-heading-sm: -0.44px;
-  --text-heading: 66px;
-  --leading-heading: 1.2;
-  --tracking-heading: -0.66px;
-  --text-heading-lg: 101px;
-  --leading-heading-lg: 1;
-  --tracking-heading-lg: -1.11px;
-  --text-display: 224px;
-  --leading-display: 0.9;
-  --tracking-display: -4.48px;
+  --text-caption: 19px;
+  --leading-caption: 25;
+  --tracking-caption: -0.13px;
+  --text-body-sm: 21px;
+  --leading-body-sm: 27;
+  --tracking-body-sm: -0.15px;
+  --text-subheading: 24px;
+  --leading-subheading: 29;
+  --tracking-subheading: -0.17px;
+  --text-heading-sm: 29px;
+  --leading-heading-sm: 35;
+  --tracking-heading-sm: -0.2px;
+  --text-heading: 34px;
+  --leading-heading: 41;
+  --tracking-heading: -0.24px;
+  --text-heading-lg: 40px;
+  --leading-heading-lg: 44;
+  --tracking-heading-lg: -0.28px;
+  --text-display: 51px;
+  --leading-display: 56;
+  --tracking-display: -0.36px;
+  --text-display-lg: 57px;
+  --leading-display-lg: 63;
+  --tracking-display-lg: -0.4px;
+  --text-hero: 68px;
+  --leading-hero: 68;
+  --tracking-hero: -0.48px;
 
   /* Spacing */
-  --spacing-8: 8px;
   --spacing-12: 12px;
-  --spacing-16: 16px;
   --spacing-20: 20px;
   --spacing-24: 24px;
-  --spacing-32: 32px;
-  --spacing-76: 76px;
-  --spacing-96: 96px;
-  --spacing-108: 108px;
+  --spacing-28: 28px;
+  --spacing-40: 40px;
+  --spacing-60: 60px;
+  --spacing-100: 100px;
+  --spacing-120: 120px;
+  --spacing-232: 232px;
 
   /* Border Radius */
-  --radius-sm: 1px;
-  --radius-lg: 8px;
-  --radius-full: 100px;
-  --radius-full-2: 9999px;
+  --radius-sm: 2.85px;
+  --radius-md: 6px;
+  --radius-lg: 10px;
+  --radius-2xl: 21.945px;
+  --radius-3xl: 28.5px;
+  --radius-3xl-2: 34.2px;
+  --radius-3xl-3: 37.3065px;
+  --radius-3xl-4: 39.9px;
+  --radius-full: 152.19px;
 }
 ```
