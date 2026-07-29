@@ -1,50 +1,51 @@
-# Playdate — Style Reference
-> A yellow Game Boy under museum lights. Playdate's whole identity is that single bright product held against neutral gray, with one violet spark doing all the interactive work.
+# ORYZO AI — Style Reference
+> Darkroom product editorial. A lone object floating in warm darkness, cream typography the only decoration.
 
-**Theme:** mixed
+**Theme:** dark
 
-Playdate reads like a sunlit toy-store catalog: saturated yellow bands alternate with cool gray and white sections, each one a stage for the bright handheld itself. A single violet accent does all the talking — buttons, links, the nav buy-pill — while the rest of the UI stays quiet on warm charcoal text and bone-white cards. Roobert carries the tone: an oversized lowercase wordmark in sunflower yellow is the brand's signature, body copy sits at a confident 22px in a humanist geometric, and line-height is generous enough to feel handmade. Components are intentionally weightless: 2.85px corners on game cards, no decorative borders, and CTAs that float as purple pills with soft drop-shadows. The rhythm is full-bleed sections stacked vertically, each one swapping palette so the page reads like a printed product brochure rather than a typical SaaS landing.
+The ORYZO visual system treats a single product object like a museum artifact: full-bleed warm-dark canvas, cream typography floating in generous negative space, and zero UI chrome competing with the form. Every text element is uppercase at weight 500, with the sole exception of body copy at 29px/400 which is the system's only conversational voice. A single vivid orange appears only for credit lines and the studio link — never for buttons or CTAs — earning its rarity. The layout alternates between two modes: photographic hero (the product in context with tools and materials) and void-mode reveal (the product isolated on warm dark), connected by hairline dashed dividers and pill-shaped controls.
 
 ## Tokens — Colors
 
 | Name | Value | Token | Role |
 |------|-------|-------|------|
-| Sunbeam Yellow | `#ffc500` | `--color-sunbeam-yellow` | Section backgrounds, the product itself, display wordmarks — the page's primary brand canvas and the loudest single color in the system |
-| Electric Violet | `linear-gradient(180deg, rgb(148, 0, 255), rgb(92, 0, 255))` | `--color-electric-violet` | Violet supporting accent for decorative details and low-frequency emphasis. Do not promote it to the primary CTA color |
-| Carbon | `#312f27` | `--color-carbon` | Body text, heading text, icon strokes, form labels — a warm near-black chosen over pure #000 to sit comfortably against yellow and white without vibrating |
-| Paper White | `#ffffff` | `--color-paper-white` | Card surfaces, text on violet buttons, text on dark bands — the default light surface |
-| Slate Gray | `#788086` | `--color-slate-gray` | Hero section background — a desaturated mid-gray that lets the yellow product pop without competing with it |
-| Fog | `#efefef` | `--color-fog` | Light alternate surface, input fill on white sections, subtle dividers |
-| Sand | `#e9e4d9` | `--color-sand` | Input backgrounds, callout bubbles, warm light surface — bridges between the cool neutrals and the yellow brand |
-| Ash | `#b1afa7` | `--color-ash` | Muted helper text, secondary borders, subdued metadata — the quietest visible neutral |
+| Warm Cream | `#ffedd7` | `--color-warm-cream` | Light text on dark surfaces, inverse labels, and high-contrast captions. |
+| Walnut Shadow | `#100904` | `--color-walnut-shadow` | Page canvas and deepest background — warm near-black, not pure black. The void behind every product reveal |
+| Bark Brown | `#382416` | `--color-bark-brown` | Elevated surface and filled button background — the one chromatic step above the canvas, used for the single solid CTA |
+| Cork Border | `#40372e` | `--color-cork-border` | Hairline dividers, dashed section separators, subtle container borders — warmer than the canvas by one step |
+| Driftwood | `#6c5f51` | `--color-driftwood` | Mid-tone warm gray for secondary dividers and muted structural elements — the bridge between Bark and Cream |
+| Ember Accent | `#dc5000` | `--color-ember-accent` | Orange text accent for links, tags, and emphasized short phrases. |
+| Pure Black | `#000000` | `--color-pure-black` | SVG icon fills and decorative vector elements only — never used as a background or text color |
 
 ## Tokens — Typography
 
-### Roobert — Sole typeface across the system — a humanist geometric that handles the 68px 'playdate' wordmark and 22px body copy in the same family. Weight 400 carries UI and running text; weight 700/800 anchors display words, prices, and CTAs. The custom -0.007em tracking is applied globally so even body text sits a touch tighter than system defaults. · `--font-roobert`
-- **Substitute:** Manrope, Inter, or DM Sans at matching weights
-- **Weights:** 400, 700, 800
-- **Sizes:** 19, 21, 22, 24, 29, 33, 34, 40, 51, 57, 68
-- **Line height:** 1.0–2.0 (display 1.0, body 1.3, generous blocks 2.0)
-- **Letter spacing:** -0.0070em
-- **Role:** Sole typeface across the system — a humanist geometric that handles the 68px 'playdate' wordmark and 22px body copy in the same family. Weight 400 carries UI and running text; weight 700/800 anchors display words, prices, and CTAs. The custom -0.007em tracking is applied globally so even body text sits a touch tighter than system defaults.
+### halyard-display-variable — The only typeface. Weight 500 at 51px drives display headlines with extreme uppercase confidence; the same family at weight 400 / 29px becomes the system's sole mixed-case body voice. Letter-spacing stays normal — the geometric forms do the work without tightening. Substitute: 'Inter', 'Söhne', or 'Neue Haas Grotesk' for close structural match. · `--font-halyard-display-variable`
+- **Substitute:** Inter or Söhne
+- **Weights:** 400, 500
+- **Sizes:** 8, 10, 12, 14, 15, 18, 24, 29, 41, 51px
+- **Line height:** 0.90–1.26
+- **Letter spacing:** normal across all sizes — no negative tracking even at display scale, the font's geometry handles visual weight without compression
+- **OpenType features:** `"ss01" on`
+- **Role:** The only typeface. Weight 500 at 51px drives display headlines with extreme uppercase confidence; the same family at weight 400 / 29px becomes the system's sole mixed-case body voice. Letter-spacing stays normal — the geometric forms do the work without tightening. Substitute: 'Inter', 'Söhne', or 'Neue Haas Grotesk' for close structural match.
+
+### Arial — System fallback for micro-legal labels (8px uppercase credits like "* ADOBE ILLUSTRATOR"). Not a design choice — a necessity for system-rendered disclaimers. · `--font-arial`
+- **Substitute:** system-ui
+- **Weights:** 400, 500
+- **Sizes:** 8px
+- **Line height:** 1.20
+- **Role:** System fallback for micro-legal labels (8px uppercase credits like "* ADOBE ILLUSTRATOR"). Not a design choice — a necessity for system-rendered disclaimers.
 
 ### Type Scale
 
 | Role | Size | Line Height | Letter Spacing | Token |
 |------|------|-------------|----------------|-------|
-| caption | 19px | 25 | -0.13px | `--text-caption` |
-| body-sm | 21px | 27 | -0.15px | `--text-body-sm` |
-| subheading | 24px | 29 | -0.17px | `--text-subheading` |
-| heading-sm | 29px | 35 | -0.2px | `--text-heading-sm` |
-| heading | 34px | 41 | -0.24px | `--text-heading` |
-| heading-lg | 40px | 44 | -0.28px | `--text-heading-lg` |
-| display | 51px | 56 | -0.36px | `--text-display` |
-| display-lg | 57px | 63 | -0.4px | `--text-display-lg` |
-| hero | 68px | 68 | -0.48px | `--text-hero` |
+| subheading | 18px | 1 | — | `--text-subheading` |
+| heading-sm | 24px | 1.09 | — | `--text-heading-sm` |
+| body | 29px | 1.26 | — | `--text-body` |
+| heading | 41px | 0.9 | — | `--text-heading` |
+| display | 51px | 0.9 | — | `--text-display` |
 
 ## Tokens — Spacing & Shapes
-
-**Base unit:** 4px
 
 **Density:** comfortable
 
@@ -52,162 +53,177 @@ Playdate reads like a sunlit toy-store catalog: saturated yellow bands alternate
 
 | Name | Value | Token |
 |------|-------|-------|
+| 6 | 6px | `--spacing-6` |
+| 8 | 8px | `--spacing-8` |
+| 9 | 9px | `--spacing-9` |
+| 10 | 10px | `--spacing-10` |
 | 12 | 12px | `--spacing-12` |
-| 20 | 20px | `--spacing-20` |
+| 14 | 14px | `--spacing-14` |
+| 18 | 18px | `--spacing-18` |
 | 24 | 24px | `--spacing-24` |
-| 28 | 28px | `--spacing-28` |
-| 40 | 40px | `--spacing-40` |
-| 60 | 60px | `--spacing-60` |
-| 100 | 100px | `--spacing-100` |
-| 120 | 120px | `--spacing-120` |
-| 232 | 232px | `--spacing-232` |
+| 31 | 31px | `--spacing-31` |
+| 41 | 41px | `--spacing-41` |
+| 45 | 45px | `--spacing-45` |
+| 68 | 68px | `--spacing-68` |
+| 204 | 204px | `--spacing-204` |
 
 ### Border Radius
 
 | Element | Value |
 |---------|-------|
-| tags | 28.5px |
-| cards | 2.85px |
-| inputs | 6px |
-| buttons | 28.5px |
-| navButtons | 22px |
-| heroButtons | 34.2px |
+| cards | 12px |
+| inputs | 0px |
+| full-round | 9999px |
+| buttons-pill | 36px |
+| buttons-outlined | 22.5px |
 
 ### Layout
 
-- **Page max-width:** 1200px
-- **Section gap:** 60px
 - **Card padding:** 24px
-- **Element gap:** 11-19px
+- **Element gap:** 18px
 
 ## Components
 
-### Primary CTA Pill (Order Now)
-**Role:** Main purchase action on hero and landing sections
+### Pill Button (Filled)
+**Role:** Primary solid CTA — used once on the page for the Lusion studio link
 
-Violet #7700ff background, white text, 28-34px border-radius (fully pill-shaped), 14px 28px padding, 21-22px Roobert weight 700, subtle 0 2px 8px rgba(0,0,0,0.15) drop shadow. The shadow lifts the pill off whatever section color it sits on — yellow, white, or gray — without darkening the page.
+36px border-radius, Bark Brown (#382416) background, Warm Cream (#ffedd7) text, 14px 24px vertical/horizontal padding, weight 500, uppercase, 8–14px size. The only filled action surface in the system — its rarity is the signal.
 
-### Nav Buy Pill (Buy Now)
-**Role:** Persistent purchase action in the top navigation
+### Outlined Ghost Button
+**Role:** Secondary action or decorative button — cream border on transparent fill
 
-Compact version of the primary CTA: violet #7700ff fill, white text, 22px radius, 8px 16px padding, 19-21px Roobert weight 700. Sits in the rightmost nav slot on a light background.
+22.5px border-radius, transparent background, 1px Warm Cream border, Warm Cream text, 7.5px vertical padding, 0px horizontal padding, weight 500, uppercase, 8–14px. Border does the work; no fill needed.
 
-### Game Card
-**Role:** Individual game tile in the seasonal showcase grid
+### Underline Text Link
+**Role:** Inline links and navigation items — borderless, relying on underline
 
-White #ffffff surface, 2.85px border-radius (almost square — the 1-bit game art fills edge-to-edge), no border, no shadow. Aspect ratio follows the source art; 3 columns on desktop, stacking to 1 column on mobile.
+0px radius, transparent background, Warm Cream text, 0px padding, weight 500, uppercase, 12–14px. The default interaction — no container, just text with an underline indicator.
 
-### Yellow Section Band
-**Role:** Full-bleed content section with the brand yellow as canvas
+### Input Field (Underline Only)
+**Role:** Minimal form input — bottom border only, no full outline
 
-#ffc500 fills the full viewport width with no internal border. Body text inside reverts to Carbon #312f27. Used for the 'We made Playdate just for fun' wordmark band and the game showcase section.
+0px radius, transparent background, 1px Warm Cream bottom border, Warm Cream text, 1px 2px padding, 36px right padding for an inline action. The form mirrors the ghost-button restraint — no boxes, just a line.
 
-### Hero Display Wordmark
-**Role:** Headline-scale brand statement on the landing hero
+### Fixed Top Navigation
+**Role:** Persistent site navigation — minimal, 4 items, uppercase micro-type
 
-Renders 'playdate' in lowercase Roobert at 68px, weight 800, line-height 1.0, color Sunbeam Yellow #ffc500 on the gray hero. Fills nearly the full content width; the lowercase + extra-bold combo is the brand's most recognizable typographic moment.
+Logo wordmark "ORYZO" left-aligned in Warm Cream at 12–14px weight 500 uppercase. Right-aligned nav items: INTRO (with dashed underline indicator for active), FEATURES, PRODUCT, CONTACT — all 12px weight 500 uppercase, Warm Cream. Transparent background over the hero photograph.
 
-### Hero Subhead
-**Role:** White-text tagline under the hero product image
+### Vertical Sidebar Label
+**Role:** Edge branding — vertical text running down the right margin
 
-34-40px Roobert weight 700, color #ffffff, sits on the Slate Gray #788086 hero band. One line, sentence-case, no punctuation — the band itself carries the weight.
+Rotated 90° text "ORYZO 1-MODEL" in Warm Cream, 10–12px uppercase, sits flush right. Functions as a product serial number — a physical-product artifact translated to UI.
 
-### Inline Body Copy
-**Role:** Standard running paragraph text on yellow and white sections
+### Logo Wordmark
+**Role:** Brand identifier — the only graphical mark
 
-22px Roobert weight 400, line-height ~1.3, color Carbon #312f27. Paragraphs are short (2-3 sentences), centered or left-aligned to a ~640px measure.
+"ORYZO" in Halyard Display Variable weight 500 uppercase, up to 51px+ at display scale with 0.9 line-height. Used at two sizes: navigation lockup (12–14px) and hero lockup (51px+). No icon, no symbol — pure typographic identity.
 
-### Inline Link
-**Role:** In-prose hyperlinks and emphasized phrases
+### Hero Overlay Info Card
+**Role:** Semi-transparent attribution card in the hero
 
-Electric Violet #7700ff at body weight 400, no underline at rest, underline appears on hover. Used sparingly — most emphasis is achieved through weight changes instead.
+12px border-radius, semi-transparent Warm Cream or dark fill with low opacity, contains uppercase heading "DESIGNED BY LUSION, THE AWARD-WINNING DESIGN STUDIO." plus a dashed divider and body text. Overlays the hero photograph bottom-left.
 
-### Speech-Bubble Callout
-**Role:** Conversational annotation boxes (e.g. 'Wait! No spoilers, please!')
+### Product Reveal Section
+**Role:** Full-viewport void-mode section — centered 3D render with flanking text
 
-Light Sand #e9e4d9 fill, Carbon #312f27 text, 6-10px border-radius, small triangular tail. 19-21px Roobert weight 400, bold spans inside for emphasis. Acts as a playful UI voice — the only place where the warm neutral appears as a fill.
+100vh height, Walnut Shadow (#100904) background, centered 3D product render, left-aligned heading at 41px uppercase "ISN'T JUST A COASTER.", right-aligned body copy at 29px weight 400 mixed-case. The signature layout pattern — three columns, generous gutters.
 
-### Input Field
-**Role:** Form input on light and yellow sections
+### Section Divider (Dashed Hairline)
+**Role:** Visual separator between content blocks
 
-Fog #efefef or Sand #e9e4d9 background, 6px border-radius, 1px subtle border, Carbon text. Padding ~12px 16px, 21px Roobert. No visible focus ring color — focus state uses a 2px violet outline.
+1px dashed line in Cork Border (#40372e) or Driftwood (#6c5f51). Used sparingly between text blocks, never as decoration — always carrying structural meaning.
 
-### Top Navigation Bar
-**Role:** Persistent site navigation
+### Video Thumbnail Card
+**Role:** Embedded video preview with play indicator
 
-Sits at top of every page. Left: white 'playdate' wordmark in Roobert weight 700. Center/right: icon-prefixed text links in Carbon, evenly spaced. Far right: the violet Buy Now pill. No background fill — the nav is transparent over whatever section color is behind it.
+Small rectangular card, 12px radius, positioned in the lower-right of the hero. Contains a miniature ORYZO wordmark and a play icon. Functions as a secondary entry point without competing with the primary CTA.
 
-### Footer
-**Role:** Bottom-of-page utility links and brand mark
+### Legal/Disclaimer Text
+**Role:** System-rendered micro-copy in Arial 8px
 
-Full-width band, typically Carbon or violet background depending on the previous section. White or violet text, small 19px Roobert, grouped links separated by thin dividers.
+Fallback font (Arial 8px weight 500 uppercase) for things like "* ADOBE ILLUSTRATOR" footnotes. Visually subordinate — intentionally uses a different typeface to signal "this is not design, this is compliance."
 
 ## Do's and Don'ts
 
 ### Do
-- Use Electric Violet #7700ff exclusively for interactive elements — buttons, links, and the nav pill. Never apply it to body text or decorative shapes.
-- Apply 28-34px pill radii to all primary CTAs; use 2.85px for game cards and content tiles. These two radius values define the system's contrast between bold action and quiet content.
-- Render the brand wordmark 'playdate' in lowercase Roobert at display sizes (51-68px), weight 800, in Sunbeam Yellow on neutral backgrounds.
-- Set body copy at 22px Roobert weight 400 in Carbon #312f27 with line-height ~1.3. Apply the global -0.007em tracking to all Roobert usage.
-- Alternate section backgrounds vertically: Slate Gray hero → yellow band → white band → yellow band. Each section is full-bleed with no borders between them.
-- Use Sunbeam Yellow #ffc500 as a full-bleed section background, never as a small accent fill on a card or button.
-- Keep game cards flat and borderless — the 1-bit game art is the content; adding shadows or borders would compete with it.
+- Set all UI text in #ffedd7 (Warm Cream) — never use pure #fff; the warm tint is the system's signature.
+- Use #dc5000 (Ember) only for credit lines, the "Built by" label, and the Lusion studio link — a single accent earns its rarity through restraint.
+- Set type in uppercase weight 500 across the entire interface; use weight 400 / mixed case only for the 29px body copy that explains the product.
+- Use 36px border-radius for the one filled CTA and 22.5px for outlined ghost buttons; 12px for cards; 0px for inputs and inline links — these four values are the entire radius vocabulary.
+- Set section gaps at 100vh — each section gets its own full viewport, never compress product reveals into bands.
+- Use 1px dashed lines in #40372 for section dividers; avoid solid dividers and avoid any divider thicker than 2px.
+- Center the 3D product render in every void-mode section with text flanking symmetrically left and right at 18px gutters.
 
 ### Don't
-- Don't use Electric Violet for body text, headings, or background fills larger than a button — its role is interactive punctuation, not chrome.
-- Don't apply heavy drop shadows to cards, images, or text. The single 0 2px 8px rgba(0,0,0,0.15) belongs only on CTA pills.
-- Don't mix in additional accent hues. The system is intentionally bichromatic (yellow + violet) on a warm-neutral base.
-- Don't use pure #000000 for text — Carbon #312f27 is warmer and sits correctly on both yellow and white without edge vibration.
-- Don't render the brand wordmark in uppercase, serif, or non-Roobert faces. The lowercase geometric is the signature.
-- Don't add borders or backgrounds to game cards. The 2.85px radius alone is the only frame the art needs.
-- Don't apply letter-spacing wider than the global -0.007em — the type is designed tight, and opening it up breaks the geometric rhythm.
+- Never use pure #fff for text or #000 for backgrounds — the warm cream and walnut shadow are the system; purity reads as wrong here.
+- Never apply #dc5000 to buttons, CTAs, or interactive surfaces — the orange is editorial credit only.
+- Never use lowercase or sentence-case for headings, nav, or labels; the only mixed-case text is the 29px body description.
+- Never add drop shadows to cards, buttons, or sections — depth comes from the two-step surface stack (#100904 → #382416), not from blur.
+- Never use border-radius below 12px on containers — the geometry is deliberately chunky, not sharp.
+- Never use more than one filled button per section; restraint is the design language.
+- Never center-align body copy — headings and body text are always left-aligned, even when flanking a centered image.
 
 ## Surfaces
 
 | Level | Name | Value | Purpose |
 |-------|------|-------|---------|
-| 1 | Slate Gray Hero Canvas | `#788086` | Full-bleed hero section background, lets the yellow product and white text read with maximum contrast |
-| 2 | Sunbeam Yellow Band | `#ffc500` | Primary brand section background, alternates with white bands to create a catalog-style rhythm |
-| 3 | Paper White Card | `#ffffff` | Card surfaces on yellow and gray backgrounds — the lightest surface, used for game tiles and content blocks |
-| 4 | Sand Callout | `#e9e4d9` | Warm neutral fill for speech-bubble annotations and softer content surfaces |
-| 5 | Fog Alternate | `#efefef` | Coolest neutral, used for input fills and the most recessed surface treatment |
+| 0 | Walnut Shadow | `#100904` | Full-bleed page canvas and section background |
+| 1 | Bark Brown | `#382416` | Filled button surface, the only elevated solid |
+| 2 | Cork Border | `#40372` | Hairline borders, dashed dividers, card outlines |
+| 3 | Warm Cream | `#ffedd7` | Foreground text, navigation, interactive borders |
 
 ## Elevation
 
-- **Primary CTA Pill:** `0 2px 8px rgba(0, 0, 0, 0.15)`
-- **Nav Buy Pill:** `0 1px 4px rgba(0, 0, 0, 0.2)`
+The system rejects shadow-based elevation entirely. Depth is achieved through a two-step surface stack: #100904 (canvas) → #382416 (elevated solid). There are no blur, no offset, no opacity-based shadows — only a 1–2 value luminance step. This keeps the interface flat and editorial, letting the 3D product renders provide all visual depth in void-mode sections.
 
 ## Imagery
 
-Product photography dominates: the yellow handheld is shot on a neutral gray background, framed large and centered, with no lifestyle context — the object itself is the hero. Game showcase cards use high-contrast 1-bit black-and-white pixel art at native resolution, giving a deliberately retro/Game Boy feel. The device appears as both a photograph and a 3D render (you can see the smooth shading and crisp edges on the hero shot), with the crank handle and button details rendered in vector-clean precision. No lifestyle photography, no human subjects, no environmental scenes — the visual language is 'product on a stage' across the board. Icon style is minimal mono-stroke line icons in nav (search, games, dev, education, help, sign-in) at 1.5-2px stroke weight.
+Photography is editorial, top-down, and in-context: the cork coaster sits on a green cutting mat surrounded by pencils, a craft knife, and a paperclip — tools of the craft visible in frame. The green cutting mat (#445231) is a hero-only element, not a UI token. 3D renders dominate the product reveal sections: the cork coaster is shown isolated against Walnut Shadow, lit from the upper right with a warm rim light, rotating from top-down to 3/4 angle between sections. No lifestyle photography, no people, no stock imagery — the object is the hero and the tools are its context. Images are full-bleed, sharp-edged (no rounded masks), and treated with high contrast and warm grading.
 
 ## Layout
 
-Full-bleed vertical sections, each one swapping background color (Slate Gray → Sunbeam Yellow → Paper White → Sunbeam Yellow). The hero is a centered stack: product image at the visual center, white subhead beneath, then the page scrolls into the giant yellow 'playdate' wordmark with a violet order pill directly below it. Content max-width sits around 1200px, centered. The game showcase uses a strict 3-column card grid (3×3 visible) with no gutters between cards — they tile edge-to-edge as a single image wall. Body paragraphs are centered or left-aligned to a ~640px measure within the wider container. Navigation is a thin transparent top bar, not a heavy header. No sticky elements, no sidebars, no mega-menus — the layout is brochure-flat from top to bottom.
+Full-bleed throughout — no max-width container, every section spans 100vw. Hero: full-viewport top-down photograph with a massive ORYZO wordmark (51px+) in the upper-left, tagline above, fixed minimal nav upper-right, vertical sidebar label running down the right edge, semi-transparent info card lower-left, video thumbnail lower-right. Subsequent sections: full-viewport Walnut Shadow canvas with a centered 3D product render flanked by left-aligned heading and right-aligned body copy — a three-column grid (text / object / text) with generous 18px gutters. Section transitions are seamless dark-on-dark; the only breaks are hairline dashed dividers. Navigation is fixed, transparent, and 4 items max. No sidebar, no footer chrome, no cards-within-cards — every screen is a single statement.
+
+## Typography Voice
+
+The system has exactly two typographic modes:
+
+1. UPPERCASE WEIGHT 500 — the default for everything: nav, headings, labels, links, button text, legal. The voice is declarative, confident, museum-label. Sizes range from 8px (legal) to 51px (display). Line-height tightens with size: 1.2 at caption, 1.0 at body-sm, 0.9 at display. No letter-spacing adjustment — the font's geometry is tight enough at every scale.
+
+2. MIXED CASE WEIGHT 400 — the exception, used only at 29px for the descriptive body copy that explains the product. This is the system's only conversational voice: "Designed to lift, insulate, and grip in all the right ways. Oryzo makes the simplest moment feel considered." The weight drop and case change are the signal — when the text shifts from 500/UPPER to 400/mixed, the user knows they are reading description, not label.
+
+The bold signature: line-height 0.9 at 41–51px display sizes. This is unusually tight — most editorial sites use 1.0–1.1. At 0.9, the uppercase letterforms overlap their line-height bounds, creating a sculptural block effect. The display type doesn't sit in lines; it stacks as solid form.
 
 ## Agent Prompt Guide
 
-**Quick Color Reference**
-- text: #312f27 (Carbon)
-- background: #ffc500 (yellow bands) / #ffffff (cards) / #788086 (hero gray)
-- border: #b1afa7 (Ash, muted dividers only)
-- accent: #7700ff (Electric Violet)
+## Quick Color Reference
+- text: #ffedd7 (Warm Cream)
+- background: #100904 (Walnut Shadow)
+- surface: #382416 (Bark Brown)
+- border: #40372e (Cork Border)
+- accent: #dc5000 (Ember)
 - primary action: no distinct CTA color
-- font: Roobert (substitute: Manrope or Inter), weights 400/700/800, global -0.007em tracking
 
-**Example Component Prompts**
+## 3-5 Example Component Prompts
+
+1. **Hero Lockup:** Full-bleed Walnut Shadow (#100904) canvas. ORYZO wordmark at 51px Halyard Display Variable weight 500 uppercase, line-height 0.9, color #ffedd7, positioned upper-left with 24px margin. Tagline "MADE FOR MUGS, BUILT FOR TABLES." at 12px weight 500 uppercase above the wordmark, also #ffedd7.
+
 No distinct primary action color was observed; use the extracted neutral button treatments instead of inventing a filled CTA color.
-2. **Game showcase card** — White #ffffff surface, 2.85px border-radius, no border, no shadow. The 1-bit black-and-white game art fills edge-to-edge. Tile 3 across with no gutter.
-3. **Hero display wordmark** — 'playdate' in lowercase Roobert at 68px, weight 800, line-height 1.0, color #ffc500. Sits on a #788086 gray background.
-4. **Speech-bubble callout** — #e9e4d9 fill, #312f27 text, 6-10px border-radius, small triangular tail pointing to the subject. 19-21px Roobert weight 400 with bold spans for emphasized words.
-5. **Section background band** — Full-bleed #ffc500 yellow with no internal borders. 60px vertical padding. Body text inside is #312f27 at 22px, centered or left-aligned to ~640px.
+
+3. **Ghost Outline Button:** Transparent background, 1px Warm Cream (#ffedd7) border, 22.5px border-radius, 7.5px vertical padding, Warm Cream text at 12px weight 500 uppercase. The secondary action vocabulary.
+
+4. **Product Reveal Section:** Full-viewport (100vh) Walnut Shadow (#100904) background. Centered 3D product render occupying the middle 40% of width. Left column: heading "ISN'T JUST A COASTER." at 41px weight 500 uppercase, line-height 0.9, #ffedd7, left-aligned. Right column: body copy at 29px weight 400 mixed-case, line-height 1.26, #ffedd7, left-aligned within the column. 18px gutter between the centered object and each text column.
+
+5. **Top Navigation:** Fixed position, transparent background, full-width. Left: ORYZO wordmark at 12px Halyard weight 500 uppercase #ffedd7. Right: four nav items (INTRO, FEATURES, PRODUCT, CONTACT) at 12px weight 500 uppercase #ffedd7, with a 1px dashed #40372e underline beneath the active item.
 
 ## Similar Brands
 
-- **Teenage Engineering** — Same playful colored product-as-hero approach, with bold lowercase wordmarks, generous whitespace, and bichromatic product photography on neutral backgrounds
-- **Analogue** — Retro gaming hardware presentation — the device floats on a neutral stage, with sparse UI and 1-bit-era visual references in supporting artwork
-- **Nothing (nothing.tech)** — Bichromatic brand identity built on a single vivid accent color against monochrome surfaces, with confident display type and minimal chrome
-- **Bored Ape / Yuga Labs** — Yellow-and-purple playful tech branding, oversized lowercase display type, and an overall toy-aisle energy applied to a digital product
+- **Lusion (the studio credited in the design)** — Same warm-dark editorial canvas, single-product hero treatment, pill-button controls, and 3D product renders as the visual centerpiece
+- **Active Theory** — Full-bleed dark mode with a single interactive 3D object commanding the viewport, minimal UI chrome, and oversized uppercase type
+- **Resn** — Editorial product-showcase sites with top-down craft photography, warm grading, and typography that steps back to let the object speak
+- **Tool of North America** — Studio portfolio sites that treat a single concept object with museum-presentation gravity — dark void, cream labels, generous negative space
+- **Buck (studio)** — Work-reveal layouts that alternate between photographic context and isolated product renders against near-black backgrounds
 
 ## Quick Start
 
@@ -216,96 +232,71 @@ No distinct primary action color was observed; use the extracted neutral button 
 ```css
 :root {
   /* Colors */
-  --color-sunbeam-yellow: #ffc500;
-  --color-electric-violet: #7700ff;
-  --gradient-electric-violet: linear-gradient(180deg, rgb(148, 0, 255), rgb(92, 0, 255));
-  --color-carbon: #312f27;
-  --color-paper-white: #ffffff;
-  --color-slate-gray: #788086;
-  --color-fog: #efefef;
-  --color-sand: #e9e4d9;
-  --color-ash: #b1afa7;
+  --color-warm-cream: #ffedd7;
+  --color-walnut-shadow: #100904;
+  --color-bark-brown: #382416;
+  --color-cork-border: #40372e;
+  --color-driftwood: #6c5f51;
+  --color-ember-accent: #dc5000;
+  --color-pure-black: #000000;
 
   /* Typography — Font Families */
-  --font-roobert: 'Roobert', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-halyard-display-variable: 'halyard-display-variable', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-arial: 'Arial', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 
   /* Typography — Scale */
-  --text-caption: 19px;
-  --leading-caption: 25;
-  --tracking-caption: -0.13px;
-  --text-body-sm: 21px;
-  --leading-body-sm: 27;
-  --tracking-body-sm: -0.15px;
-  --text-subheading: 24px;
-  --leading-subheading: 29;
-  --tracking-subheading: -0.17px;
-  --text-heading-sm: 29px;
-  --leading-heading-sm: 35;
-  --tracking-heading-sm: -0.2px;
-  --text-heading: 34px;
-  --leading-heading: 41;
-  --tracking-heading: -0.24px;
-  --text-heading-lg: 40px;
-  --leading-heading-lg: 44;
-  --tracking-heading-lg: -0.28px;
+  --text-subheading: 18px;
+  --leading-subheading: 1;
+  --text-heading-sm: 24px;
+  --leading-heading-sm: 1.09;
+  --text-body: 29px;
+  --leading-body: 1.26;
+  --text-heading: 41px;
+  --leading-heading: 0.9;
   --text-display: 51px;
-  --leading-display: 56;
-  --tracking-display: -0.36px;
-  --text-display-lg: 57px;
-  --leading-display-lg: 63;
-  --tracking-display-lg: -0.4px;
-  --text-hero: 68px;
-  --leading-hero: 68;
-  --tracking-hero: -0.48px;
+  --leading-display: 0.9;
 
   /* Typography — Weights */
   --font-weight-regular: 400;
-  --font-weight-bold: 700;
-  --font-weight-extrabold: 800;
+  --font-weight-medium: 500;
 
   /* Spacing */
-  --spacing-unit: 4px;
+  --spacing-6: 6px;
+  --spacing-8: 8px;
+  --spacing-9: 9px;
+  --spacing-10: 10px;
   --spacing-12: 12px;
-  --spacing-20: 20px;
+  --spacing-14: 14px;
+  --spacing-18: 18px;
   --spacing-24: 24px;
-  --spacing-28: 28px;
-  --spacing-40: 40px;
-  --spacing-60: 60px;
-  --spacing-100: 100px;
-  --spacing-120: 120px;
-  --spacing-232: 232px;
+  --spacing-31: 31px;
+  --spacing-41: 41px;
+  --spacing-45: 45px;
+  --spacing-68: 68px;
+  --spacing-204: 204px;
 
   /* Layout */
-  --page-max-width: 1200px;
-  --section-gap: 60px;
   --card-padding: 24px;
-  --element-gap: 11-19px;
+  --element-gap: 18px;
 
   /* Border Radius */
-  --radius-sm: 2.85px;
-  --radius-md: 6px;
-  --radius-lg: 10px;
-  --radius-2xl: 21.945px;
-  --radius-3xl: 28.5px;
-  --radius-3xl-2: 34.2px;
-  --radius-3xl-3: 37.3065px;
-  --radius-3xl-4: 39.9px;
-  --radius-full: 152.19px;
+  --radius-xl: 12px;
+  --radius-2xl: 22.5px;
+  --radius-3xl: 36px;
+  --radius-full: 9999px;
 
   /* Named Radii */
-  --radius-tags: 28.5px;
-  --radius-cards: 2.85px;
-  --radius-inputs: 6px;
-  --radius-buttons: 28.5px;
-  --radius-navbuttons: 22px;
-  --radius-herobuttons: 34.2px;
+  --radius-cards: 12px;
+  --radius-inputs: 0px;
+  --radius-full-round: 9999px;
+  --radius-buttons-pill: 36px;
+  --radius-buttons-outlined: 22.5px;
 
   /* Surfaces */
-  --surface-slate-gray-hero-canvas: #788086;
-  --surface-sunbeam-yellow-band: #ffc500;
-  --surface-paper-white-card: #ffffff;
-  --surface-sand-callout: #e9e4d9;
-  --surface-fog-alternate: #efefef;
+  --surface-walnut-shadow: #100904;
+  --surface-bark-brown: #382416;
+  --surface-cork-border: #40372;
+  --surface-warm-cream: #ffedd7;
 }
 ```
 
@@ -314,67 +305,49 @@ No distinct primary action color was observed; use the extracted neutral button 
 ```css
 @theme {
   /* Colors */
-  --color-sunbeam-yellow: #ffc500;
-  --color-electric-violet: #7700ff;
-  --color-carbon: #312f27;
-  --color-paper-white: #ffffff;
-  --color-slate-gray: #788086;
-  --color-fog: #efefef;
-  --color-sand: #e9e4d9;
-  --color-ash: #b1afa7;
+  --color-warm-cream: #ffedd7;
+  --color-walnut-shadow: #100904;
+  --color-bark-brown: #382416;
+  --color-cork-border: #40372e;
+  --color-driftwood: #6c5f51;
+  --color-ember-accent: #dc5000;
+  --color-pure-black: #000000;
 
   /* Typography */
-  --font-roobert: 'Roobert', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-halyard-display-variable: 'halyard-display-variable', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-arial: 'Arial', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 
   /* Typography — Scale */
-  --text-caption: 19px;
-  --leading-caption: 25;
-  --tracking-caption: -0.13px;
-  --text-body-sm: 21px;
-  --leading-body-sm: 27;
-  --tracking-body-sm: -0.15px;
-  --text-subheading: 24px;
-  --leading-subheading: 29;
-  --tracking-subheading: -0.17px;
-  --text-heading-sm: 29px;
-  --leading-heading-sm: 35;
-  --tracking-heading-sm: -0.2px;
-  --text-heading: 34px;
-  --leading-heading: 41;
-  --tracking-heading: -0.24px;
-  --text-heading-lg: 40px;
-  --leading-heading-lg: 44;
-  --tracking-heading-lg: -0.28px;
+  --text-subheading: 18px;
+  --leading-subheading: 1;
+  --text-heading-sm: 24px;
+  --leading-heading-sm: 1.09;
+  --text-body: 29px;
+  --leading-body: 1.26;
+  --text-heading: 41px;
+  --leading-heading: 0.9;
   --text-display: 51px;
-  --leading-display: 56;
-  --tracking-display: -0.36px;
-  --text-display-lg: 57px;
-  --leading-display-lg: 63;
-  --tracking-display-lg: -0.4px;
-  --text-hero: 68px;
-  --leading-hero: 68;
-  --tracking-hero: -0.48px;
+  --leading-display: 0.9;
 
   /* Spacing */
+  --spacing-6: 6px;
+  --spacing-8: 8px;
+  --spacing-9: 9px;
+  --spacing-10: 10px;
   --spacing-12: 12px;
-  --spacing-20: 20px;
+  --spacing-14: 14px;
+  --spacing-18: 18px;
   --spacing-24: 24px;
-  --spacing-28: 28px;
-  --spacing-40: 40px;
-  --spacing-60: 60px;
-  --spacing-100: 100px;
-  --spacing-120: 120px;
-  --spacing-232: 232px;
+  --spacing-31: 31px;
+  --spacing-41: 41px;
+  --spacing-45: 45px;
+  --spacing-68: 68px;
+  --spacing-204: 204px;
 
   /* Border Radius */
-  --radius-sm: 2.85px;
-  --radius-md: 6px;
-  --radius-lg: 10px;
-  --radius-2xl: 21.945px;
-  --radius-3xl: 28.5px;
-  --radius-3xl-2: 34.2px;
-  --radius-3xl-3: 37.3065px;
-  --radius-3xl-4: 39.9px;
-  --radius-full: 152.19px;
+  --radius-xl: 12px;
+  --radius-2xl: 22.5px;
+  --radius-3xl: 36px;
+  --radius-full: 9999px;
 }
 ```

@@ -105,9 +105,10 @@ function applyDynamicSectionSettings(sections = []) {
 function renderDynamicNavigation(items = []) {
   if (!items.length) return
   const desktop = document.querySelector('.desktop-nav'); const mobile = document.querySelector('.mobile-nav')
+  const visibleItems = items.slice(0, 4)
   const itemMarkup = (item, mobileMode = false, index = 0) => `<a href="${escapeHtml(safeUrl(item.href))}" target="${item.target === '_blank' ? '_blank' : '_self'}" ${item.target === '_blank' ? 'rel="noreferrer"' : ''}>${escapeHtml(item.label)}${mobileMode ? ` <span>${String(index + 1).padStart(2, '0')}</span>` : ''}</a>`
-  if (desktop) desktop.innerHTML = items.map(item => itemMarkup(item)).join('')
-  if (mobile) mobile.innerHTML = items.map((item, index) => itemMarkup(item, true, index)).join('')
+  if (desktop) desktop.innerHTML = visibleItems.map(item => itemMarkup(item)).join('')
+  if (mobile) mobile.innerHTML = visibleItems.map((item, index) => itemMarkup(item, true, index)).join('')
   initializeSectionNavigationUi()
 }
 
