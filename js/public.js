@@ -185,14 +185,14 @@ function applySiteIdentity(settings, profile) {
   if (logoElement && siteLogo) logoElement.innerHTML = '<img src="' + escapeHtml(siteLogo) + '" alt="Logo ' + escapeHtml(siteName) + '" loading="eager" decoding="async" width="54" height="54" data-image-fallback data-fallback-label="' + escapeHtml(siteName.slice(0, 1).toUpperCase()) + '"><span hidden>' + escapeHtml(siteName.slice(0, 1).toUpperCase()) + '</span>'
   document.querySelectorAll('[data-site-location]').forEach(element => { element.textContent = location })
   document.querySelectorAll('[data-site-tagline]').forEach(element => { element.textContent = settings.site_tagline || description })
-  document.querySelector('[data-availability]')?.replaceChildren(document.createTextNode(settings.availability_label || 'Terbuka untuk kolaborasi pilihan'))
-  document.querySelector('[data-hero-badge]')?.replaceChildren(document.createTextNode(settings.hero_badge || 'Portfolio digital'))
-  document.querySelector('#hero-title')?.replaceChildren(document.createTextNode(settings.hero_title || 'Membangun pengalaman digital yang berarti.'))
+  document.querySelector('[data-availability]')?.replaceChildren(document.createTextNode(settings.availability_label || 'Terbuka untuk obrolan dan kolaborasi'))
+  document.querySelector('[data-hero-badge]')?.replaceChildren(document.createTextNode(settings.hero_badge || 'Membangun dengan rasa ingin tahu'))
+  document.querySelector('#hero-title')?.replaceChildren(document.createTextNode(settings.hero_title || 'Ide yang terasa hidup.'))
   const heroIntro = document.querySelector('[data-hero-intro]')
-  if (heroIntro) heroIntro.innerHTML = `${escapeHtml(settings.hero_description || profile?.bio || 'Saya membangun aplikasi web yang dinamis, mudah digunakan, dan berorientasi pada pengalaman pengguna.')} <span class="accent-green" data-role data-roles='${escapeHtml(JSON.stringify(settings.professional_titles || []))}'></span>`
-  document.querySelector('[data-about-short]')?.replaceChildren(document.createTextNode(profile?.bio || 'Desain yang jelas, teknologi yang tepat, dan pengalaman yang terasa manusiawi.'))
-  document.querySelector('[data-about-long]')?.replaceChildren(document.createTextNode(settings.about_text || 'Dari ide pertama hingga produk yang siap digunakan, setiap detail dibangun dengan tujuan.'))
-  document.querySelector('[data-contact-description]')?.replaceChildren(document.createTextNode(settings.site_tagline || 'Ceritakan apa yang sedang Anda bangun dan mari temukan cara terbaik untuk membuatnya bergerak.'))
+  if (heroIntro) heroIntro.innerHTML = `${escapeHtml(settings.hero_description || profile?.bio || 'Saya membantu mengubah ide menjadi pengalaman digital yang jelas, hangat, dan mudah dinikmati.')} <span class="accent-green" data-role data-roles='${escapeHtml(JSON.stringify(settings.professional_titles || []))}'></span>`
+  document.querySelector('[data-about-short]')?.replaceChildren(document.createTextNode(profile?.bio || 'Pekerjaan yang baik terasa jelas, ringan, dan tetap punya ruang untuk rasa ingin tahu.'))
+  document.querySelector('[data-about-long]')?.replaceChildren(document.createTextNode(settings.about_text || 'Dari ide pertama sampai produk siap digunakan, kita merapikan detail bersama agar hasilnya terasa jujur dan punya karakter.'))
+  document.querySelector('[data-contact-description]')?.replaceChildren(document.createTextNode(settings.site_tagline || 'Ceritakan sedikit tentang yang sedang Anda bangun. Kita bisa mulai dari pertanyaan sederhana.'))
   document.querySelectorAll('[data-contact-email]').forEach(element => {
     if (!email) { element.hidden = true; return }
     element.hidden = false
