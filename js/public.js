@@ -7,6 +7,7 @@ import { closeModal, openModal } from './ui/modal.js'
 import { applyProjectFilter, createProjectSearchHandler } from './ui/filters.js'
 import { resetFormState, setFieldError, setFormSubmitting } from './ui/form-feedback.js'
 import { initializeRevealAnimations as initializeRevealUi } from './ui/scroll-effects.js'
+import { initializeWorldInteractions } from './ui/world-interactions.js'
 
 const reduceMotion = prefersReducedMotion()
 
@@ -16,6 +17,7 @@ export function initializePublic() {
   initializeHeaderScrollUi()
   initializeSectionNavigationUi()
   initializeRevealUi()
+  initializeWorldInteractions()
   initializeCopyEmail()
   initializeSmoothScrollUi()
   initializeYear()
