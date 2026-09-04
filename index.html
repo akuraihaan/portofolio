@@ -26,7 +26,13 @@
         }
       }
     </script>
-    <script type="module" src="/portfolio.config.js"></script>
+    <!-- Laragon serves the ignored runtime config over HTTP. Vercel injects
+         VITE_* variables at build time, so it must not resolve this local file. -->
+    <script>
+      if (window.location.protocol !== 'https:') {
+        document.write('<script src="/portfolio.config.js"><\/script>')
+      }
+    </script>
     <script type="application/ld+json" id="person-jsonld">{}</script>
     <title>Portofolio profesional</title>
   </head>
