@@ -1,13 +1,16 @@
 import { createClient } from '@supabase/supabase-js'
 
+const viteEnv = import.meta.env || {}
+const runtimeConfig = globalThis.__PORTFOLIO_CONFIG__ || {}
+
 const supabaseUrl = String(
-  import.meta.env.VITE_SUPABASE_URL || ''
+  viteEnv.VITE_SUPABASE_URL || runtimeConfig.VITE_SUPABASE_URL || ''
 )
   .trim()
   .replace(/\/+$/, '')
 
 const supabasePublishableKey = String(
-  import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || ''
+  viteEnv.VITE_SUPABASE_PUBLISHABLE_KEY || runtimeConfig.VITE_SUPABASE_PUBLISHABLE_KEY || ''
 ).trim()
 
 export const supabaseProjectRef =
@@ -42,6 +45,6 @@ export const supabase = supabaseConfiguration.ready
   )
   : null
 
-if (import.meta.env.DEV) {
+if (viteEnv.DEV) {
   console.info('Supabase project', { projectRef: supabaseProjectRef })
 }

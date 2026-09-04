@@ -17,9 +17,10 @@ export function formatDate(value) {
 }
 
 export function safeUrl(value, fallback = '#') {
-  const raw = String(value ?? '').trim()
+  let raw = String(value ?? '').trim()
   if (!raw) return fallback
   if (raw.startsWith('#') || raw.startsWith('/')) return raw
+  if (/^[a-z0-9.-]+\.[a-z]{2,}(\/|$)/i.test(raw)) raw = 'https://' + raw
   try {
     const url = new URL(raw, window.location.origin)
     if (!['http:', 'https:', 'mailto:'].includes(url.protocol)) return fallback

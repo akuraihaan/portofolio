@@ -2,7 +2,7 @@ import { debounce } from './jquery-ui.js'
 
 export function applyProjectFilter({ category = 'all', search = '' } = {}) {
   const term = String(search).trim().toLowerCase()
-  const cards = [...document.querySelectorAll('[data-project]')]
+  const cards = [...document.querySelectorAll('[data-project-card]')]
   let visibleCount = 0
   cards.forEach(card => {
     const haystack = [card.dataset.title, card.dataset.type, card.dataset.description, card.dataset.technologies]
@@ -22,4 +22,3 @@ export function applyProjectFilter({ category = 'all', search = '' } = {}) {
 export function createProjectSearchHandler(callback) {
   return debounce(callback, 250)
 }
-

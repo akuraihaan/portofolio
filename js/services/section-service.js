@@ -1,7 +1,7 @@
 import { supabase, supabaseConfiguration } from '../../supabase.js'
 import { deletePublicImage, uploadPublicImage } from './storage-service.js'
 
-export const SECTION_KEYS = ['hero', 'about', 'statistics', 'skills', 'services', 'featured_projects', 'projects', 'experiences', 'educations', 'certificates', 'articles', 'testimonials', 'contact', 'cta', 'process', 'footer']
+export const SECTION_KEYS = ['hero', 'about', 'statistics', 'skills', 'services', 'featured_projects', 'projects', 'experiences', 'educations', 'certificates', 'achievements', 'articles', 'testimonials', 'contact', 'cta', 'process', 'footer']
 
 function ensureReady() {
   if (!supabaseConfiguration.ready || !supabase) throw new Error('Supabase belum dikonfigurasi.')

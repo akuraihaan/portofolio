@@ -49,4 +49,4 @@ Lalu uji:
 7. Contact form masuk ke `contact_messages`.
 8. Upload media mengikuti policy Storage.
 
-Jika build gagal pada Windows karena dependency native, hapus `node_modules` dan `package-lock.json` lokal yang stale, lalu jalankan `npm install` ulang. Root project tidak memiliki dependency binding OS-specific langsung; lockfile boleh memuat optional package transitive milik toolchain Vite.
+Jika build gagal pada Windows karena dependency native sedang terkunci, hentikan dulu proses `npm run dev` atau `npm run preview` yang berjalan, hapus hanya `node_modules` lokal setelah proses benar-benar berhenti, lalu jalankan `npm ci` kembali. Jangan menghapus `package-lock.json`; lockfile adalah sumber versi dependency yang dipakai CI/Vercel. Root project tidak memiliki dependency binding OS-specific langsung; lockfile boleh memuat optional package transitive milik toolchain Vite.

@@ -50,7 +50,8 @@ export function initializeSectionNavigation() {
   if (document.documentElement.dataset.sectionNavigationReady === 'true') return
   const update = () => {
     const links = [...document.querySelectorAll('.desktop-nav a, .mobile-nav a')]
-    const sections = links
+      const sections = links
+      .filter(link => (link.getAttribute('href') || '').startsWith('#'))
       .map(link => document.querySelector(link.getAttribute('href')))
       .filter(Boolean)
     const marker = window.scrollY + 160
@@ -83,4 +84,3 @@ export function initializeSmoothScroll() {
   }, 'bworieyNavigation')
   document.documentElement.dataset.smoothScrollReady = 'true'
 }
-

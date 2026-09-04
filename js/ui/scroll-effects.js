@@ -9,6 +9,7 @@ export function initializeRevealAnimations(root = document) {
     elements.forEach(element => element.classList.add('is-visible'))
     return
   }
+  document.documentElement.classList.add('reveal-ready')
   revealObserver ||= new IntersectionObserver((entries, observer) => {
     entries.forEach(entry => {
       if (!entry.isIntersecting) return
@@ -20,4 +21,3 @@ export function initializeRevealAnimations(root = document) {
   }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 })
   elements.forEach(element => revealObserver.observe(element))
 }
-

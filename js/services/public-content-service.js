@@ -4,13 +4,14 @@ import { getPublicImageUrl } from './storage-service.js'
 import { normalizeSettingValue } from '../utils.js'
 
 export const PROFILE_COLUMNS = 'id,full_name,username,avatar_url,avatar_path,phone,bio,is_active,last_login_at,created_at,updated_at'
-export const PROJECT_COLUMNS = 'id,title,slug,category,summary,description,thumbnail_url,thumbnail_path,cover_url,cover_image_url,cover_path,project_url,repository_url,technologies,start_date,completion_date,status,sort_order,is_featured,created_at,updated_at,published_at'
+export const PROJECT_COLUMNS = 'id,title,slug,category,summary,description,thumbnail_url,thumbnail_path,cover_url,cover_image_url,cover_path,project_url,repository_url,technologies,project_year,duration,role,client,video_url,figma_url,documentation_url,extra_links,case_study,seo_title,meta_description,og_image_url,og_image_path,canonical_url,start_date,completion_date,status,sort_order,is_featured,created_at,updated_at,published_at'
 export const PROJECT_MEDIA_COLUMNS = 'id,project_id,media_url,media_path,alt_text,caption,sort_order,created_at'
-export const ARTICLE_COLUMNS = 'id,title,slug,category,excerpt,content,thumbnail_url,thumbnail_path,cover_image_url,cover_path,tags,reading_time,status,sort_order,is_featured,created_at,updated_at,published_at'
+export const ARTICLE_COLUMNS = 'id,title,slug,category,excerpt,content,thumbnail_url,thumbnail_path,cover_image_url,cover_path,tags,reading_time,seo_title,meta_description,og_image_url,og_image_path,status,sort_order,is_featured,created_at,updated_at,published_at'
 export const SKILL_COLUMNS = 'id,name,category,description,level,status,sort_order,created_at,updated_at,published_at'
-export const EXPERIENCE_COLUMNS = 'id,company,role_title,description,location,start_date,end_date,is_current,logo_url,logo_path,status,sort_order,created_at,updated_at,published_at'
-export const EDUCATION_COLUMNS = 'id,institution,degree,field_of_study,location,description,start_date,end_date,is_current,logo_url,logo_path,sort_order,is_featured,status,created_at,updated_at,published_at'
+export const EXPERIENCE_COLUMNS = 'id,company,role_title,experience_type,description,responsibilities,achievements,location,organization_url,start_date,end_date,is_current,logo_url,logo_path,status,sort_order,created_at,updated_at,published_at'
+export const EDUCATION_COLUMNS = 'id,institution,degree,level,field_of_study,location,description,related_achievements,start_date,end_date,is_current,logo_url,logo_path,sort_order,is_featured,status,created_at,updated_at,published_at'
 export const CERTIFICATE_COLUMNS = 'id,title,issuer,issue_date,credential_url,credential_id,expiry_date,certificate_url,certificate_path,image_url,status,sort_order,created_at,updated_at,published_at'
+export const ACHIEVEMENT_COLUMNS = 'id,title,organizer,result,achievement_date,description,image_url,image_path,document_url,document_path,link_url,status,sort_order,is_featured,created_at,updated_at,published_at'
 export const SERVICE_COLUMNS = 'id,title,slug,description,icon,icon_url,icon_path,features,price_label,cta_label,cta_url,status,sort_order,is_featured,created_at,updated_at,published_at'
 export const TESTIMONIAL_COLUMNS = 'id,author_name,author_role,company,quote,avatar_url,avatar_path,rating,status,sort_order,is_featured,created_at,updated_at,published_at'
 export const SOCIAL_LINK_COLUMNS = 'id,platform,label,url,username,icon,is_active,open_in_new_tab,show_in_hero,show_in_contact,show_in_footer,sort_order,created_at,updated_at'
@@ -24,7 +25,8 @@ const COUNT_TABLES = {
   skills: 'skills',
   experiences: 'experiences',
   certificates: 'certificates',
-  articles: 'articles'
+  articles: 'articles',
+  achievements: 'achievements'
 }
 
 function unavailable(message = 'Supabase belum dikonfigurasi.') {
@@ -60,16 +62,21 @@ async function resolveAssetRows(rows = [], fields = []) {
     for (const field of fields) {
       const aliases = field === 'cover_url' ? ['cover_image_url'] : field === 'certificate_url' ? ['image_url'] : []
       const pathFields = field === 'cover_url' ? ['cover_path', 'thumbnail_path'] : field === 'certificate_url' ? ['certificate_path'] : [field.replace(/_url$/, '_path')]
-      const source = [field, ...aliases].map(name => row[name]).find(Boolean) || pathFields.map(name => row[name]).find(Boolean)
-      resolved[field] = source ? (await resolveAssetUrl(source)) : ''
+      // Prefer the managed Storage path when it exists. The legacy URL column
+      // can point at an older upload after a profile or content image is replaced.
+      const source = pathFields.map(name => row[name]).find(Boolean) || [field, ...aliases].map(name => row[name]).find(Boolean)
+      resolved[field] = source ? (await resolveAssetUrl(source, row.updated_at || source)) : ''
     }
     return resolved
   }))
 }
 
-async function resolveAssetUrl(value) {
-  if (!value || /^https?:\/\//i.test(value)) return value || ''
-  return getPublicImageUrl(value)
+async function resolveAssetUrl(value, cacheKey = '') {
+  if (!value) return ''
+  const url = /^https?:\/\//i.test(value) ? value : getPublicImageUrl(value)
+  if (!url || /^data:/i.test(url) || !cacheKey) return url
+  const separator = url.includes('?') ? '&' : '?'
+  return `${url}${separator}v=${encodeURIComponent(cacheKey)}`
 }
 
 export async function getSiteSettings() {
@@ -80,7 +87,7 @@ export async function getSiteSettings() {
     const fields = assetFields[row.key]
     if (!fields) return [row.key, value]
     const source = row[fields[0]] || row[fields[1]] || value
-    return [row.key, source ? await resolveAssetUrl(source) : '']
+    return [row.key, source ? await resolveAssetUrl(source, row.updated_at || source) : '']
   }))
   return { ...result, data: Object.fromEntries(entries) }
 }
@@ -137,6 +144,11 @@ export async function getPublishedCertificates() {
   return { ...result, data: await resolveAssetRows(result.data, ['certificate_url']) }
 }
 
+export async function getPublishedAchievements() {
+  const result = await readPublicTable('achievements', publishedQuery, ACHIEVEMENT_COLUMNS)
+  return { ...result, data: await resolveAssetRows(result.data, ['image_url']) }
+}
+
 export async function getPublishedServices() {
   const result = await readPublicTable('services', publishedQuery, SERVICE_COLUMNS)
   return { ...result, data: await resolveAssetRows(result.data, ['icon_url']) }
@@ -172,7 +184,15 @@ export async function getStatistics() {
 export async function getPublicContent() {
   const baseResults = await Promise.allSettled([
     getSiteSettings(),
-    readPublicTable('profiles', query => query.eq('is_active', true).limit(1), PROFILE_COLUMNS),
+    // Auth creates one profile row per user. Only use a populated active
+    // profile for the public portfolio instead of whichever row PostgREST
+    // happens to return first.
+    readPublicTable('profiles', query => query
+      .eq('is_active', true)
+      .not('full_name', 'is', null)
+      .neq('full_name', '')
+      .order('updated_at', { ascending: false })
+      .limit(1), PROFILE_COLUMNS),
     getVisibleSections(),
     getNavigationItems(),
     getPublishedProjects(),
@@ -182,13 +202,14 @@ export async function getPublicContent() {
     getPublishedEducationsData(),
     getPublishedExperiences(),
     getPublishedCertificates(),
+    getPublishedAchievements(),
     getPublishedTestimonials(),
     getSocialLinks(),
     getStatistics()
   ])
   const normalize = result => result.status === 'fulfilled' ? result.value : unavailable(result.reason?.message)
-  const [settings, profile, sections, navigation, projects, articles, skills, services, educations, experiences, certificates, testimonials, socialLinks, statistics] = baseResults.map(normalize)
+  const [settings, profile, sections, navigation, projects, articles, skills, services, educations, experiences, certificates, achievements, testimonials, socialLinks, statistics] = baseResults.map(normalize)
   const projectMedia = await getPublishedProjectMedia(projects.data)
   const profileData = await resolveAssetRows(profile.data, ['avatar_url'])
-  return { settings, profile: profileData[0] || null, sections, navigation, projects, projectMedia, articles, skills, services, educations, experiences, certificates, testimonials, socialLinks, statistics }
+  return { settings, profile: profileData[0] || null, sections, navigation, projects, projectMedia, articles, skills, services, educations, experiences, certificates, achievements, testimonials, socialLinks, statistics }
 }

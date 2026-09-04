@@ -1,51 +1,68 @@
-# ORYZO AI — Style Reference
-> Darkroom product editorial. A lone object floating in warm darkness, cream typography the only decoration.
+# Notion — Style Reference
+> warm paper notebook under afternoon sun
 
-**Theme:** dark
+**Theme:** light
 
-The ORYZO visual system treats a single product object like a museum artifact: full-bleed warm-dark canvas, cream typography floating in generous negative space, and zero UI chrome competing with the form. Every text element is uppercase at weight 500, with the sole exception of body copy at 29px/400 which is the system's only conversational voice. A single vivid orange appears only for credit lines and the studio link — never for buttons or CTAs — earning its rarity. The layout alternates between two modes: photographic hero (the product in context with tools and materials) and void-mode reveal (the product isolated on warm dark), connected by hairline dashed dividers and pill-shaped controls.
+Notion reads like a well-loved paper notebook under afternoon light: a warm off-white canvas (#f6f5f4) that feels tactile rather than clinical, generous sans typography that gives editorial weight to product copy, and color used as sparse punctuation — peachy pills highlight verbs, a single blue anchors the primary action, and a rotating cast of accent hues (coral, amber, sky, midnight) paints the feature card backgrounds like sticky notes. Cards sit on the canvas with 1px hairline borders and 12px corners — no shadows, no chrome — like ruled sections in a Moleskine. Motion is playful and springy, with 200ms ease transitions and bouncy character-mark animations that make the interface feel alive without ever being decorative.
 
 ## Tokens — Colors
 
 | Name | Value | Token | Role |
 |------|-------|-------|------|
-| Warm Cream | `#ffedd7` | `--color-warm-cream` | Light text on dark surfaces, inverse labels, and high-contrast captions. |
-| Walnut Shadow | `#100904` | `--color-walnut-shadow` | Page canvas and deepest background — warm near-black, not pure black. The void behind every product reveal |
-| Bark Brown | `#382416` | `--color-bark-brown` | Elevated surface and filled button background — the one chromatic step above the canvas, used for the single solid CTA |
-| Cork Border | `#40372e` | `--color-cork-border` | Hairline dividers, dashed section separators, subtle container borders — warmer than the canvas by one step |
-| Driftwood | `#6c5f51` | `--color-driftwood` | Mid-tone warm gray for secondary dividers and muted structural elements — the bridge between Bark and Cream |
-| Ember Accent | `#dc5000` | `--color-ember-accent` | Orange text accent for links, tags, and emphasized short phrases. |
-| Pure Black | `#000000` | `--color-pure-black` | SVG icon fills and decorative vector elements only — never used as a background or text color |
+| Notion Blue | `#0075de` | `--color-notion-blue` | Primary CTA fill, active nav accent, filled action buttons — the single chromatic commitment in a near-monochrome system, saturated enough to read as a switch |
+| Paper Warmth | `#f6f5f4` | `--color-paper-warmth` | Page canvas, hero background, section backgrounds — warm off-white gives the system its tactile analog feel |
+| Pure White | `#ffffff` | `--color-pure-white` | Card surfaces, elevated panels, logo-wall background, contrast text on dark cards |
+| Ink Black | `#000000` | `--color-ink-black` | Primary text, nav links, headings — deployed at varying alpha (100%, 95%, 90%, 60%, 40%, 20%) to build hierarchy without adding new colors |
+| Charcoal | `#111111` | `--color-charcoal` | Dark text variant for specific UI moments where pure black would feel too harsh |
+| Stone | `#757575` | `--color-stone` | Secondary nav text, muted helper text, deactivated button labels — the 60% alpha of ink |
+| Graphite | `#615d59` | `--color-graphite` | Body text with warm cast — the brown-tinted gray that harmonizes with the warm canvas |
+| Slate | `#696969` | `--color-slate` | Card body text, secondary content within cards — slightly lighter than Stone |
+| Sky Tint | `#e6f3fe` | `--color-sky-tint` | Ghost CTA background, soft blue wash for secondary actions, tinted hover states |
+| Marigold | `#ffb110` | `--color-marigold` | Hero pill highlights, Agent feature card background, warm accent for callouts — the first color the eye finds |
+| Coral | `#f64932` | `--color-coral` | Decorative card backgrounds, hero pill alternates, warm-to-hot accent in the rotating cast |
+| Saffron | `#e89d01` | `--color-saffron` | Body-section accent panels, secondary warm yellow for background washes |
+| Vermillion | `#e32d14` | `--color-vermillion` | Deep coral for saturated body-section backgrounds, signal-warm accent |
+| Mocha | `#b18164` | `--color-mocha` | Warm brown accent for body-section panels — the earthy member of the accent cast |
+| Signal Blue | `#097fe8` | `--color-signal-blue` | Decorative card backgrounds, hero decorative highlights, secondary blue for visual variety |
+| Sky Wash | `#62aef0` | `--color-sky-wash` | Lightest blue in the cast — decorative backgrounds, heading accent highlights, airy washes |
+| Midnight Ink | `#02093a` | `--color-midnight-ink` | Violet wash for highlight backgrounds, decorative bands, and soft emphasis behind content. |
 
 ## Tokens — Typography
 
-### halyard-display-variable — The only typeface. Weight 500 at 51px drives display headlines with extreme uppercase confidence; the same family at weight 400 / 29px becomes the system's sole mixed-case body voice. Letter-spacing stays normal — the geometric forms do the work without tightening. Substitute: 'Inter', 'Söhne', or 'Neue Haas Grotesk' for close structural match. · `--font-halyard-display-variable`
-- **Substitute:** Inter or Söhne
-- **Weights:** 400, 500
-- **Sizes:** 8, 10, 12, 14, 15, 18, 24, 29, 41, 51px
-- **Line height:** 0.90–1.26
-- **Letter spacing:** normal across all sizes — no negative tracking even at display scale, the font's geometry handles visual weight without compression
-- **OpenType features:** `"ss01" on`
-- **Role:** The only typeface. Weight 500 at 51px drives display headlines with extreme uppercase confidence; the same family at weight 400 / 29px becomes the system's sole mixed-case body voice. Letter-spacing stays normal — the geometric forms do the work without tightening. Substitute: 'Inter', 'Söhne', or 'Neue Haas Grotesk' for close structural match.
+### NotionInter — Primary sans-serif — geometric humanist with slight quirks, deployed at 400 for body, 500 for nav/UI, 600-700 for display headings. The type-scale uses aggressive negative letter-spacing at large sizes (-4.6px at 96px, -2px at 72px) that tightens the headline to feel confident and compact rather than airy. · `--font-notioninter`
+- **Substitute:** Inter
+- **Weights:** 400, 500, 600, 700
+- **Sizes:** 12px, 14px, 16px, 20px, 22px, 24px, 40px, 42px, 48px, 54px, 72px, 96px
+- **Line height:** 0.83, 1.00, 1.04, 1.14, 1.21, 1.27, 1.33, 1.40, 1.43, 1.50
+- **Letter spacing:** -0.048em at 96px, -0.036em at 42px, -0.035em at 54px, -0.028em at 72px, -0.011em at 22px, +0.01em at 12px, normal at body sizes
+- **OpenType features:** `"lnum", "locl" 0`
+- **Role:** Primary sans-serif — geometric humanist with slight quirks, deployed at 400 for body, 500 for nav/UI, 600-700 for display headings. The type-scale uses aggressive negative letter-spacing at large sizes (-4.6px at 96px, -2px at 72px) that tightens the headline to feel confident and compact rather than airy.
 
-### Arial — System fallback for micro-legal labels (8px uppercase credits like "* ADOBE ILLUSTRATOR"). Not a design choice — a necessity for system-rendered disclaimers. · `--font-arial`
-- **Substitute:** system-ui
-- **Weights:** 400, 500
-- **Sizes:** 8px
-- **Line height:** 1.20
-- **Role:** System fallback for micro-legal labels (8px uppercase credits like "* ADOBE ILLUSTRATOR"). Not a design choice — a necessity for system-rendered disclaimers.
+### Lyon Text — Editorial serif reserved for specific body-text moments and section intros — used sparingly (4 instances) to give voice a literary weight, like a pull-quote in a magazine layout. Functions as a system accent, not a parallel hierarchy. · `--font-lyon-text`
+- **Substitute:** Source Serif Pro
+- **Weights:** 400
+- **Sizes:** 18px, 32px
+- **Line height:** 1.25, 1.56
+- **Role:** Editorial serif reserved for specific body-text moments and section intros — used sparingly (4 instances) to give voice a literary weight, like a pull-quote in a magazine layout. Functions as a system accent, not a parallel hierarchy.
 
 ### Type Scale
 
 | Role | Size | Line Height | Letter Spacing | Token |
 |------|------|-------------|----------------|-------|
-| subheading | 18px | 1 | — | `--text-subheading` |
-| heading-sm | 24px | 1.09 | — | `--text-heading-sm` |
-| body | 29px | 1.26 | — | `--text-body` |
-| heading | 41px | 0.9 | — | `--text-heading` |
-| display | 51px | 0.9 | — | `--text-display` |
+| caption | 12px | 1.33 | 0.12px | `--text-caption` |
+| body-sm | 14px | 1.43 | — | `--text-body-sm` |
+| body | 16px | 1.5 | — | `--text-body` |
+| subheading | 20px | 1 | — | `--text-subheading` |
+| heading-sm | 22px | 1.27 | -0.242px | `--text-heading-sm` |
+| heading | 40px | 1.5 | — | `--text-heading` |
+| heading-lg | 48px | 1.5 | — | `--text-heading-lg` |
+| display-sm | 54px | 1.04 | -1.89px | `--text-display-sm` |
+| display | 72px | 1.21 | -2.016px | `--text-display` |
+| display-lg | 96px | 1.04 | -4.608px | `--text-display-lg` |
 
 ## Tokens — Spacing & Shapes
+
+**Base unit:** 4px
 
 **Density:** comfortable
 
@@ -53,177 +70,180 @@ The ORYZO visual system treats a single product object like a museum artifact: f
 
 | Name | Value | Token |
 |------|-------|-------|
-| 6 | 6px | `--spacing-6` |
+| 4 | 4px | `--spacing-4` |
 | 8 | 8px | `--spacing-8` |
-| 9 | 9px | `--spacing-9` |
-| 10 | 10px | `--spacing-10` |
 | 12 | 12px | `--spacing-12` |
-| 14 | 14px | `--spacing-14` |
-| 18 | 18px | `--spacing-18` |
+| 16 | 16px | `--spacing-16` |
+| 20 | 20px | `--spacing-20` |
 | 24 | 24px | `--spacing-24` |
-| 31 | 31px | `--spacing-31` |
-| 41 | 41px | `--spacing-41` |
-| 45 | 45px | `--spacing-45` |
-| 68 | 68px | `--spacing-68` |
-| 204 | 204px | `--spacing-204` |
+| 28 | 28px | `--spacing-28` |
+| 32 | 32px | `--spacing-32` |
+| 36 | 36px | `--spacing-36` |
+| 64 | 64px | `--spacing-64` |
+| 80 | 80px | `--spacing-80` |
 
 ### Border Radius
 
 | Element | Value |
 |---------|-------|
 | cards | 12px |
-| inputs | 0px |
-| full-round | 9999px |
-| buttons-pill | 36px |
-| buttons-outlined | 22.5px |
+| pills | 9999px |
+| small | 4px |
+| buttons | 8px |
 
 ### Layout
 
+- **Page max-width:** 1440px
+- **Section gap:** 80px
 - **Card padding:** 24px
-- **Element gap:** 18px
+- **Element gap:** 8px
 
 ## Components
 
-### Pill Button (Filled)
-**Role:** Primary solid CTA — used once on the page for the Lusion studio link
+### Primary CTA Button
+**Role:** Filled blue action button for the main conversion goal
 
-36px border-radius, Bark Brown (#382416) background, Warm Cream (#ffedd7) text, 14px 24px vertical/horizontal padding, weight 500, uppercase, 8–14px size. The only filled action surface in the system — its rarity is the signal.
+Background #0075de, text #ffffff at 14px NotionInter weight 500, border-radius 8px, padding 6px 15px. The only chromatic filled button in the system — every other action defers to ghost or text styles.
 
-### Outlined Ghost Button
-**Role:** Secondary action or decorative button — cream border on transparent fill
+### Ghost CTA Button
+**Role:** Secondary action with a subtle blue tint
 
-22.5px border-radius, transparent background, 1px Warm Cream border, Warm Cream text, 7.5px vertical padding, 0px horizontal padding, weight 500, uppercase, 8–14px. Border does the work; no fill needed.
+Background #e6f3fe (sky tint), text #0075de at 14px weight 500, border-radius 8px, padding 6px 15px. Pairs beside the primary CTA as the lower-commitment alternative.
 
-### Underline Text Link
-**Role:** Inline links and navigation items — borderless, relying on underline
+### Ghost Text Button
+**Role:** Minimal action button with no fill or border
 
-0px radius, transparent background, Warm Cream text, 0px padding, weight 500, uppercase, 12–14px. The default interaction — no container, just text with an underline indicator.
+Background transparent, text #000000 at 95% alpha, border-radius 8px, padding 6px 15px. The default for tertiary actions in the hero and feature cards.
 
-### Input Field (Underline Only)
-**Role:** Minimal form input — bottom border only, no full outline
+### Outlined Text Button
+**Role:** Bordered button with no fill for mid-priority actions
 
-0px radius, transparent background, 1px Warm Cream bottom border, Warm Cream text, 1px 2px padding, 36px right padding for an inline action. The form mirrors the ghost-button restraint — no boxes, just a line.
+Background transparent, text #000000 at 90% alpha, 1px border at same color, border-radius 4px, padding 5px 10px. Used for compact inline actions like view-all links.
 
-### Fixed Top Navigation
-**Role:** Persistent site navigation — minimal, 4 items, uppercase micro-type
+### Muted Nav Link
+**Role:** Low-emphasis navigation item
 
-Logo wordmark "ORYZO" left-aligned in Warm Cream at 12–14px weight 500 uppercase. Right-aligned nav items: INTRO (with dashed underline indicator for active), FEATURES, PRODUCT, CONTACT — all 12px weight 500 uppercase, Warm Cream. Transparent background over the hero photograph.
+Background transparent, text #000000 at 54% alpha, border-radius 8px, padding 12px 16px. The default nav-item state — text darkens to full alpha on hover, never gets an underline.
 
-### Vertical Sidebar Label
-**Role:** Edge branding — vertical text running down the right margin
+### Pill Tag
+**Role:** Category label or status indicator
 
-Rotated 90° text "ORYZO 1-MODEL" in Warm Cream, 10–12px uppercase, sits flush right. Functions as a product serial number — a physical-product artifact translated to UI.
+Background colored fill (varies), text #000000 or #ffffff, border-radius 9999px, padding 4px 12px. Used for status labels like 'In progress', 'To do', 'Complete' in product mockups.
 
-### Logo Wordmark
-**Role:** Brand identifier — the only graphical mark
+### White Feature Card
+**Role:** Standard content card on warm canvas
 
-"ORYZO" in Halyard Display Variable weight 500 uppercase, up to 51px+ at display scale with 0.9 line-height. Used at two sizes: navigation lockup (12–14px) and hero lockup (51px+). No icon, no symbol — pure typographic identity.
+Background #ffffff, border-radius 12px, padding 24px, 1px solid border at rgba(0,0,0,0.08), no shadow. The default card — sits on the warm canvas like a sticky note.
 
-### Hero Overlay Info Card
-**Role:** Semi-transparent attribution card in the hero
+### Accent Feature Card
+**Role:** Full-bleed colored card for feature blocks
 
-12px border-radius, semi-transparent Warm Cream or dark fill with low opacity, contains uppercase heading "DESIGNED BY LUSION, THE AWARD-WINNING DESIGN STUDIO." plus a dashed divider and body text. Overlays the hero photograph bottom-left.
+Background one of the accent hues (#ffb110, #f64932, #62aef0, #e6f3fe, etc.), border-radius 12px, padding 24px, no border. Functions as a colored panel that paints the canvas — text inside uses #000000 or #ffffff depending on contrast.
 
-### Product Reveal Section
-**Role:** Full-viewport void-mode section — centered 3D render with flanking text
+### Dark Feature Card
+**Role:** Inverted card for dark-on-light contrast moments
 
-100vh height, Walnut Shadow (#100904) background, centered 3D product render, left-aligned heading at 41px uppercase "ISN'T JUST A COASTER.", right-aligned body copy at 29px weight 400 mixed-case. The signature layout pattern — three columns, generous gutters.
+Background #02093a (midnight), text #ffffff, border-radius 12px, padding 24px. The system uses this sparingly as a 'dark mode island' on the light page — not as a full dark theme.
 
-### Section Divider (Dashed Hairline)
-**Role:** Visual separator between content blocks
+### Hero Highlight Pill
+**Role:** Colored pill placed behind a verb in hero copy
 
-1px dashed line in Cork Border (#40372e) or Driftwood (#6c5f51). Used sparingly between text blocks, never as decoration — always carrying structural meaning.
+Background accent color (peach #f6d5b8, yellow #ffb110, or coral #f64932), text #000000, border-radius 9999px, padding 8px 24px. The signature typographic device — wraps a single word in a sentence to draw the eye and give it weight.
 
-### Video Thumbnail Card
-**Role:** Embedded video preview with play indicator
+### Avatar Character Mark
+**Role:** Decorative illustrated character in a circle
 
-Small rectangular card, 12px radius, positioned in the lower-right of the hero. Contains a miniature ORYZO wordmark and a play icon. Functions as a secondary entry point without competing with the primary CTA.
+40-48px circle with 2px colored border (blue, red, yellow), flat illustration inside, white background. Used in hero arrangements and scattered as decorative marks with squiggle/sparkle companions.
 
-### Legal/Disclaimer Text
-**Role:** System-rendered micro-copy in Arial 8px
+### Kanban Task Card
+**Role:** Product UI task item in the embedded product mockup
 
-Fallback font (Arial 8px weight 500 uppercase) for things like "* ADOBE ILLUSTRATOR" footnotes. Visually subordinate — intentionally uses a different typeface to signal "this is not design, this is compliance."
+Background #ffffff, border-radius 8px, padding 8px 12px, 1px border at rgba(0,0,0,0.08), small status text and emoji. Replicates the real Notion task card aesthetic inside the marketing screenshot.
+
+### Section Header
+**Role:** Large heading that opens a new content section
+
+NotionInter weight 500-700, 48-54px, line-height 1.04-1.5, letter-spacing -1.89 to -2.016px. Color #000000. Followed by an optional Lyon Text subhead at 18px for editorial voice.
+
+### Logo Wall Item
+**Role:** Greyscale partner/client logo
+
+SVG logo at native proportions, color desaturated to near-black (#000000 at 60% alpha), no individual borders or backgrounds. Centered grid layout with generous spacing — logos are treated as typography, not imagery.
 
 ## Do's and Don'ts
 
 ### Do
-- Set all UI text in #ffedd7 (Warm Cream) — never use pure #fff; the warm tint is the system's signature.
-- Use #dc5000 (Ember) only for credit lines, the "Built by" label, and the Lusion studio link — a single accent earns its rarity through restraint.
-- Set type in uppercase weight 500 across the entire interface; use weight 400 / mixed case only for the 29px body copy that explains the product.
-- Use 36px border-radius for the one filled CTA and 22.5px for outlined ghost buttons; 12px for cards; 0px for inputs and inline links — these four values are the entire radius vocabulary.
-- Set section gaps at 100vh — each section gets its own full viewport, never compress product reveals into bands.
-- Use 1px dashed lines in #40372 for section dividers; avoid solid dividers and avoid any divider thicker than 2px.
-- Center the 3D product render in every void-mode section with text flanking symmetrically left and right at 18px gutters.
+- Use #f6f5f4 as the page canvas and #ffffff for card surfaces — never invert this hierarchy by putting a warm card on a white page
+- Reserve #0075de for the single primary action per screen; all secondary actions should use ghost (#e6f3fe bg) or text styles
+- Apply negative letter-spacing to all display sizes: -4.6px at 96px, -2px at 72px, -1.9px at 54px — body text stays at normal tracking
+- Use 1px solid borders at rgba(0,0,0,0.08) instead of shadows to separate cards from the canvas
+- Use 12px border-radius for cards and 8px for buttons; reserve 9999px for pills and hero highlight pills only
+- Paint feature-block backgrounds with accent hues (#ffb110, #f64932, #62aef0, #02093a) rather than adding borders or shadows to create visual variety
+- Keep motion at 200ms with ease timing for hovers and transitions; reserve spring/bounce animations for character marks and hero elements
 
 ### Don't
-- Never use pure #fff for text or #000 for backgrounds — the warm cream and walnut shadow are the system; purity reads as wrong here.
-- Never apply #dc5000 to buttons, CTAs, or interactive surfaces — the orange is editorial credit only.
-- Never use lowercase or sentence-case for headings, nav, or labels; the only mixed-case text is the 29px body description.
-- Never add drop shadows to cards, buttons, or sections — depth comes from the two-step surface stack (#100904 → #382416), not from blur.
-- Never use border-radius below 12px on containers — the geometry is deliberately chunky, not sharp.
-- Never use more than one filled button per section; restraint is the design language.
-- Never center-align body copy — headings and body text are always left-aligned, even when flanking a centered image.
+- Do not use pure #ffffff as the page background — the warm #f6f5f4 canvas is the system's signature warmth
+- Do not add shadows to content cards — the system uses hairline borders only, shadows appear only on the product UI mockup and nav bar
+- Do not use multiple chromatic button colors in the same view — #0075de is the only filled button; color variety belongs in card backgrounds
+- Do not use #000000 at 100% for all text — build hierarchy through alpha (100%, 95%, 60%, 40%) on the same color
+- Do not use Lyon Text for UI labels or navigation — it is reserved for editorial body copy moments at 18px
+- Do not apply border-radius larger than 12px to rectangular content — pills (9999px) and cards (12px) are the two shapes
+- Do not use gradients — the system is strictly flat fills; visual depth comes from the warm-to-white surface contrast and accent card backgrounds
 
 ## Surfaces
 
 | Level | Name | Value | Purpose |
 |-------|------|-------|---------|
-| 0 | Walnut Shadow | `#100904` | Full-bleed page canvas and section background |
-| 1 | Bark Brown | `#382416` | Filled button surface, the only elevated solid |
-| 2 | Cork Border | `#40372` | Hairline borders, dashed dividers, card outlines |
-| 3 | Warm Cream | `#ffedd7` | Foreground text, navigation, interactive borders |
+| 0 | Page Canvas | `#f6f5f4` | Warm off-white base for the entire page — the analog-paper feel starts here |
+| 1 | Card Surface | `#ffffff` | White cards on warm canvas — pure white is reserved for surfaces that need to read as 'on top of the page' |
+| 2 | Accent Card Surface | `#ffb110` | Colored card backgrounds (yellow, coral, blue, midnight) — feature blocks paint the canvas with single-hue fills |
+| 3 | Dark Card Surface | `#02093a` | Deep navy panels for dark-mode-style feature blocks — inverting the surface stack with white text on midnight |
 
 ## Elevation
 
-The system rejects shadow-based elevation entirely. Depth is achieved through a two-step surface stack: #100904 (canvas) → #382416 (elevated solid). There are no blur, no offset, no opacity-based shadows — only a 1–2 value luminance step. This keeps the interface flat and editorial, letting the 3D product renders provide all visual depth in void-mode sections.
+- **Nav (sticky):** `0px 0.7px 1.462px 0px rgb(0% 0% 0%/0.015), 0px 3px 9px 0px rgb(0% 0% 0%/0.03)`
+- **Product UI Mockup:** `0px 4px 12px rgba(0, 0, 0, 0.1)`
 
 ## Imagery
 
-Photography is editorial, top-down, and in-context: the cork coaster sits on a green cutting mat surrounded by pencils, a craft knife, and a paperclip — tools of the craft visible in frame. The green cutting mat (#445231) is a hero-only element, not a UI token. 3D renders dominate the product reveal sections: the cork coaster is shown isolated against Walnut Shadow, lit from the upper right with a warm rim light, rotating from top-down to 3/4 angle between sections. No lifestyle photography, no people, no stock imagery — the object is the hero and the tools are its context. Images are full-bleed, sharp-edged (no rounded masks), and treated with high contrast and warm grading.
+Illustration-first, photography-free. The visual language is built from flat illustrated character marks (round faces in 2px colored circles), abstract decorative elements (hand-drawn squiggles, sparkles, arrows, flower shapes), and product UI mockups. Character marks appear in the hero as a horizontal row of 7 avatars and scatter across the page as playful punctuation. Product screenshots are the only 'real' visuals — they show the actual Notion interface (kanban boards, document views, AI agent panels) with full chrome and real data. The product mockup in the hero is large, centered, and casts a single drop-shadow to separate it from the canvas. There are no lifestyle photos, no stock imagery, no abstract 3D renders.
 
 ## Layout
 
-Full-bleed throughout — no max-width container, every section spans 100vw. Hero: full-viewport top-down photograph with a massive ORYZO wordmark (51px+) in the upper-left, tagline above, fixed minimal nav upper-right, vertical sidebar label running down the right edge, semi-transparent info card lower-left, video thumbnail lower-right. Subsequent sections: full-viewport Walnut Shadow canvas with a centered 3D product render flanked by left-aligned heading and right-aligned body copy — a three-column grid (text / object / text) with generous 18px gutters. Section transitions are seamless dark-on-dark; the only breaks are hairline dashed dividers. Navigation is fixed, transparent, and 4 items max. No sidebar, no footer chrome, no cards-within-cards — every screen is a single statement.
-
-## Typography Voice
-
-The system has exactly two typographic modes:
-
-1. UPPERCASE WEIGHT 500 — the default for everything: nav, headings, labels, links, button text, legal. The voice is declarative, confident, museum-label. Sizes range from 8px (legal) to 51px (display). Line-height tightens with size: 1.2 at caption, 1.0 at body-sm, 0.9 at display. No letter-spacing adjustment — the font's geometry is tight enough at every scale.
-
-2. MIXED CASE WEIGHT 400 — the exception, used only at 29px for the descriptive body copy that explains the product. This is the system's only conversational voice: "Designed to lift, insulate, and grip in all the right ways. Oryzo makes the simplest moment feel considered." The weight drop and case change are the signal — when the text shifts from 500/UPPER to 400/mixed, the user knows they are reading description, not label.
-
-The bold signature: line-height 0.9 at 41–51px display sizes. This is unusually tight — most editorial sites use 1.0–1.1. At 0.9, the uppercase letterforms overlap their line-height bounds, creating a sculptural block effect. The display type doesn't sit in lines; it stacks as solid form.
+Centered, max-width contained at ~1440px. The hero is a centered stack: character-mark row → large two-line headline with an embedded colored pill → subhead → two-button CTA row → large product UI mockup. Below the hero, sections alternate between white-card grids and full-bleed colored accent panels. The logo wall is a centered single-row grid of greyscale partner logos. Feature blocks use a 2-column layout (text left, colored panel right) that alternates left-right between sections. The 'Ask your on-demand assistants' section uses a 2×2 card grid where the top card is full-width and the bottom row splits into two equal columns. Section gaps are generous (~80px) creating a calm vertical rhythm. Navigation is a fixed top bar at 64px height with centered nav items and right-aligned action buttons.
 
 ## Agent Prompt Guide
 
 ## Quick Color Reference
-- text: #ffedd7 (Warm Cream)
-- background: #100904 (Walnut Shadow)
-- surface: #382416 (Bark Brown)
-- border: #40372e (Cork Border)
-- accent: #dc5000 (Ember)
-- primary action: no distinct CTA color
+- text: #000000 (build hierarchy through alpha: 100% / 95% / 60% / 40%)
+- background: #f6f5f4 (warm off-white canvas)
+- card surface: #ffffff
+- border: rgba(0, 0, 0, 0.08)
+- primary action: #0075de (filled action)
+- accent: #ffb110, #f64932, #62aef0, #02093a (rotate through these for card backgrounds)
 
-## 3-5 Example Component Prompts
+## Example Component Prompts
 
-1. **Hero Lockup:** Full-bleed Walnut Shadow (#100904) canvas. ORYZO wordmark at 51px Halyard Display Variable weight 500 uppercase, line-height 0.9, color #ffedd7, positioned upper-left with 24px margin. Tagline "MADE FOR MUGS, BUILT FOR TABLES." at 12px weight 500 uppercase above the wordmark, also #ffedd7.
+1. **Hero headline with highlight pill**: Render a centered hero on #f6f5f4. Headline: 'Where teams and agents Create together.' at 72px NotionInter weight 500, #000000, line-height 1.21, letter-spacing -2.016px. Wrap the word 'Create' in a pill: background #f6d5b8, text #000000, border-radius 9999px, padding 8px 24px, inline within the sentence. Subhead below at 18px Lyon Text weight 400, #615d59, line-height 1.56.
 
-No distinct primary action color was observed; use the extracted neutral button treatments instead of inventing a filled CTA color.
+2. **White feature card**: Create a card on the warm canvas. Background #ffffff, border-radius 12px, padding 24px, 1px solid border rgba(0,0,0,0.08). No shadow. Title at 22px NotionInter weight 700, #000000, letter-spacing -0.242px. Body at 16px weight 400, #615d59, line-height 1.5.
 
-3. **Ghost Outline Button:** Transparent background, 1px Warm Cream (#ffedd7) border, 22.5px border-radius, 7.5px vertical padding, Warm Cream text at 12px weight 500 uppercase. The secondary action vocabulary.
+3. **Accent feature block**: Create a full-bleed colored panel. Background #ffb110, border-radius 12px, padding 24px. Title at 40px NotionInter weight 400, #000000, line-height 1.5. A product UI screenshot sits inside with a drop-shadow at 0px 4px 12px rgba(0,0,0,0.1) to create depth against the colored background.
 
-4. **Product Reveal Section:** Full-viewport (100vh) Walnut Shadow (#100904) background. Centered 3D product render occupying the middle 40% of width. Left column: heading "ISN'T JUST A COASTER." at 41px weight 500 uppercase, line-height 0.9, #ffedd7, left-aligned. Right column: body copy at 29px weight 400 mixed-case, line-height 1.26, #ffedd7, left-aligned within the column. 18px gutter between the centered object and each text column.
+4. Create a Primary Action Button: #0075de background, #ffffff text, 9999px radius, compact pill padding. Use this filled treatment for the main CTA.
 
-5. **Top Navigation:** Fixed position, transparent background, full-width. Left: ORYZO wordmark at 12px Halyard weight 500 uppercase #ffedd7. Right: four nav items (INTRO, FEATURES, PRODUCT, CONTACT) at 12px weight 500 uppercase #ffedd7, with a 1px dashed #40372e underline beneath the active item.
+5. **Kanban task card (product mockup)**: Create a task card inside a product screenshot. Background #ffffff, border-radius 8px, padding 8px 12px, 1px solid border rgba(0,0,0,0.08). Task text at 14px NotionInter weight 500, #000000. Optional status pill above: background colored fill, text #ffffff, border-radius 9999px, padding 2px 8px, font 12px.
+
+## Decorative Marks System
+
+Character marks (round illustrated faces in 2px colored circles) and abstract decorative elements (squiggles, sparkles, arrows, flower shapes) are deployed as visual punctuation, not as illustrations with content. They cluster around hero copy, scatter near feature cards, and animate on scroll. Colors for the circle borders rotate through the accent palette: #097fe8 (blue), #f64932 (coral), #ffb110 (yellow), #62aef0 (sky). The marks are 40-48px circles with flat color illustrations inside, always on white fills. They never carry information or link to content — they exist purely to make the interface feel alive and handcrafted.
 
 ## Similar Brands
 
-- **Lusion (the studio credited in the design)** — Same warm-dark editorial canvas, single-product hero treatment, pill-button controls, and 3D product renders as the visual centerpiece
-- **Active Theory** — Full-bleed dark mode with a single interactive 3D object commanding the viewport, minimal UI chrome, and oversized uppercase type
-- **Resn** — Editorial product-showcase sites with top-down craft photography, warm grading, and typography that steps back to let the object speak
-- **Tool of North America** — Studio portfolio sites that treat a single concept object with museum-presentation gravity — dark void, cream labels, generous negative space
-- **Buck (studio)** — Work-reveal layouts that alternate between photographic context and isolated product renders against near-black backgrounds
+- **Linear** — Same monochrome-light approach with a single accent color, hairline-border cards, generous display typography with negative tracking, and zero shadows on content surfaces
+- **Stripe** — Same editorial use of serif+sans pairing, large display headlines with tight letter-spacing, and color reserved for functional emphasis rather than decoration
+- **Figma** — Same playful illustrated character marks as decorative punctuation, warm light canvas, and rotating accent hues for section variety
+- **Craft Docs** — Same paper-warm aesthetic with off-white canvas, restrained color palette, and a focus on the document-as-surface metaphor
 
 ## Quick Start
 
@@ -232,71 +252,98 @@ No distinct primary action color was observed; use the extracted neutral button 
 ```css
 :root {
   /* Colors */
-  --color-warm-cream: #ffedd7;
-  --color-walnut-shadow: #100904;
-  --color-bark-brown: #382416;
-  --color-cork-border: #40372e;
-  --color-driftwood: #6c5f51;
-  --color-ember-accent: #dc5000;
-  --color-pure-black: #000000;
+  --color-notion-blue: #0075de;
+  --color-paper-warmth: #f6f5f4;
+  --color-pure-white: #ffffff;
+  --color-ink-black: #000000;
+  --color-charcoal: #111111;
+  --color-stone: #757575;
+  --color-graphite: #615d59;
+  --color-slate: #696969;
+  --color-sky-tint: #e6f3fe;
+  --color-marigold: #ffb110;
+  --color-coral: #f64932;
+  --color-saffron: #e89d01;
+  --color-vermillion: #e32d14;
+  --color-mocha: #b18164;
+  --color-signal-blue: #097fe8;
+  --color-sky-wash: #62aef0;
+  --color-midnight-ink: #02093a;
 
   /* Typography — Font Families */
-  --font-halyard-display-variable: 'halyard-display-variable', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-arial: 'Arial', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-notioninter: 'NotionInter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-lyon-text: 'Lyon Text', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 
   /* Typography — Scale */
-  --text-subheading: 18px;
+  --text-caption: 12px;
+  --leading-caption: 1.33;
+  --tracking-caption: 0.12px;
+  --text-body-sm: 14px;
+  --leading-body-sm: 1.43;
+  --text-body: 16px;
+  --leading-body: 1.5;
+  --text-subheading: 20px;
   --leading-subheading: 1;
-  --text-heading-sm: 24px;
-  --leading-heading-sm: 1.09;
-  --text-body: 29px;
-  --leading-body: 1.26;
-  --text-heading: 41px;
-  --leading-heading: 0.9;
-  --text-display: 51px;
-  --leading-display: 0.9;
+  --text-heading-sm: 22px;
+  --leading-heading-sm: 1.27;
+  --tracking-heading-sm: -0.242px;
+  --text-heading: 40px;
+  --leading-heading: 1.5;
+  --text-heading-lg: 48px;
+  --leading-heading-lg: 1.5;
+  --text-display-sm: 54px;
+  --leading-display-sm: 1.04;
+  --tracking-display-sm: -1.89px;
+  --text-display: 72px;
+  --leading-display: 1.21;
+  --tracking-display: -2.016px;
+  --text-display-lg: 96px;
+  --leading-display-lg: 1.04;
+  --tracking-display-lg: -4.608px;
 
   /* Typography — Weights */
   --font-weight-regular: 400;
   --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
 
   /* Spacing */
-  --spacing-6: 6px;
+  --spacing-unit: 4px;
+  --spacing-4: 4px;
   --spacing-8: 8px;
-  --spacing-9: 9px;
-  --spacing-10: 10px;
   --spacing-12: 12px;
-  --spacing-14: 14px;
-  --spacing-18: 18px;
+  --spacing-16: 16px;
+  --spacing-20: 20px;
   --spacing-24: 24px;
-  --spacing-31: 31px;
-  --spacing-41: 41px;
-  --spacing-45: 45px;
-  --spacing-68: 68px;
-  --spacing-204: 204px;
+  --spacing-28: 28px;
+  --spacing-32: 32px;
+  --spacing-36: 36px;
+  --spacing-64: 64px;
+  --spacing-80: 80px;
 
   /* Layout */
+  --page-max-width: 1440px;
+  --section-gap: 80px;
   --card-padding: 24px;
-  --element-gap: 18px;
+  --element-gap: 8px;
 
   /* Border Radius */
+  --radius-md: 4px;
+  --radius-lg: 8px;
   --radius-xl: 12px;
-  --radius-2xl: 22.5px;
-  --radius-3xl: 36px;
   --radius-full: 9999px;
 
   /* Named Radii */
   --radius-cards: 12px;
-  --radius-inputs: 0px;
-  --radius-full-round: 9999px;
-  --radius-buttons-pill: 36px;
-  --radius-buttons-outlined: 22.5px;
+  --radius-pills: 9999px;
+  --radius-small: 4px;
+  --radius-buttons: 8px;
 
   /* Surfaces */
-  --surface-walnut-shadow: #100904;
-  --surface-bark-brown: #382416;
-  --surface-cork-border: #40372;
-  --surface-warm-cream: #ffedd7;
+  --surface-page-canvas: #f6f5f4;
+  --surface-card-surface: #ffffff;
+  --surface-accent-card-surface: #ffb110;
+  --surface-dark-card-surface: #02093a;
 }
 ```
 
@@ -305,49 +352,72 @@ No distinct primary action color was observed; use the extracted neutral button 
 ```css
 @theme {
   /* Colors */
-  --color-warm-cream: #ffedd7;
-  --color-walnut-shadow: #100904;
-  --color-bark-brown: #382416;
-  --color-cork-border: #40372e;
-  --color-driftwood: #6c5f51;
-  --color-ember-accent: #dc5000;
-  --color-pure-black: #000000;
+  --color-notion-blue: #0075de;
+  --color-paper-warmth: #f6f5f4;
+  --color-pure-white: #ffffff;
+  --color-ink-black: #000000;
+  --color-charcoal: #111111;
+  --color-stone: #757575;
+  --color-graphite: #615d59;
+  --color-slate: #696969;
+  --color-sky-tint: #e6f3fe;
+  --color-marigold: #ffb110;
+  --color-coral: #f64932;
+  --color-saffron: #e89d01;
+  --color-vermillion: #e32d14;
+  --color-mocha: #b18164;
+  --color-signal-blue: #097fe8;
+  --color-sky-wash: #62aef0;
+  --color-midnight-ink: #02093a;
 
   /* Typography */
-  --font-halyard-display-variable: 'halyard-display-variable', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-arial: 'Arial', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-notioninter: 'NotionInter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-lyon-text: 'Lyon Text', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 
   /* Typography — Scale */
-  --text-subheading: 18px;
+  --text-caption: 12px;
+  --leading-caption: 1.33;
+  --tracking-caption: 0.12px;
+  --text-body-sm: 14px;
+  --leading-body-sm: 1.43;
+  --text-body: 16px;
+  --leading-body: 1.5;
+  --text-subheading: 20px;
   --leading-subheading: 1;
-  --text-heading-sm: 24px;
-  --leading-heading-sm: 1.09;
-  --text-body: 29px;
-  --leading-body: 1.26;
-  --text-heading: 41px;
-  --leading-heading: 0.9;
-  --text-display: 51px;
-  --leading-display: 0.9;
+  --text-heading-sm: 22px;
+  --leading-heading-sm: 1.27;
+  --tracking-heading-sm: -0.242px;
+  --text-heading: 40px;
+  --leading-heading: 1.5;
+  --text-heading-lg: 48px;
+  --leading-heading-lg: 1.5;
+  --text-display-sm: 54px;
+  --leading-display-sm: 1.04;
+  --tracking-display-sm: -1.89px;
+  --text-display: 72px;
+  --leading-display: 1.21;
+  --tracking-display: -2.016px;
+  --text-display-lg: 96px;
+  --leading-display-lg: 1.04;
+  --tracking-display-lg: -4.608px;
 
   /* Spacing */
-  --spacing-6: 6px;
+  --spacing-4: 4px;
   --spacing-8: 8px;
-  --spacing-9: 9px;
-  --spacing-10: 10px;
   --spacing-12: 12px;
-  --spacing-14: 14px;
-  --spacing-18: 18px;
+  --spacing-16: 16px;
+  --spacing-20: 20px;
   --spacing-24: 24px;
-  --spacing-31: 31px;
-  --spacing-41: 41px;
-  --spacing-45: 45px;
-  --spacing-68: 68px;
-  --spacing-204: 204px;
+  --spacing-28: 28px;
+  --spacing-32: 32px;
+  --spacing-36: 36px;
+  --spacing-64: 64px;
+  --spacing-80: 80px;
 
   /* Border Radius */
+  --radius-md: 4px;
+  --radius-lg: 8px;
   --radius-xl: 12px;
-  --radius-2xl: 22.5px;
-  --radius-3xl: 36px;
   --radius-full: 9999px;
 }
 ```

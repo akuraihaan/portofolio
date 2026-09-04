@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://portofolio-bworiey.vercel.app/sitemap.xml

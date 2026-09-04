@@ -76,7 +76,7 @@ export function initializeWorldInteractions() {
       root.style.setProperty('--hero-image-y', String((y * 4).toFixed(2)) + 'px')
     }
 
-    const card = target?.closest?.('[data-project]')
+    const card = target?.closest?.('[data-project-card]') || target?.closest?.('[data-project]')
     if (card) {
       const bounds = card.getBoundingClientRect()
       const x = (clientX - bounds.left) / Math.max(1, bounds.width) - .5

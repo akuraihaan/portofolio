@@ -25,6 +25,11 @@ Urutan migration:
 8. `supabase/migrations/202607200008_create_dynamic_content_schema.sql`
 9. `supabase/migrations/202607200009_repair_admin_authorization.sql`
 10. `supabase/migrations/202607210001_storage_uploads_and_image_paths.sql`
+11. `supabase/migrations/202607210002_sync_dynamic_media_schema.sql`
+12. `supabase/migrations/202607210003_dynamic_site_sections.sql`
+13. `supabase/migrations/202607220004_repair_portfolio_storage.sql`
+14. `supabase/migrations/202609030001_portfolio_versions.sql`
+15. `supabase/migrations/202609040001_admin_content_expansion.sql`
 
 Cara yang direkomendasikan memakai Supabase CLI:
 
@@ -34,7 +39,7 @@ supabase link --project-ref YOUR_PROJECT_REF
 supabase db push
 ```
 
-Atau buka **SQL Editor**, tempel dan jalankan file tersebut satu per satu sesuai urutan. Migration membuat 20 tabel, trigger profile otomatis, default role viewer, function security-definer, RLS, dan bucket `portfolio-public` privat. Role dan permission memakai `bigint`, sedangkan user/Auth memakai `uuid`. Migration final memastikan `dashboard.view` dan permission super admin tersedia, memperbaiki policy baca metadata akses, serta menetapkan user admin pertama jika UUID tersebut sudah ada di `auth.users`. Migration kelima memperbaiki kasus ketika user Auth dibuat setelah migration sebelumnya dijalankan.
+Atau buka **SQL Editor**, tempel dan jalankan file tersebut satu per satu sesuai urutan. Migration membuat tabel konten dinamis, trigger profile otomatis, default role viewer, function security-definer, RLS, bucket `portfolio-public`, serta tabel `portfolio_versions` dan `achievements`. Role dan permission memakai `bigint`, sedangkan user/Auth memakai `uuid`. Migration terakhir menambah field CMS untuk SEO, studi kasus, CV PDF, dan pilihan konten pada portfolio versi.
 
 ## 3. Buat Super Admin pertama
 
@@ -81,9 +86,9 @@ Reset password memakai `/reset-password` sebagai redirect path.
 
 ## 5. Storage
 
-Migration `202607210001_storage_uploads_and_image_paths.sql` memastikan bucket publik `portfolio-public` tersedia, menambah policy Storage berbasis permission `media.manage`, dan menambah path gambar tanpa menghapus URL lama. Frontend hanya menerima JPG, PNG, dan WebP dengan batas 5 MB; file tidak disimpan sebagai base64.
+Migration `202607210001_storage_uploads_and_image_paths.sql` memastikan bucket publik `portfolio-public` tersedia, menambah policy Storage berbasis permission `media.manage`, dan menambah path gambar tanpa menghapus URL lama. Frontend menerima JPG, PNG, dan WebP untuk gambar dengan batas 5 MB, serta PDF CV/dokumen dengan batas 8 MB; file tidak disimpan sebagai base64.
 
-Untuk project yang sudah menjalankan migration lama, jalankan file `202607210001_storage_uploads_and_image_paths.sql` sekali dari SQL Editor lalu refresh schema cache. Migration memastikan bucket publik `portfolio-public` tersedia, menambah policy Storage berdasarkan permission `media.manage`, dan menambah path gambar tanpa menghapus URL lama. Frontend hanya menerima JPG, PNG, dan WebP dengan batas 5 MB.
+Untuk project yang sudah menjalankan migration lama, jalankan migration tambahan `202609030001_portfolio_versions.sql` lalu `202609040001_admin_content_expansion.sql` dari SQL Editor dan refresh schema cache. Migration tambahan bersifat additive: data lama tidak dihapus, permission `achievements.manage` ditambahkan, dan bucket diperbarui agar menerima PDF.
 
 ## 6. Troubleshooting
 
