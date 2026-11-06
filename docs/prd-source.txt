@@ -1,0 +1,196 @@
+PRD Portofolio Taufik Raihandani
+Dokumen kebutuhan produk
+Versi 1.0 | 19 September 2026 | Pemilik produk Taufik Raihandani
+1 Ringkasan produk
+Portofolio ini menjadi tempat utama untuk memperkenalkan profil profesional Taufik Raihandani, menjelaskan kontribusi dalam proyek, dan membuka percakapan tentang pekerjaan atau kolaborasi. Pengunjung perlu dapat memahami bidang yang dikerjakan, menilai contoh karya, lalu menemukan kontak yang sesuai tanpa harus berpindah ke banyak platform.
+Website mencakup halaman publik dan dashboard admin. Seluruh konten profesional dikelola dari satu sumber data, termasuk profil, proyek, pengalaman, sertifikat, CV, dan versi portofolio untuk kebutuhan lamaran. Perubahan konten dapat diterbitkan melalui admin tanpa mengubah kode aplikasi.
+Masalah yang diselesaikan
+CV memberikan ringkasan pengalaman, tetapi ruangnya terbatas untuk menjelaskan proses kerja, keputusan teknis, dan hasil proyek. Tautan repository juga belum selalu menunjukkan bagian yang dikerjakan secara pribadi. Portofolio perlu menghubungkan ringkasan profil dengan bukti karya dan penjelasan kontribusi yang mudah ditelusuri.
+Pemilik juga membutuhkan cara untuk menyesuaikan pilihan karya bagi kebutuhan yang berbeda. Versi untuk posisi Web Developer, misalnya, dapat menonjolkan pengembangan aplikasi, sedangkan versi teknologi pendidikan dapat memberi ruang lebih besar pada rancangan pembelajaran dan evaluasi.
+Keputusan utama
+Website ditujukan untuk satu pemilik. Pengunjung dapat melihat konten publik, mengunduh dokumen yang disediakan, dan mengirim pesan tanpa membuat akun.
+Next.js menjadi dasar aplikasi. Integrasi data, autentikasi, dan penyimpanan yang sudah tersedia dipertahankan setelah pemeriksaan proyek.
+Profil dan seluruh konten portofolio dibaca dari database. Nilai yang sengaja dikosongkan tetap kosong; aplikasi tidak mengisinya kembali dari contoh bawaan.
+DESIGN.md menjadi dasar tampilan. Karakter modern dikembangkan melalui komposisi, transisi, dan interaksi yang ringan.
+Publikasi dilakukan secara sengaja. Mengedit draf tidak langsung mengubah halaman yang sedang dibaca pengunjung.
+Batas dokumen
+PRD ini menetapkan perilaku produk, aturan data, prioritas, dan kondisi penerimaan. Nama tabel serta rute merupakan rancangan logis yang dapat disesuaikan dengan struktur proyek. Perubahan struktur harus tetap menghasilkan perilaku yang sama dan menjaga data yang sudah tersimpan.
+Bagian 2 sampai 3 menjelaskan sasaran dan struktur website. Bagian 4 sampai 12 merinci fitur. Bagian 13 sampai 16 memuat desain, data, keamanan, dan mutu layanan. Bagian 17 sampai 18 digunakan untuk pengujian serta perencanaan rilis.
+2 Sasaran pengguna dan keberhasilan produk
+Pengguna utama
+Ukuran keberhasilan
+Angka berikut merupakan target penerimaan produk. Pengukuran dilakukan setelah website memiliki konten nyata; angka ini tidak digunakan sebagai klaim pencapaian pada halaman publik.
+Prioritas dan cakupan rilis
+P0 adalah fondasi yang harus tersedia sebelum website dipakai secara publik: profil, proyek, kontak, admin, publikasi, media, CV, keamanan, aksesibilitas, dan SEO dasar. P1 melengkapi versi 1.0 dengan playground, artikel, testimoni, versi portofolio, bahasa Inggris, ekspor PDF, dan analitik. Seluruh P0 dan P1 harus berfungsi agar versi 1.0 dinyatakan lengkap, meskipun beberapa bagian publik masih disembunyikan karena belum berisi konten.
+P2 mencakup pengembangan setelah kebutuhan utama terpenuhi: penjadwalan publikasi, akun editor tambahan, impor GitHub, tautan dengan kata sandi, serta tema visual tambahan. Fitur pembayaran, marketplace, pendaftaran pengunjung, dan sistem pembelajaran di dalam portofolio berada di luar cakupan. Proyek pembelajaran ditampilkan sebagai studi kasus dan dapat dihubungkan ke demo yang tersedia.
+3 Struktur halaman dan alur penggunaan
+Navigasi utama berisi Beranda, Tentang, Studi Kasus, Playground, dan Kontak. Pengalaman, pendidikan, serta sertifikasi dapat ditemukan pada beranda dan tautan tambahan. Menu untuk bagian yang belum diterbitkan tidak muncul di halaman publik.
+Rute bahasa Inggris menggunakan awalan /en. Halaman versi portofolio memiliki bahasa yang ditentukan dalam pengaturannya. Slug unik dalam kelompok konten dan bahasa yang sama. Jika rute lama telah digunakan, pengembang mempertahankannya atau menyiapkan pengalihan permanen yang terdokumentasi.
+Alur menilai portofolio
+Pengunjung membaca ringkasan profesi, membuka proyek pilihan, memeriksa kontribusi dan hasil, kemudian mengunduh CV atau menghubungi pemilik. Tautan kembali dari detail mempertahankan filter daftar proyek ketika pengunjung datang dari hasil pencarian.
+Alur memperbarui karya
+Pemilik masuk ke admin, menambahkan atau mengedit proyek, menyimpan draf, lalu memeriksa pratinjau. Setelah diterbitkan, proyek muncul pada daftar dan beranda apabila ditandai sebagai karya pilihan. Kesalahan saat menyimpan tidak menghapus isian.
+Alur mengirim portofolio khusus
+Pemilik membuat versi dari konten yang telah diterbitkan, mengatur urutan karya, memilih kontak, lalu memeriksa halaman dan PDF. Setelah versi diterbitkan, pemilik dapat menyalin tautan atau mengunduh PDF untuk dikirim melalui saluran yang dipilih sendiri.
+4 Profil dan kredibilitas profesional
+K01 Identitas dan beranda
+Prioritas P0. Hero memuat nama, bidang utama, perkenalan singkat, status ketersediaan, dan tombol menuju karya, CV, serta kontak. Nama tampilan boleh berbeda dari nama lengkap, tetapi keduanya dikelola dalam profil yang sama. Status ketersediaan memiliki pilihan aktif, tidak aktif, atau disembunyikan dan tidak berubah secara otomatis.
+Bagian tentang menjelaskan latar Pendidikan Komputer, minat pengembangan web, teknologi pendidikan, dan pengalaman cloud sesuai data profil. Foto berasal dari unggahan pemilik. Apabila foto belum tersedia, susunan teks tetap utuh tanpa gambar pengganti orang lain.
+Keahlian dikelompokkan menjadi frontend, backend, cloud dan tools, teknologi pendidikan, serta kolaborasi. Setiap keahlian dapat dihubungkan ke proyek atau pengalaman pendukung. Label tingkat kemampuan bersifat opsional dan menggunakan keterangan yang dapat dijelaskan; persentase kemampuan tidak menjadi tampilan bawaan.
+K02 Pengalaman dan bukti pendukung
+Prioritas P0. Pengalaman ditampilkan dengan nama kegiatan atau organisasi, peran, periode, ringkasan tanggung jawab, dan bukti yang tersedia. Pendidikan menggunakan institusi, program studi, jenjang, periode, dan status kelulusan. Tanggal yang belum lengkap dapat ditampilkan pada ketelitian tahun tanpa mengarang bulan atau hari.
+Sertifikasi memuat judul, penerbit, tanggal, nomor kredensial opsional, tautan verifikasi, dan dokumen. Prestasi memuat nama kegiatan, penyelenggara, pencapaian, tahun, serta peran pribadi. Setiap entri dapat disimpan sebagai draf sampai keterangannya siap diterbitkan.
+CV memiliki satu berkas aktif per bahasa. Penggantian CV mempertahankan tautan unduhan pada website dan hanya memindahkannya ke berkas baru setelah unggahan berhasil. CV merupakan dokumen terpisah dari PDF portofolio yang dibentuk dari pilihan proyek.
+Ketentuan isi
+Nama, bio, label tombol, kontak, navigasi, serta footer berasal dari pengaturan atau data yang sama pada seluruh halaman.
+Tautan sosial, dokumen, dan tombol demo hanya muncul jika tujuan valid tersedia.
+Peran pribadi dibedakan dari kemampuan keseluruhan tim. Teknologi milik anggota tim tidak otomatis dimasukkan sebagai keahlian pemilik.
+Pencapaian kuantitatif harus disertai konteks dan bukti. Field kosong tidak ditampilkan sebagai angka nol, tanda hubung, atau naskah contoh.
+Kriteria penerimaan. Perubahan nama, bio, dan CV yang diterbitkan tercermin pada beranda, footer, serta metadata terkait. Menyembunyikan sertifikat menghapusnya dari halaman dan hasil pencarian publik. Tidak ada data pribadi yang harus diedit langsung pada komponen antarmuka.
+5 Proyek dan studi kasus
+K03 Daftar karya
+Prioritas P0. Beranda menampilkan proyek pilihan berdasarkan urutan yang ditetapkan pemilik. Halaman daftar memuat seluruh proyek yang diterbitkan. Kartu proyek berisi judul, ringkasan, kategori, peran, teknologi utama, dan cover jika tersedia. Tata letak tetap rapi untuk satu, dua, maupun banyak proyek.
+Pencarian mencakup judul, ringkasan, kategori, serta teknologi. Filter dapat digabungkan dan disimpan dalam parameter URL agar hasil dapat dibagikan. Daftar menggunakan pagination dengan ukuran awal 12 proyek. Halaman kosong menampilkan penjelasan dan tindakan untuk menghapus filter; draft tidak ikut dihitung dalam jumlah hasil.
+K04 Halaman studi kasus
+Prioritas P0. Studi kasus menjelaskan pekerjaan dengan urutan yang masuk akal: konteks, masalah, tujuan, kontribusi pribadi, proses, keputusan pengembangan, hasil, dan refleksi. Pemilik dapat menyusun ulang blok tambahan tanpa mengubah template halaman.
+Blok isi mendukung paragraf, daftar, gambar, galeri, kutipan bersumber, potongan kode, serta video dari penyedia yang diizinkan. Diagram dan screenshot dapat dibuka pada ukuran penuh. Galeri memiliki caption, teks alternatif, tombol sebelumnya dan berikutnya, serta kontrol tutup yang dapat digunakan dengan keyboard.
+Demo dan repository menjadi tindakan tambahan. Repository privat boleh diberi keterangan singkat; tombol menuju tautan kosong tidak ditampilkan. Jika demo sedang tidak aktif, pemilik dapat menandainya dan tetap menyajikan dokumentasi proyek.
+Kriteria penerimaan. Pengunjung dapat membuka detail melalui kartu dan URL langsung, menggunakan filter gabungan, serta kembali ke daftar. Mengganti slug membuat tautan lama menuju halaman pengganti. Proyek draft tidak dapat ditemukan lewat pencarian, sitemap, API publik, atau tebakan URL. Hasil proyek ditulis berdasarkan bukti yang diunggah atau dikonfirmasi.
+6 Playground dan konten pendukung
+K05 Playground
+Prioritas P1. Playground menampung karya yang belum membutuhkan uraian sepanjang studi kasus, seperti eksperimen antarmuka, komponen frontend, eksplorasi 3D, atau latihan visual. Setiap item memiliki judul, deskripsi, kategori, tanggal, media, teknologi opsional, dan tautan demo atau kode.
+Pengunjung dapat memfilter kategori dan membuka tampilan detail. Hubungan ke proyek utama dapat ditambahkan untuk menjelaskan konteks. Item playground dapat dinaikkan menjadi proyek dengan menyalin konten ke draf baru dan tetap menjaga tautan asal.
+Preview interaktif hanya menggunakan sumber yang disetujui. Kode yang dimasukkan melalui editor konten tidak dijalankan dalam halaman utama. Jika digunakan iframe, preview dibatasi melalui sandbox dan tidak memperoleh akses ke sesi admin. Gambar atau video tetap tersedia ketika preview gagal dimuat.
+K06 Artikel dan catatan teknis
+Prioritas P1. Modul artikel menyediakan judul, slug, ringkasan, cover, isi, kategori, tag, bahasa, tanggal publikasi, dan metadata pencarian. Isi mendukung heading, tautan, gambar, daftar, dan blok kode dengan tombol salin. Estimasi waktu baca dihitung dari isi, bukan diisi manual.
+Daftar tulisan mendukung pencarian, filter kategori, dan pagination. Artikel panjang menampilkan daftar isi dari heading yang tersedia. Tulisan terkait dipilih dari kategori yang sama atau ditentukan pemilik. Komentar publik dan newsletter berada di luar versi 1.0 sehingga tidak muncul sebagai tombol yang belum berfungsi.
+K07 Testimoni dan bidang kolaborasi
+Prioritas P1. Testimoni memiliki kutipan, nama pemberi, peran atau organisasi, konteks kerja sama, tanggal opsional, serta catatan persetujuan publikasi di admin. Foto pemberi testimoni bersifat opsional. Hanya testimoni yang memiliki izin dan telah diterbitkan yang muncul di website.
+Bidang kolaborasi menjelaskan jenis pekerjaan yang dapat dibicarakan, misalnya pengembangan web, backend, media pembelajaran, atau materi Informatika. Setiap bidang memuat ringkasan lingkup dan tombol kontak. Daftar ini tidak diperlakukan sebagai riwayat jasa yang telah dikerjakan maupun janji tarif tertentu.
+Perilaku ketika belum ada konten
+Bagian playground, artikel, testimoni, dan kolaborasi dapat diaktifkan secara terpisah. Jika tidak ada konten terbit, bagian dan tautan navigasinya disembunyikan. URL langsung menampilkan keadaan kosong yang jelas dan tautan kembali; halaman kosong tidak masuk sitemap. Admin tetap menyediakan tombol untuk menambah entri pertama.
+Kriteria penerimaan. Seluruh modul dapat disimpan, dipratinjau, diterbitkan, diurutkan, dan disembunyikan. Konten berbahaya tidak dieksekusi. Website tetap lengkap dan seimbang ketika satu atau beberapa modul belum digunakan.
+7 Kontak dan pengelolaan pesan
+K08 Formulir kontak
+Prioritas P0. Kontak menyediakan alamat email publik, tautan profesional, dan formulir. Nomor telepon atau WhatsApp hanya ditampilkan ketika pemilik mengaktifkannya. Formulir tidak mewajibkan nomor telepon maupun lampiran.
+Saat pengiriman berlangsung, tombol menunjukkan proses dan mencegah klik ganda. Server memvalidasi seluruh data, menerapkan perlindungan spam, lalu menyimpan pesan. Permintaan ulang dengan kunci pengiriman yang sama tidak membuat pesan baru selama 24 jam.
+Pesan berhasil ditampilkan setelah penyimpanan terkonfirmasi. Jika notifikasi email gagal, pesan tetap masuk ke inbox admin dan kegagalan notifikasi dicatat untuk dicoba kembali. Jika penyimpanan gagal, formulir mempertahankan isian selama halaman masih terbuka dan menyediakan tindakan coba lagi.
+Pembatasan awal adalah lima percobaan dalam 15 menit per kombinasi sinyal alamat jaringan dan identitas pengirim. Batas dapat disesuaikan melalui konfigurasi server. Pengunjung yang dibatasi menerima waktu tunggu tanpa kehilangan isi formulir. CAPTCHA hanya ditambahkan jika perlindungan awal tidak cukup.
+Inbox admin
+Pesan memiliki status Baru, Dibaca, Ditindaklanjuti, dan Arsip. Pemilik dapat mencari berdasarkan pengirim atau topik, memfilter status, memberi catatan internal, dan menghapus pesan. Pengirim tidak dapat membaca daftar pesan melalui endpoint publik.
+Tombol Balas membuka aplikasi email dengan alamat tujuan yang sesuai. Pengiriman email dari dashboard bukan bagian versi 1.0. Notifikasi hanya dikirim ke alamat pemilik yang sudah dikonfigurasi dan diverifikasi. Pengujian menggunakan alamat uji, tanpa menghubungi pihak lain.
+Kriteria penerimaan. Pengiriman valid menghasilkan tepat satu pesan dan status sukses. Pengiriman tidak valid, klik ganda, koneksi putus, batas permintaan, serta kegagalan notifikasi menghasilkan perilaku yang dapat dipahami. Isi pesan dan alamat email tidak dikirim ke sistem analitik.
+8 Dashboard dan pengelolaan konten
+K09 Akses dan ringkasan admin
+Prioritas P0. Hanya akun pemilik yang terdaftar dapat mengakses admin. Tidak tersedia pendaftaran publik. Masuk, keluar, pemulihan akses, serta autentikasi dua langkah disediakan melalui layanan autentikasi yang dipilih. Akun pemilik harus menyelesaikan pengaturan dua langkah sebelum peluncuran penuh.
+Dashboard menampilkan konten terbit, draf, pesan baru, aktivitas terbaru, dan pekerjaan yang perlu dilengkapi. Setiap pengingat membuka halaman yang relevan, misalnya profil tanpa foto, proyek tanpa ringkasan, CV belum tersedia, atau tautan yang perlu diperiksa.
+Perilaku formulir
+Setiap modul menyediakan tambah, edit, simpan draf, pratinjau, terbitkan, sembunyikan, urutkan, dan hapus sesuai jenis data. Formulir panjang dibagi menjadi Informasi, Isi, Media, dan Publikasi. Bahasa antarmuka admin menggunakan bahasa Indonesia.
+Field teknis seperti ID, path penyimpanan, serta hubungan database ditangani sistem. Slug dibuat dari judul dan dapat diubah melalui pengaturan lanjutan. Pemilik memilih kategori dan media melalui kontrol yang dapat dicari; ID tidak diketik secara manual.
+Perubahan yang belum disimpan ditandai. Ketika pemilik pindah halaman, sistem meminta pilihan menyimpan atau membuang perubahan. Validasi tampil pada field terkait, fokus berpindah ke kesalahan pertama, dan isian tetap tersedia saat server menolak penyimpanan. Pengurutan mendukung drag and drop serta tombol naik dan turun.
+Jika dua tab mengubah entri yang sama, versi terakhir dibandingkan sebelum penyimpanan. Konflik menampilkan pemberitahuan dan pilihan memuat perubahan terbaru atau menyalin isian; tidak ada penimpaan diam-diam.
+Kriteria penerimaan. Pemilik dapat menambah proyek dan memperbarui profil dari desktop maupun ponsel. Akun yang tidak berhak ditolak pada halaman dan operasi server. Muat ulang setelah penyimpanan menampilkan data yang sama, dan konflik edit tidak menghilangkan perubahan tanpa pemberitahuan.
+9 Draf revisi dan publikasi
+K10 Siklus konten
+Prioritas P0. Setiap konten memiliki revisi kerja dan referensi ke revisi yang sedang diterbitkan. Menyimpan revisi baru tidak mengubah revisi publik. Pratinjau menggunakan revisi kerja dan hanya tersedia dalam sesi pemilik yang sah.
+Publikasi memeriksa field wajib, slug, tautan, kelengkapan media, dan status bahasa. Kesalahan menyebutkan item yang harus diperbaiki. Jika operasi gagal di tengah proses, versi publik sebelumnya tetap menjadi rujukan yang sah.
+Konsistensi dan pencabutan akses
+Publikasi normal memperbarui halaman, daftar, pencarian, sitemap, dan metadata paling lambat 60 detik setelah berhasil. Penyembunyian atau penghapusan memiliki aturan lebih ketat: status akses diperiksa pada setiap permintaan baru sehingga halaman yang dicabut tidak tetap tersedia hanya karena cache lama.
+Ketika konten dipakai dalam versi portofolio, admin memperlihatkan daftar penggunaannya. Menyembunyikan sumber menonaktifkan akses item tersebut juga pada versi yang merujuknya. Berkas yang sudah disimpan pengunjung di perangkatnya berada di luar kendali pencabutan website.
+Penghapusan permanen memerlukan konfirmasi yang menyebutkan isi dan dampaknya. Media tidak ikut dihapus selama masih digunakan revisi yang dipertahankan, CV aktif, atau versi portofolio. Riwayat pemulihan tetap mengikuti periode retensi yang ditetapkan pada sistem.
+Jejak perubahan
+Log mencatat pelaku, waktu, jenis konten, ID, revisi, serta tindakan simpan, terbitkan, sembunyikan, pulihkan, dan hapus. Isi pesan, token, kata sandi, dan dokumen sensitif tidak disalin ke log. Pemilik dapat melihat riwayat per item.
+Kriteria penerimaan. Mengubah bio pada draf tidak mengubah halaman publik. Pemulihan revisi tetap membutuhkan publikasi. Setelah penyembunyian dikonfirmasi, endpoint aplikasi menolak akses baru ke konten yang dicabut. URL berkas sementara yang telah diterbitkan mengikuti batas kedaluwarsa pada bagian 10.
+10 Media dan dokumen
+K11 Pustaka media
+Prioritas P0. Pemilik dapat mengunggah berkas, memilih media yang sudah ada, mencari berdasarkan nama, dan memeriksa lokasi penggunaan. Setiap aset menyimpan jenis berkas, ukuran, dimensi jika relevan, teks alternatif, caption, titik fokus, pemilik, dan status akses.
+Batas tersebut menjadi konfigurasi awal dan dapat diturunkan sesuai kapasitas layanan. Validasi memeriksa ukuran, MIME, serta isi berkas yang dapat dikenali. HTML dan executable ditolak. SVG unggahan tidak diterima pada versi 1.0; ikon antarmuka tetap berasal dari aset aplikasi yang dikendalikan pengembang.
+Gambar dioptimalkan untuk ukuran tampil, mempertahankan rasio, dan menghapus metadata lokasi bila tersedia. Screenshot kode, diagram, dan antarmuka memiliki mode tampilan utuh agar informasi tidak terpotong. Video menggunakan poster dan dimuat saat diperlukan, tanpa suara yang berjalan otomatis.
+Proses unggah dan penggantian
+Antarmuka menunjukkan progres serta kegagalan per berkas. Referensi media baru disimpan hanya setelah unggahan berhasil. Saat penggantian, sistem mengunggah berkas baru, memperbarui referensi secara aman, lalu menandai aset lama untuk pembersihan jika tidak digunakan lagi. Unggahan yang tertinggal akibat kegagalan dibersihkan melalui tugas pemeliharaan.
+Pemilik dapat mengganti gambar, memperbarui teks alternatif, mengatur urutan galeri, dan memilih crop cover tanpa mengubah file asli. Penghapusan aset yang masih digunakan ditolak dengan daftar lokasi penggunaan.
+Akses berkas
+Berkas disimpan secara privat secara bawaan. Akses publik diberikan melalui pemeriksaan referensi publik yang masih aktif; menebak nama objek tidak membuka berkas draf. Preview admin dan dokumen privat menggunakan otorisasi yang sah. URL sementara dibuat saat dibutuhkan dan tidak disimpan sebagai alamat permanen.
+Pencabutan konten menghapus izin unduh baru. Bila pengiriman file menggunakan URL bertanda tangan, masa berlakunya dibatasi maksimal 60 detik sehingga batas pencabutan dapat dijelaskan dan diuji. Aset yang juga dipakai pada publikasi aktif lain tetap dapat diakses melalui publikasi tersebut.
+Kriteria penerimaan. Unggahan gagal tidak menghasilkan media palsu pada daftar. Mengganti CV tidak memutus tautan aktif. Berkas draf tidak dapat dibaca tanpa login, dan sistem menolak penghapusan media yang masih dirujuk.
+11 Versi portofolio dan bahasa
+K12 Portofolio sesuai kebutuhan
+Prioritas P1. Pemilik dapat membuat versi Umum, Web Developer, Teknologi Pendidikan, Cloud Computing, UI dan UX, atau versi khusus. Nama kategori berfungsi sebagai pengelompokan. Kategori tersebut tidak otomatis mengubah jabatan, menambah keahlian, maupun menghasilkan karya baru.
+Setiap versi mengatur judul, ringkasan profil, proyek, keahlian, pengalaman, sertifikasi, kontak yang terlihat, urutan bagian, bahasa, dan template yang tersedia. Pemilik dapat menduplikasi konfigurasi versi sebagai titik awal. Jika konten yang sesuai belum tersedia, admin menjelaskan kekurangan dan membuka pilihan sumber yang relevan.
+Aturan revisi versi
+Pada saat versi diterbitkan, sistem mengikat pilihan ke revisi konten tertentu beserta konfigurasi tampilannya. Pembaruan portofolio utama tidak otomatis mengubah versi yang telah dibagikan. Admin menandai sumber yang memiliki revisi lebih baru dan menyediakan tindakan Perbarui dari konten terbaru, lalu pratinjau dan publikasi ulang.
+Pembekuan revisi tidak mengabaikan hak akses. Sumber yang disembunyikan atau dihapus langsung disaring dari versi. Jika tidak ada lagi konten utama yang layak ditampilkan, akses versi dinonaktifkan dengan pemberitahuan kepada pemilik. Pembaruan revisi juga tidak memulihkan konten yang sengaja disembunyikan.
+Tautan yang tidak diindeks tetap merupakan tautan publik. Akses terbatas dengan kata sandi atau akun penerima direncanakan pada P2, terpisah dari status melalui tautan.
+K13 Bahasa Indonesia dan Inggris
+Prioritas P1. Bahasa Indonesia menjadi bahasa awal. Bahasa Inggris menggunakan entri terjemahan yang dapat ditinjau dan diterbitkan secara terpisah. Label antarmuka mengikuti bahasa halaman; tanggal dan metadata menggunakan format yang sesuai.
+Pengalih bahasa pada detail menuju padanan konten yang sama. Jika terjemahan belum ada, pengguna memperoleh informasi singkat dan tautan ke bahasa yang tersedia. Halaman tidak mencampurkan paragraf dua bahasa secara diam-diam. Perubahan sumber menandai terjemahan untuk diperiksa kembali.
+Kriteria penerimaan. Dua versi dapat menampilkan urutan dan kontak berbeda tanpa mengubah profil utama. Edit sumber tidak mengubah versi terbit sampai diperbarui. Pencabutan sumber tetap berlaku pada seluruh versi, dan bahasa Inggris hanya muncul ketika isi terjemahan tersedia.
+12 Tautan berbagi dan ekspor PDF
+K14 Berbagi versi
+Prioritas P1. Setiap versi terbit memiliki tautan tetap, tombol salin, serta QR yang mengarah ke URL tersebut. Pemilik dapat membuka pratinjau tautan sebelum membagikannya. Tombol salin menampilkan keberhasilan atau menyediakan teks yang dapat disalin manual jika izin clipboard ditolak.
+Judul, deskripsi, dan gambar pratinjau sosial menggunakan data versi, bukan metadata beranda secara otomatis. Pengaturan melalui tautan menerapkan noindex dan dikecualikan dari sitemap. Metadata sosial tidak menjamin tautan menjadi rahasia atau hilang dari layanan yang telah menyimpannya.
+Jika slug berubah, alamat sebelumnya diarahkan ke versi yang sama selama masih aktif. Jika versi dinonaktifkan, tautan lama dan QR menampilkan halaman tidak tersedia tanpa membocorkan konten draf. Tombol berbagi menyalin atau membuka pilihan perangkat; sistem tidak mengirim pesan kepada pihak lain secara otomatis.
+K15 PDF portofolio
+Prioritas P1. PDF dibentuk dari revisi dan konfigurasi versi yang dipilih. Dokumen menampilkan nama, ringkasan, kontak yang diizinkan, karya, pengalaman, dan bukti pendukung sesuai urutan. PDF menggunakan ukuran A4, margin konsisten, nomor halaman, teks yang dapat dipilih, dan tautan yang dapat diklik.
+Layout cetak disiapkan khusus. Navigasi website, kontrol admin, animasi, formulir, serta bagian tersembunyi tidak masuk dokumen. Gambar dimuat sebelum proses selesai dan tidak terpotong pada pergantian halaman. Judul bagian dipertahankan bersama paragraf atau gambar pembukanya.
+QR hanya dimasukkan apabila versi memiliki URL terbit yang aktif. Ekspor draf untuk pemeriksaan pemilik diberi penanda Draf dan tidak memiliki QR publik. Nama berkas memuat nama pemilik, nama versi, bahasa, dan tanggal ekspor tanpa karakter yang tidak aman.
+Status pekerjaan ekspor
+Unduhan langsung menggunakan proses pembentukan PDF yang kompatibel dengan lingkungan hosting. Pemilik melihat status menyiapkan, selesai, atau gagal. Pengulangan proses menggunakan konfigurasi yang sama dan tidak membuat berkas tersedia sebelum pembentukan selesai.
+Hasil ekspor mencatat revisi dan daftar sumbernya. Permintaan unduhan memeriksa kembali akses versi serta sumber yang dirujuk. Ekspor tersimpan yang memuat sumber tercabut tidak disajikan kembali; pemilik perlu membuat ekspor baru dari konten yang masih aktif. Dialog browser tetap dapat tersedia dengan label Cetak atau Simpan PDF dan dibedakan dari unduhan langsung.
+Kriteria penerimaan. Susunan halaman dan PDF sesuai versi yang sama, semua kontak mengikuti pilihan, tautan dapat dibuka, serta halaman panjang tidak terpotong. Kegagalan renderer dapat dicoba kembali. Penonaktifan versi menghentikan unduhan baru, tetapi salinan yang sudah diunduh penerima tidak dapat ditarik kembali.
+13 Arah visual dan pengalaman penggunaan
+Karakter tampilan
+DESIGN.md menjadi rujukan visual: latar krem, tipografi editorial, permukaan datar, garis pembatas tipis, dan aksen biru. Kesan futuristik diwujudkan melalui pergantian tampilan karya yang halus, respons kontrol yang jelas, dan preview yang terintegrasi. Konten proyek tetap menjadi fokus halaman.
+Aturan warna pada referensi diterapkan sesuai peran dan kontras. Teks isi menggunakan hitam; aksen biru tidak dipaksakan pada teks kecil jika kontrasnya tidak memenuhi kebutuhan. Warna teks aksi dapat diperkuat sambil mempertahankan karakter biru pada bingkai dan aksen. Warna status pada admin memiliki label teks.
+Foto pemilik dan screenshot proyek digunakan sebagai bukti karya. Ini menjadi penyesuaian terhadap bagian ilustrasi pada referensi. Ukuran judul dan jarak 144 px dari referensi desktop tidak diterapkan tetap pada ponsel. Jika pemilih template sudah ada, tampilan baru mengikuti mekanisme yang sama dan menggunakan data bersama.
+Responsivitas dan aksesibilitas
+Tampilan diuji pada lebar 360, 390, 768, 1024, dan 1440 px serta reflow sampai 320 px. Konten tidak bergeser horizontal, kecuali area yang memang memerlukan gulir seperti kode atau tabel lebar. Admin menggunakan drawer pada layar sempit; tombol simpan tidak tertutup keyboard.
+Target aksesibilitas adalah WCAG 2.2 tingkat AA untuk alur utama. Teks normal memiliki kontras minimal 4,5 banding 1, judul besar minimal 3 banding 1. Kontrol utama ditargetkan berukuran sentuh 44 kali 44 px. Acuan: WCAG 2.2.
+Seluruh navigasi, filter, modal, galeri, serta formulir dapat dipakai dengan keyboard. Fokus modal kembali ke pemicunya saat ditutup. Heading berurutan, label input eksplisit, dan teks alternatif tersedia. Pesan berhasil atau gagal dapat dibaca pembaca layar. Konten utama tetap terlihat tanpa menunggu animasi; preferensi pengurangan gerak menonaktifkan perpindahan besar.
+Kriteria penerimaan. Tidak ada tombol dekoratif yang menyerupai tindakan aktif, teks bertumpuk, isi terpotong, atau scroll yang dikunci. Mode keyboard dan pembaca layar dapat menyelesaikan alur melihat karya serta mengirim pesan.
+14 Model data dan sumber konten
+Model berikut menjelaskan kelompok data dan hubungan yang diperlukan. Implementasi menggunakan tabel yang sudah tersedia jika fungsinya sesuai. Setiap perubahan skema disertai migrasi yang menjaga isi, ID, dan referensi lama.
+Aturan konsistensi
+Entitas menggunakan ID stabil. Slug memiliki batas keunikan yang sesuai rute dan bahasa. Relasi memakai foreign key atau validasi setara sehingga entri tidak merujuk media maupun revisi yang sudah hilang. Waktu disimpan secara konsisten dan ditampilkan mengikuti konfigurasi zona waktu; preferensi awal pemilik adalah Asia/Makassar.
+Konten fleksibel dapat memakai blok terstruktur atau JSON dengan schema tervalidasi. HTML mentah dan kode yang bisa dieksekusi tidak menjadi format penyimpanan bebas. Kategori, keahlian, dan media yang digunakan berulang memiliki identitas tersendiri sehingga perubahan nama tidak memerlukan edit pada banyak halaman.
+Impor awal hanya menambah data yang belum tersedia dan menghasilkan laporan perubahan. Proses tidak berjalan otomatis setiap aplikasi menyala atau setiap deployment. Field yang sudah terisi maupun sengaja dikosongkan tidak ditimpa. Data contoh untuk pengujian dipisahkan dari data pemilik.
+Kriteria penerimaan. Setiap konten pada halaman publik dapat ditelusuri ke sumber dan revisi terbitnya. Media dapat diketahui seluruh penggunaannya. Impor ulang tidak menggandakan proyek, mengubah kontak, atau mengembalikan konten yang telah dihapus pemilik.
+15 Arsitektur akses dan pemulihan
+Pembagian tanggung jawab sistem
+Next.js menangani halaman publik, dashboard, rendering, serta operasi server melalui mekanisme proyek yang tersedia. TypeScript digunakan untuk kontrak data, sedangkan Tailwind CSS mengikuti sistem desain. Komponen server menangani pembacaan yang sesuai dan komponen interaktif dibatasi pada bagian yang membutuhkannya. Acuan teknis: Next.js App Router.
+Supabase menyediakan PostgreSQL, autentikasi, dan penyimpanan jika integrasinya sudah digunakan dalam proyek. Operasi konten dipisahkan dari komponen tampilan melalui fungsi domain yang konsisten. Pembuatan PDF dan pengiriman notifikasi dapat memakai pekerjaan latar ketika durasinya melebihi batas permintaan hosting. Versi dependensi mengikuti pemeriksaan repository dan lockfile, tanpa pembaruan mayor otomatis.
+Batas akses
+Setiap operasi memeriksa sesi dan kewenangan pada server. Database menerapkan Row Level Security pada tabel yang diakses melalui API. Hak pemilik tidak berasal dari field profil yang dapat diubah sendiri. Secret key dan service role tidak dimasukkan ke bundle browser, log, atau repository. Acuan: Supabase Row Level Security.
+Input divalidasi di server, rich text disanitasi, dan tautan dibatasi pada protokol yang aman. Endpoint mutation dengan cookie mengikuti perlindungan CSRF dan pemeriksaan asal permintaan yang sesuai. Autentikasi, kontak, serta ekspor memiliki pembatasan permintaan. Renderer PDF hanya mengambil media dari sumber yang diizinkan dan tidak menerima URL internal jaringan secara bebas.
+Pemeliharaan dan privasi
+HTTPS wajib pada lingkungan publik. Log kesalahan memiliki ID penelusuran tanpa isi rahasia. Backup database dan media dilakukan harian dengan retensi awal 30 hari; kemampuan pulih diuji pada lingkungan terpisah. Target pemulihan adalah kehilangan data maksimal 24 jam dan layanan kembali dalam 8 jam sejak proses pemulihan dimulai.
+Pesan disimpan maksimal 12 bulan setelah interaksi terakhir kecuali pemilik memerlukan tindak lanjut. Peristiwa analitik mentah dibatasi 90 hari, sedangkan agregat tanpa identitas dapat disimpan lebih lama. Halaman privasi menyebutkan tujuan, retensi, dan kontak permintaan penghapusan. Biaya, kuota, lokasi layanan, dan kemampuan backup diperiksa sebelum memilih paket hosting.
+Kriteria penerimaan. Permintaan tanpa hak gagal pada UI, API, dan database. Backup berhasil dipulihkan, sesi keluar tidak dapat dipakai kembali, dan tidak ada secret di aset browser atau keluaran build.
+16 Pencarian kinerja dan analitik
+K16 SEO dan pratinjau sosial
+Prioritas P0. Setiap halaman terbit memiliki judul, deskripsi, canonical URL, Open Graph, dan gambar sosial sesuai isi. Sitemap hanya berisi halaman yang boleh diindeks. Admin, preview, draft, hasil filter duplikat, dan versi melalui tautan tidak masuk sitemap. Noindex bukan pengganti autentikasi.
+Metadata dibentuk dari revisi yang sama dengan halaman. Structured data memakai informasi yang tersedia, seperti identitas pemilik atau artikel, tanpa rating maupun prestasi tambahan. Rute bahasa memiliki canonical dan hreflang yang sesuai. Perubahan slug menyimpan pengalihan dan tidak membentuk rantai redirect panjang.
+K17 Pengukuran penggunaan
+Prioritas P1. Dashboard menampilkan kunjungan, halaman dan proyek yang sering dibuka, klik kontak, unduhan CV, serta formulir berhasil. Rentang awal adalah 7, 30, dan 90 hari. Angka kosong ditampilkan sebagai belum ada data, dengan periode dan zona waktu yang jelas.
+Kunjungan admin dan pengujian dikecualikan. Peristiwa unduh menunjukkan berkas dilayani, bukan bukti berkas dibaca. Klik kontak tidak dianggap sebagai percakapan atau peluang kerja. Jumlah lamaran atau penawaran kerja tidak disimpulkan dari kunjungan website. Cookie analitik yang memerlukan persetujuan baru aktif setelah persetujuan diberikan.
+Sasaran kinerja dan ketahanan
+Pada data lapangan yang mencukupi, target persentil ke 75 adalah LCP paling lama 2,5 detik, INP paling lama 200 ms, dan CLS maksimal 0,1. Ambang mengacu pada Web Vitals. Sebelum data tersedia, pengujian laboratorium pada perangkat dan jaringan yang dicatat menjadi indikator awal, tanpa diklaim sebagai hasil lapangan.
+Gambar memiliki ukuran yang jelas, media di luar layar dimuat sesuai kebutuhan, dan video tidak diunduh penuh saat beranda dibuka. Kegagalan analitik atau notifikasi tidak menghalangi pembacaan karya maupun penyimpanan pesan. Kegagalan database memunculkan status gangguan yang dapat dicoba kembali; draf atau data contoh tidak digunakan sebagai pengganti konten publik.
+Kriteria penerimaan. Metadata sesuai konten, tautan privat tidak terindeks melalui sitemap, dan peristiwa utama tercatat sekali untuk tindakan yang sama. Website dapat digunakan ketika layanan analitik tidak tersedia.
+17 Pengujian penerimaan
+Pengujian memakai data terpisah dan hasil build produksi. Bukti berupa hasil skenario, tangkapan layar yang relevan, serta catatan kegagalan disimpan bersama pekerjaan rilis. Seluruh P0 dan P1 harus lulus; keterbatasan data lapangan dicatat secara terpisah dari keberhasilan pengujian fungsi.
+Kondisi yang harus ikut diperiksa
+Gunakan nama panjang, judul proyek panjang, gambar besar, proyek tanpa cover, data kosong, jaringan lambat, sesi kedaluwarsa, unggahan terputus, serta kegagalan penyedia email dan PDF. Uji akses langsung ke draft melalui URL, query data, media, dan ekspor lama.
+Pemeriksaan mencakup Chrome, Edge, Firefox, serta Safari yang masih didukung pada saat implementasi. Catat versi browser dan perangkat. Jalankan lint, pemeriksaan tipe, pengujian otomatis untuk batas akses serta publikasi, dan production build. Uji tampilan pada ukuran layar yang disebutkan pada bagian 13.
+Rilis ditahan jika ditemukan kebocoran data, kehilangan perubahan, formulir kontak tidak menyimpan pesan, dokumen mengandung konten yang telah dicabut, atau alur utama tidak bisa digunakan pada ponsel. Masalah kecil di luar alur utama dicatat dengan prioritas dan penanggung jawab sebelum rilis.
+18 Tahap pengerjaan dan kesiapan rilis
+Urutan pelaksanaan
+Estimasi pengerjaan ditetapkan setelah tahap pertama karena struktur dan fitur yang sudah tersedia menentukan besarnya perubahan. Pemilik meninjau identitas, karya, kontak, serta versi lamaran. Pengembang bertanggung jawab atas integrasi, batas akses, dokumentasi, dan bukti pemeriksaan sebelum publikasi.
+Konten awal
+Profil memakai Taufik Raihandani, dengan nama tampilan Raihan dan bidang Web Developer serta Teknologi Pendidikan. Pendidikan mencantumkan Pendidikan Komputer, Universitas Lambung Mangkurat, dengan status lulus. Nama tampilan dan bidang tetap dapat diubah melalui admin.
+Dua calon studi kasus awal adalah Media Pembelajaran Tailwind CSS dan ComBridge. Studi kasus pertama menjelaskan pengembangan web, model tutorial, serta learning analytics. ComBridge menempatkan kontribusi pribadi pada bagian Cloud Computing dan membedakannya dari pekerjaan tim mobile serta machine learning.
+Pengalaman awal mencakup Bangkit Academy 2024 Batch 2 jalur Cloud Computing, asistensi mengajar Informatika di SMPN 26, dan kegiatan pengenalan Scratch di SMPN 1 Panyipatan. Tanggal rinci, dokumen, tautan, serta uraian kontribusi diterbitkan setelah diperiksa pemilik. Prestasi lomba media kampanye sosial tetap berupa draf sampai nama kegiatan, peringkat, tahun, dan bukti dilengkapi.
+Kebutuhan sebelum peluncuran
+Pemilik menyiapkan foto, CV terbaru, alamat email publik, tautan profesional, screenshot proyek, dan kontak untuk menerima pesan. Pilihan domain, paket hosting, penyedia email, kapasitas media, serta runtime PDF ditetapkan setelah kebutuhan biaya dan operasional diperiksa. Tidak ada asumsi layanan akan gratis tanpa batas.
+Dokumentasi serah terima memuat cara menjalankan proyek, konfigurasi tanpa secret, migrasi, pengelolaan konten, publikasi, pemulihan, dan pemeriksaan layanan. Rilis lengkap dinyatakan siap setelah seluruh P0 dan P1 berjalan, konten publik ditinjau, backup dapat dipulihkan, serta URL produksi lolos pemeriksaan akses, media, kontak, dan PDF.
+Acuan produk. DESIGN.md menjadi rujukan tampilan, sedangkan kebutuhan portofolio sebelumnya mendasari cakupan fitur. Referensi teknis tercantum pada bagian terkait. Revisi PRD berikutnya mencatat alasan, dampak, dan tanggal perubahan.

@@ -1,52 +1,9 @@
-# Deployment Vercel BWORIEY
+# Deployment Vercel — Next.js
 
-## Konfigurasi project
+Aplikasi produksi memakai root repository, `npm ci`, `npm run build`, preset **Next.js**, Node.js 24 LTS, dan output directory bawaan. `vercel.json` sudah memakai Next.js. Konfigurasi Vite/dist dalam dokumentasi lama tidak berlaku.
 
-Hubungkan repository ke Vercel dengan **Root Directory** `.` (folder repository ini), yaitu folder yang berisi `package.json`, `index.html`, `script.js`, dan `vercel.json`. Jangan memilih `backend/`, karena folder tersebut adalah aplikasi Laravel terpisah yang membutuhkan runtime PHP.
+Gunakan proyek Vercel yang sudah ada. Panduan rinci, kebutuhan akses dan verifikasi: [docs/deployment.md](docs/deployment.md) serta [docs/onyx-release.md](docs/onyx-release.md).
 
-| Pengaturan | Nilai |
-| --- | --- |
-| Framework preset | Vite |
-| Install command | `npm ci` |
-| Build command | `npm run build` |
-| Output directory | `dist` |
-| Node.js | versi yang kompatibel dengan Vite, minimal engine project |
+Environment production: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY, NEXT_PUBLIC_SITE_URL (origin HTTPS final). PORTFOLIO_ANALYTICS opsional. Jangan mengekspos secret/service-role key.
 
-`vercel.json` sudah mengunci `buildCommand` ke `npm run build` dan `outputDirectory` ke `dist`. Jika Project Settings Vercel masih memiliki Root Directory `backend`, ubah ke `.` lalu redeploy.
-
-`vercel.json` me-rewrite seluruh direct route ke `index.html`, sehingga refresh `/login`, `/admin`, dan subroute admin tidak menghasilkan 404.
-
-## Environment variables
-
-Tambahkan dua variable berikut pada tiga environment Vercel: **Production**, **Preview**, dan **Development**.
-
-```text
-VITE_SUPABASE_URL
-VITE_SUPABASE_PUBLISHABLE_KEY
-```
-
-Jangan menambahkan `VITE_SUPABASE_SECRET_KEY` atau `VITE_SUPABASE_SERVICE_ROLE_KEY`. Setelah variable diubah, lakukan redeploy karena Vite memasukkan variable saat build.
-
-## Domain dan Supabase Auth
-
-Setelah domain Vercel tersedia, masukkan domain aktual ke **Supabase → Authentication → URL Configuration** sebagai Site URL dan Allowed Redirect URL. Tambahkan localhost untuk development. Jika custom domain aktif, tambahkan domain Vercel dan custom domain agar reset password dan session redirect tetap valid.
-
-## Checklist deploy
-
-```bash
-npm ci
-npm run build
-```
-
-Lalu uji:
-
-1. `/` menampilkan portfolio.
-2. `/login` dapat dibuka langsung.
-3. `/admin` tanpa session diarahkan ke login.
-4. Login Super Admin membuka dashboard.
-5. Refresh `/admin/projects` tidak 404.
-6. Draft tidak tampil di homepage.
-7. Contact form masuk ke `contact_messages`.
-8. Upload media mengikuti policy Storage.
-
-Jika build gagal pada Windows karena dependency native sedang terkunci, hentikan dulu proses `npm run dev` atau `npm run preview` yang berjalan, hapus hanya `node_modules` lokal setelah proses benar-benar berhenti, lalu jalankan `npm ci` kembali. Jangan menghapus `package-lock.json`; lockfile adalah sumber versi dependency yang dipakai CI/Vercel. Root project tidak memiliki dependency binding OS-specific langsung; lockfile boleh memuat optional package transitive milik toolchain Vite.
+Setelah sesi CLI tersedia, `npx vercel link` harus memilih proyek yang sudah ada. Periksa project link dan konfigurasi sebelum `npx vercel --prod`. Build tidak menjalankan migrasi Supabase. Verifikasi URL hasil deploy, autentikasi, publish/unpublish, media, dan penyimpanan pesan setelah migrasi diterapkan.

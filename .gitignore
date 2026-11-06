@@ -14,3 +14,12 @@ backend/public/build/
 backend/database/database.sqlite
 backend/.env
 .laravel-scaffold/
+
+.next/
+*.tsbuildinfo
+.vercel/
+
+# Local render and release verification artifacts
+.qa/
+.vercel
+.env*

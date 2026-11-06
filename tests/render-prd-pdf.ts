@@ -1,0 +1,12 @@
+import { mkdir, writeFile } from 'node:fs/promises';
+import { renderToBuffer } from '@react-pdf/renderer';
+import QRCode from 'qrcode';
+import { PortfolioPdf } from '../components/portfolio-pdf';
+import { prdPreviewBundle } from '../lib/prd-content';
+const bundle=prdPreviewBundle();
+const version={title:'Pratinjau Web Developer',portfolio_type:'web',description:'Pratinjau dokumen berdasarkan konten PRD. Belum diterbitkan.',language:'id',show_contact:false,section_order:['projects']};
+const url='https://example.test/portfolio/preview';
+await mkdir('.qa',{recursive:true});
+const bytes=await renderToBuffer(PortfolioPdf({bundle,version,url,qr:await QRCode.toDataURL(url)}));
+await writeFile('.qa/portfolio.pdf',bytes);
+console.log(JSON.stringify({bytes:bytes.length,pdfHeader:bytes.subarray(0,5).toString()}));

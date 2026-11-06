@@ -1,0 +1,23 @@
+# Deploy only the active Next.js application, never legacy credentials or QA data.
+backend/
+node_modules/
+.next/
+.qa/
+.git/
+dist/
+docs/
+tests/
+/supabase/
+scripts/
+js/
+.env*
+portfolio.config.js
+portfolio.config.example.js
+index.html
+styles.css
+extra.css
+script.js
+supabase.js
+robots.txt
+sitemap.xml
+*.tsbuildinfo

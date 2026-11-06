@@ -4,17 +4,53 @@
   "version": "0.1.0",
   "type": "module",
   "engines": {
-    "node": ">=22.12.0"
+    "node": ">=22.13.0"
   },
   "scripts": {
-    "dev": "vite --host 0.0.0.0",
-    "build": "vite build",
-    "preview": "vite preview --host 0.0.0.0"
+    "dev": "next dev --hostname 0.0.0.0",
+    "build": "next build",
+    "start": "next start --hostname 0.0.0.0",
+    "lint": "eslint app components lib proxy.ts next.config.ts",
+    "typecheck": "tsc --noEmit",
+    "check:services": "node scripts/check-services.mjs",
+    "test": "node --import tsx --test tests/*.test.mjs tests/*.test.ts",
+    "legacy:dev": "vite --host 0.0.0.0",
+    "legacy:build": "vite build"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.0.0"
+    "@fontsource/bebas-neue": "^5.3.0",
+    "@fontsource/cormorant": "^5.3.0",
+    "@fontsource/dm-sans": "^5.3.0",
+    "@fontsource/ibm-plex-mono": "^5.3.0",
+    "@fontsource/inter": "^5.3.0",
+    "@fontsource/press-start-2p": "^5.3.0",
+    "@react-pdf/renderer": "^4.9.0",
+    "@supabase/ssr": "^0.12.6",
+    "@supabase/supabase-js": "^2.0.0",
+    "@types/canvas-confetti": "^1.9.0",
+    "canvas-confetti": "^1.9.4",
+    "framer-motion": "^14.9.1",
+    "lucide-react": "^1.69.0",
+    "next": "^16.3.4",
+    "qrcode": "^1.5.4",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "server-only": "^0.0.1"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "^0.5.8",
+    "@types/node": "^26.5.0",
+    "@types/qrcode": "^1.5.6",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.7",
+    "autoprefixer": "^10.6.2",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "^16.3.4",
+    "postcss": "^8.5.32",
+    "prettier": "^3.9.6",
+    "tailwindcss": "^3.4.19",
+    "tsx": "^4.23.13",
+    "typescript": "^6.0.3",
     "vite": "7.3.6"
   }
 }

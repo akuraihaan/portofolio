@@ -1,0 +1,74 @@
+/* Space Theme Global Styles */
+:root {
+  --space-void: #02040a;
+  --space-surface: #060a20;
+  --space-blue: #2c67ed;
+  --space-glow: rgba(44, 103, 237, 0.45);
+  color-scheme: dark;
+}
+
+html {
+  color-scheme: dark;
+  background-color: #02040a;
+  scroll-behavior: smooth;
+  scroll-padding-top: 90px;
+}
+
+body {
+  background-color: #02040a !important;
+  color: #f1f5f9 !important;
+  overflow-x: hidden;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+}
+
+/* Custom Cosmic Scrollbar */
+::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
+}
+
+::-webkit-scrollbar-track {
+  background: #02040a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #111d4a;
+  border-radius: 9999px;
+  border: 2px solid #02040a;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #2c67ed;
+  box-shadow: 0 0 10px #2c67ed;
+}
+
+/* Custom scrollbar for modal elements */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 999px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #2c67ed;
+  border-radius: 999px;
+}
+
+/* Smooth selection */
+::selection {
+  background-color: #2c67ed;
+  color: #ffffff;
+}
+
+/* Glowing text utility */
+.text-glow-blue {
+  text-shadow: 0 0 20px rgba(44, 103, 237, 0.65);
+}
+
+.box-glow-blue {
+  box-shadow: 0 0 25px rgba(44, 103, 237, 0.4), inset 0 0 10px rgba(44, 103, 237, 0.2);
+}
+
