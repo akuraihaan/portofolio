@@ -6,7 +6,10 @@ import { SpaceBackground } from "./SpaceBackground";
 import { SpaceNavbar } from "./SpaceNavbar";
 import { SpaceHero } from "./SpaceHero";
 import { SpaceAbout } from "./SpaceAbout";
-import { SpacePortfolio, type ProjectItem, type CertificateItem } from "./SpacePortfolio";
+import { SpaceExperience } from "./SpaceExperience";
+import { SpaceCertificates, type CertificateItem } from "./SpaceCertificates";
+import { SpaceTechStack } from "./SpaceTechStack";
+import { SpaceProjects, type ProjectItem } from "./SpaceProjects";
 import { SpaceContact } from "./SpaceContact";
 import { SpaceFooter } from "./SpaceFooter";
 
@@ -320,13 +323,23 @@ export function SpaceMain({ bundle }: SpaceMainProps) {
           }}
         />
 
-        {/* 5. Portfolio Section with 3 Tabs: Projects, Certificates, Tech Stack */}
-        <SpacePortfolio
-          projects={finalProjects}
-          certificates={finalCertificates}
+        {/* 5. Work Experience (Career Path with Spotlight Hover) */}
+        <SpaceExperience
+          experiences={
+            bundleExperiences.length > 0 ? bundleExperiences : undefined
+          }
         />
 
-        {/* 6. Contact Section with Form & Social Links */}
+        {/* 6. Licenses & Awards (Accreditation Grid & Lightbox) */}
+        <SpaceCertificates certificates={finalCertificates} />
+
+        {/* 7. Tech Stack (Technical Arsenal 1/3 narrative + 2/3 pill grid) */}
+        <SpaceTechStack />
+
+        {/* 8. Selected Works (Projects with Filter, Cards & Case Study Modal) */}
+        <SpaceProjects projects={finalProjects} />
+
+        {/* 9. Contact Section with Form & Social Links */}
         <SpaceContact
           ownerEmail={ownerEmail}
           ownerLocation={ownerLocation}

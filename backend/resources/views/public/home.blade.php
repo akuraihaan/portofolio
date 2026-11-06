@@ -1,10 +1,10 @@
 @php
-    $studioName = $settings['studio_name'] ?? $settings['site_name'] ?? 'bworiey';
+    $studioName = $settings['studio_name'] ?? $settings['site_name'] ?? '';
     $siteTitle = $settings['default_meta_title'] ?? $studioName;
-    $siteDescription = $settings['default_meta_description'] ?? $settings['site_description'] ?? 'Portfolio digital bworiey.';
-    $displayName = $profile?->display_name ?: $profile?->full_name ?: $studioName;
-    $heroTitle = $profile?->hero_heading ?: ($settings['hero_title'] ?? 'Konten belum tersedia.');
-    $heroDescription = $profile?->hero_description ?: ($settings['hero_description'] ?? 'Konten belum tersedia.');
+    $siteDescription = $settings['default_meta_description'] ?? $settings['site_description'] ?? '';
+    $displayName = $profile?->display_name ?: $profile?->full_name ?: '';
+    $heroTitle = $profile?->hero_heading ?: ($settings['hero_title'] ?? '');
+    $heroDescription = $profile?->hero_description ?: ($settings['hero_description'] ?? '');
     $email = $profile?->email ?: ($settings['public_email'] ?? $settings['business_email'] ?? null);
     $location = collect([$profile?->city ?: ($settings['city'] ?? null), $profile?->country ?: ($settings['country'] ?? null)])->filter()->join(', ');
     $titleList = $titles->pluck('title')->values()->all();
@@ -30,7 +30,7 @@
 <body>
     <div class="noise" aria-hidden="true"></div>
     <div class="announcement">
-        <span>{{ $settings['availability_label'] ?? 'bworiey' }}</span>
+        <span>{{ $settings['availability_label'] ?? '' }}</span>
         <a href="#contact">Mulai percakapan <span aria-hidden="true">↗</span></a>
     </div>
 
@@ -55,7 +55,7 @@
     <main id="top">
         <section class="hero section-shell" aria-labelledby="hero-title">
             <div class="hero__copy" data-reveal>
-                <p class="eyebrow"><span class="eyebrow__braces">{</span> {{ $settings['hero_badge'] ?? 'Portfolio' }} <span class="eyebrow__braces">}</span></p>
+                <p class="eyebrow"><span class="eyebrow__braces">{</span> {{ $settings['hero_badge'] ?? '' }} <span class="eyebrow__braces">}</span></p>
                 <h1 id="hero-title">{{ $heroTitle }}</h1>
                 <div class="hero__bottom">
                     <p class="hero__intro">{{ $heroDescription }} @if (count($titleList)) <span class="accent-green" data-role data-roles='@json($titleList)'></span>@endif</p>
@@ -65,35 +65,35 @@
             <div class="hero__visual" data-reveal data-reveal-delay="150">
                 <div class="hero__visual-label"><span>01</span><span>{{ $studioName }}</span></div>
                 <div class="hero__orb hero__orb--pink" aria-hidden="true"></div><div class="hero__orb hero__orb--blue" aria-hidden="true"></div><div class="hero__orb hero__orb--green" aria-hidden="true"></div>
-                <div class="hero__portrait" aria-label="Visual profil {{ $displayName }}" @if ($profile?->profile_image) style="background-image:url('{{ asset('storage/'.$profile->profile_image) }}');background-size:cover;background-position:center" @endif><span class="hero__portrait-initials">{{ mb_strtoupper(mb_substr($displayName, 0, 2)) }}</span><span class="hero__portrait-caption">{{ $profile?->professional_title ?: 'Portfolio digital' }}</span></div>
+                <div class="hero__portrait" aria-label="Visual profil {{ $displayName }}" @if ($profile?->profile_image) style="background-image:url('{{ asset('storage/'.$profile->profile_image) }}');background-size:cover;background-position:center" @endif><span class="hero__portrait-initials">{{ mb_strtoupper(mb_substr($displayName, 0, 2)) }}</span><span class="hero__portrait-caption">{{ $profile?->professional_title ?: '' }}</span></div>
                 <div class="hero__stamp"><span>{{ $location ?: 'Digital studio' }}</span><span>—</span><span>{{ $settings['default_language'] ?? 'id' }}</span></div>
                 <div class="hero__scroll-cue"><span class="hero__scroll-line"></span> Scroll untuk menjelajah</div>
             </div>
         </section>
 
-        <div class="marquee" aria-label="Informasi studio"><div class="marquee__track"><span>{{ $studioName }}</span><b>✳</b><span>{{ $settings['site_tagline'] ?? 'Portfolio digital' }}</span><b>✳</b><span>{{ $settings['availability_status'] ?? 'Available' }}</span><b>✳</b><span>{{ $location ?: 'Remote friendly' }}</span><b>✳</b><span>{{ $studioName }}</span><b>✳</b></div></div>
+        <div class="marquee" aria-label="Informasi studio"><div class="marquee__track"><span>{{ $studioName }}</span><b>✳</b><span>{{ $settings['site_tagline'] ?? '' }}</span><b>✳</b><span>{{ $settings['availability_status'] ?? '' }}</span><b>✳</b><span>{{ $location }}</span><b>✳</b><span>{{ $studioName }}</span><b>✳</b></div></div>
 
         <section class="statement section-shell section-shell--narrow" id="about" aria-labelledby="about-title">
             <div class="section-intro" data-reveal><span class="section-number">02 / 04</span><p class="eyebrow"><span class="eyebrow__braces">{</span> Tentang <span class="eyebrow__braces">}</span></p></div>
-            <div class="statement__content" data-reveal data-reveal-delay="100"><h2 id="about-title">{{ $profile?->short_bio ?: 'Konten belum tersedia.' }}</h2><div class="statement__aside"><p>{{ $profile?->full_bio ?: 'Konten belum tersedia.' }}</p>@if ($resume)<a class="text-link" href="{{ route('resume.download', ['language' => $resume->language]) }}">Unduh CV <span aria-hidden="true">↗</span></a>@endif</div></div>
+            <div class="statement__content" data-reveal data-reveal-delay="100"><h2 id="about-title">{{ $profile?->short_bio ?: '' }}</h2><div class="statement__aside"><p>{{ $profile?->full_bio ?: '' }}</p>@if ($resume)<a class="text-link" href="{{ route('resume.download', ['language' => $resume->language]) }}">Unduh CV <span aria-hidden="true">↗</span></a>@endif</div></div>
         </section>
 
         <section class="capabilities section-shell" id="titles" aria-labelledby="titles-title">
             <div class="section-intro" data-reveal><span class="section-number">03 / 04</span><p class="eyebrow"><span class="eyebrow__braces">{</span> Judul profesional <span class="eyebrow__braces">}</span></p></div>
-            <div class="section-heading section-heading--split" data-reveal><h2 id="titles-title">Keahlian<br><span class="accent-green">{{ $studioName }}.</span></h2><p>{{ $settings['site_description'] ?? 'Konten belum tersedia.' }}</p></div>
+            <div class="section-heading section-heading--split" data-reveal><h2 id="titles-title">{{ $settings['skills_heading'] ?? '' }}<br><span class="accent-green">{{ $studioName }}</span></h2><p>{{ $settings['site_description'] ?? '' }}</p></div>
             <div class="capability-list">
                 @forelse ($titles as $index => $title)
-                    <article class="capability capability--{{ ['orange', 'pink', 'lilac', 'blue'][$index % 4] }}" data-reveal><div class="capability__visual capability__visual--{{ ['orange', 'pink', 'lilac', 'blue'][$index % 4] }}" aria-hidden="true"><span>{{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}</span><i></i><i></i><i></i></div><div class="capability__content"><div class="capability__meta"><span class="category-label">{{ $title->is_primary ? 'Primary' : 'Focus' }}</span><span>{{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}</span></div><h3>{{ $title->title }}</h3><p>{{ $title->description ?: 'Konten belum tersedia.' }}</p></div></article>
+                    <article class="capability capability--{{ ['orange', 'pink', 'lilac', 'blue'][$index % 4] }}" data-reveal><div class="capability__visual capability__visual--{{ ['orange', 'pink', 'lilac', 'blue'][$index % 4] }}" aria-hidden="true"><span>{{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}</span><i></i><i></i><i></i></div><div class="capability__content"><div class="capability__meta"><span class="category-label">{{ $title->is_primary ? 'Primary' : 'Focus' }}</span><span>{{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}</span></div><h3>{{ $title->title }}</h3><p>{{ $title->description }}</p></div></article>
                 @empty
-                    <article class="capability capability--blue" data-reveal><div class="capability__content"><h3>Konten belum tersedia.</h3><p>Tambahkan judul profesional melalui panel admin.</p></div></article>
+                    <article class="capability capability--blue" data-reveal><div class="capability__content"><h3></h3><p></p></div></article>
                 @endforelse
             </div>
         </section>
 
-        <section class="contact section-shell" id="contact" aria-labelledby="contact-title"><div class="contact__glow" aria-hidden="true"></div><div class="contact__content" data-reveal><p class="eyebrow"><span class="eyebrow__braces">{</span> Kontak <span class="eyebrow__braces">}</span></p><h2 id="contact-title">Mari buat<br><span class="hero__outline">sesuatu</span><br><span class="accent-green">berarti.</span></h2><p class="contact__description">{{ $settings['site_tagline'] ?? 'Konten belum tersedia.' }}</p>@if ($email)<a class="button button--large button--gradient" href="mailto:{{ $email }}">{{ $email }} <span aria-hidden="true">↗</span></a>@endif</div><div class="contact-form" data-reveal data-reveal-delay="150"><div class="form-heading"><span>Informasi kontak</span><span>{{ $location ?: 'Konten belum tersedia.' }}</span></div>@if ($profile?->phone ?: ($settings['phone'] ?? null))<p>{{ $profile?->phone ?: $settings['phone'] }}</p>@endif @if ($profile?->availability_text ?: ($settings['availability_label'] ?? null))<p>{{ $profile?->availability_text ?: $settings['availability_label'] }}</p>@endif @forelse ($socialLinks as $link)<p><a class="text-link" href="{{ $link->url }}" @if ($link->open_in_new_tab) target="_blank" rel="noreferrer" @endif>{{ $link->label }} <span aria-hidden="true">↗</span></a></p>@empty<p>Konten belum tersedia.</p>@endforelse</div></section>
+        <section class="contact section-shell" id="contact" aria-labelledby="contact-title"><div class="contact__glow" aria-hidden="true"></div><div class="contact__content" data-reveal><p class="eyebrow"><span class="eyebrow__braces">{</span> {{ $settings['contact_eyebrow'] ?? '' }} <span class="eyebrow__braces">}</span></p><h2 id="contact-title">{{ $settings['contact_heading'] ?? '' }}</h2><p class="contact__description">{{ $settings['site_tagline'] ?? '' }}</p>@if ($email)<a class="button button--large button--gradient" href="mailto:{{ $email }}">{{ $email }} <span aria-hidden="true">↗</span></a>@endif</div><div class="contact-form" data-reveal data-reveal-delay="150"><div class="form-heading"><span>{{ $settings['contact_info_label'] ?? '' }}</span><span>{{ $location }}</span></div>@if ($profile?->phone ?: ($settings['phone'] ?? null))<p>{{ $profile?->phone ?: $settings['phone'] }}</p>@endif @if ($profile?->availability_text ?: ($settings['availability_label'] ?? null))<p>{{ $profile?->availability_text ?: $settings['availability_label'] }}</p>@endif @foreach ($socialLinks as $link)<p><a class="text-link" href="{{ $link->url }}" @if ($link->open_in_new_tab) target="_blank" rel="noreferrer" @endif>{{ $link->label }} <span aria-hidden="true">↗</span></a></p>@endforeach</div></section>
     </main>
 
-    <footer class="site-footer"><div class="footer__top section-shell"><a class="brand" href="#top" aria-label="Kembali ke atas"><span class="brand__mark">{{ mb_strtoupper(mb_substr($studioName, 0, 1)) }}</span><span>{{ $studioName }}</span></a><p>{{ $settings['site_tagline'] ?? 'Portfolio digital' }}<br>{{ $location }}</p>@if ($email)<button class="text-link footer__email" type="button" data-copy-email data-email="{{ $email }}">Salin email <span aria-hidden="true">↗</span></button>@endif</div><div class="footer__bottom section-shell"><span>© <span data-year></span> {{ $displayName }}</span><div><a href="#about">Tentang</a><a href="#titles">Keahlian</a><a href="#contact">Kontak</a></div><div>@foreach ($socialLinks as $link)<a href="{{ $link->url }}" @if ($link->open_in_new_tab) target="_blank" rel="noreferrer" @endif>{{ $link->label }} ↗</a>@endforeach</div></div></footer>
+    <footer class="site-footer"><div class="footer__top section-shell"><a class="brand" href="#top" aria-label="{{ $studioName }}"><span class="brand__mark">{{ mb_strtoupper(mb_substr($studioName, 0, 1)) }}</span><span>{{ $studioName }}</span></a><p>{{ $settings['site_tagline'] ?? '' }}<br>{{ $location }}</p>@if ($email)<button class="text-link footer__email" type="button" data-copy-email data-email="{{ $email }}">{{ $settings['copy_email_label'] ?? '' }} <span aria-hidden="true">↗</span></button>@endif</div><div class="footer__bottom section-shell"><span>© <span data-year></span> {{ $displayName }}</span><div>@foreach (($settings['footer_links'] ?? []) as $link)<a href="{{ $link['href'] ?? '#' }}">{{ $link['label'] ?? '' }}</a>@endforeach</div><div>@foreach ($socialLinks as $link)<a href="{{ $link->url }}" @if ($link->open_in_new_tab) target="_blank" rel="noreferrer" @endif>{{ $link->label }} ↗</a>@endforeach</div></div></footer>
     <script type="module" src="{{ url('/script.js') }}"></script>
 </body>
 </html>

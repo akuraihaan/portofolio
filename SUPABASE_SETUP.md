@@ -1,99 +1,31 @@
-# Supabase setup BWORIEY
+# Supabase untuk portfolio BWORIEY
 
-## 1. Buat project dan ambil key
+Portfolio Next.js menggunakan proyek Supabase yang sudah terhubung. Domain production adalah `https://portofolio-bworiey.vercel.app`; pengaturan frontend memakai `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, dan `NEXT_PUBLIC_SITE_URL`. Publishable key boleh dipakai browser. Jangan masukkan service-role/secret key ke frontend, Vercel public env, atau repository.
 
-Buat project baru di Supabase, lalu buka **Project Settings → API**. Gunakan:
+## Status project production
 
-```env
-VITE_SUPABASE_URL=https://your-project-ref.supabase.co
-VITE_SUPABASE_PUBLISHABLE_KEY=your-publishable-key
-```
+Ref production: `txsqhxhnamgteofarqfz` (region Tokyo). Project sempat paused lalu berhasil di-resume pada 21 Oktober 2026; status akhir **Healthy**. Bila paused lagi, masuk ke [Supabase Dashboard](https://supabase.com/dashboard/project/txsqhxhnamgteofarqfz) dan gunakan **Resume project**. Situs Vercel bergantung pada database aktif. Project Free dapat dijeda setelah periode tanpa aktivitas; lihat [panduan Supabase](https://supabase.com/docs/guides/platform/free-project-pausing). Tidak ada paket berbayar yang diaktifkan.
 
-Key publishable boleh dipakai frontend. Jangan gunakan `service_role`, `secret`, atau key privat pada `.env.local`, Vercel, atau source code frontend.
+Migrasi CMS yang sudah diterapkan dan direkonsiliasi: `202609030001`, `202609040001`, `202609080000–003`, `202609200001–006`. Jangan jalankan seluruh folder dari awal: schema legacy sudah ada, beberapa migration historis mengandung seed/perbaikan khusus, dan `202609040002_single_source_content.sql` sengaja tidak diputar ulang karena backfill-nya dapat mengubah status hero lama. Riwayat rilis dan backup pra-migrasi ada di [docs/onyx-release.md](docs/onyx-release.md); file backup privat di `.qa/` tidak dimasukkan ke Git atau deployment.
 
-## 2. Jalankan migration
+Sesudah project aktif, jalankan `npm run check:services`, periksa kelengkapan Auth user/role yang sudah ada, lalu uji `/login`, pengelolaan draft/publikasi, akses anonim ke konten draft, media, dan inbox. Jangan membuat akun admin baru atau membuka konten tersembunyi tanpa persetujuan pemilik.
 
-Urutan migration:
+## URL autentikasi
 
-1. `supabase/migrations/202607190001_initial_schema.sql`
-2. `supabase/migrations/202607190002_security_and_rls.sql`
-3. `supabase/migrations/202607190003_seed_roles_permissions.sql`
-4. `supabase/migrations/202607190004_fix_admin_authorization.sql`
-5. `supabase/migrations/202607190005_repair_known_admin_role.sql`
-6. `supabase/migrations/202607200006_repair_all_auth_access.sql`
-7. `supabase/migrations/202607200007_finalize_auth_access_and_rls.sql`
-8. `supabase/migrations/202607200008_create_dynamic_content_schema.sql`
-9. `supabase/migrations/202607200009_repair_admin_authorization.sql`
-10. `supabase/migrations/202607210001_storage_uploads_and_image_paths.sql`
-11. `supabase/migrations/202607210002_sync_dynamic_media_schema.sql`
-12. `supabase/migrations/202607210003_dynamic_site_sections.sql`
-13. `supabase/migrations/202607220004_repair_portfolio_storage.sql`
-14. `supabase/migrations/202609030001_portfolio_versions.sql`
-15. `supabase/migrations/202609040001_admin_content_expansion.sql`
+**Authentication → URL Configuration** sudah memakai Site URL production dan dua redirect berikut:
 
-Cara yang direkomendasikan memakai Supabase CLI:
+- Site URL: `https://portofolio-bworiey.vercel.app`
+- Redirect URL: `https://portofolio-bworiey.vercel.app/auth/callback`
+- Redirect URL lokal untuk pengembangan: `http://localhost:3000/auth/callback`
 
-```bash
-supabase login
-supabase link --project-ref YOUR_PROJECT_REF
-supabase db push
-```
+Callback mengarahkan ke `/admin`; pemulihan kata sandi mengarah ke `/reset-password`. Hanya tambahkan domain production atau development yang benar-benar dipakai.
 
-Atau buka **SQL Editor**, tempel dan jalankan file tersebut satu per satu sesuai urutan. Migration membuat tabel konten dinamis, trigger profile otomatis, default role viewer, function security-definer, RLS, bucket `portfolio-public`, serta tabel `portfolio_versions` dan `achievements`. Role dan permission memakai `bigint`, sedangkan user/Auth memakai `uuid`. Migration terakhir menambah field CMS untuk SEO, studi kasus, CV PDF, dan pilihan konten pada portfolio versi.
+## Storage dan kontak
 
-## 3. Buat Super Admin pertama
+Bucket `portfolio-public` menyimpan media yang memang diterbitkan. Bucket `portfolio-private` menahan berkas draf sampai publikasi mengizinkannya. Aplikasi mengizinkan gambar JPG/PNG/WebP dan dokumen PDF sesuai batas per jenis unggahan. Jangan membuat bucket publik atau melemahkan RLS untuk mengatasi kesalahan izin.
 
-1. Buka **Authentication → Users → Add user** dan buat user dengan email yang kamu miliki. Jangan menaruh password-nya di repository.
-2. Salin UUID user tersebut.
-3. Jalankan SQL berikut dengan UUID milikmu:
+Formulir kontak memanggil RPC `cms_submit_contact`, memvalidasi panjang/topik, memiliki ID idempotensi, dan membatasi laju pengiriman. Pesan tersimpan di inbox admin; notifikasi email belum dikonfigurasi.
 
-```sql
-update public.profiles
-set is_active = true
-where id = 'USER_UUID';
+## Backup dan perubahan schema
 
-delete from public.user_roles
-where user_id = 'USER_UUID';
-
-insert into public.user_roles (user_id, role_id)
-select 'USER_UUID', id
-from public.roles
-where name = 'super_admin';
-```
-
-4. Pastikan hasilnya:
-
-```sql
-select p.id, p.is_active, r.name
-from public.profiles p
-join public.user_roles ur on ur.user_id = p.id
-join public.roles r on r.id = ur.role_id
-where p.id = 'USER_UUID';
-```
-
-Login di `/login`. Migration keenam juga memperbaiki semua user lama yang belum
-memiliki role dengan role `admin`, melengkapi mapping permission setiap role,
-dan memastikan user baru otomatis dibuatkan profile aktif dengan role `viewer`.
-
-## 4. Auth URL Configuration
-
-Buka **Authentication → URL Configuration**.
-
-- Site URL produksi: `https://YOUR-VERCEL-DOMAIN.vercel.app` atau custom domain aktual.
-- Redirect URLs: `http://localhost:5173/**`, `https://YOUR-VERCEL-DOMAIN.vercel.app/**`, dan custom domain `https://YOUR-CUSTOM-DOMAIN/**` bila digunakan.
-
-Reset password memakai `/reset-password` sebagai redirect path.
-
-## 5. Storage
-
-Migration `202607210001_storage_uploads_and_image_paths.sql` memastikan bucket publik `portfolio-public` tersedia, menambah policy Storage berbasis permission `media.manage`, dan menambah path gambar tanpa menghapus URL lama. Frontend menerima JPG, PNG, dan WebP untuk gambar dengan batas 5 MB, serta PDF CV/dokumen dengan batas 8 MB; file tidak disimpan sebagai base64.
-
-Untuk project yang sudah menjalankan migration lama, jalankan migration tambahan `202609030001_portfolio_versions.sql` lalu `202609040001_admin_content_expansion.sql` dari SQL Editor dan refresh schema cache. Migration tambahan bersifat additive: data lama tidak dihapus, permission `achievements.manage` ditambahkan, dan bucket diperbarui agar menerima PDF.
-
-## 6. Troubleshooting
-
-- Pesan “Supabase belum dikonfigurasi”: isi dua environment variable Vite dan restart dev server.
-- Login berhasil tetapi kembali ke login: pastikan row `profiles.is_active=true` dan ada row `user_roles`.
-- CRUD ditolak: cek role, permission, dan policy RLS; jangan menonaktifkan RLS.
-- Contact form gagal: pastikan migration function `submit_contact_message` sudah dijalankan.
-- Setelah mengubah environment variable, restart lokal atau redeploy Vercel.
+Supabase backup SQL tidak otomatis mencakup objek file Storage. Backup logis sebelum migration rilis disimpan privat di `.qa/production-before-data.json` dan `.qa/production-before-schema.json`; ini belum merupakan backup fisik atau pemulihan yang teruji. Buat backup resmi database serta objek Storage sebelum perubahan schema besar, dan uji pemulihannya di lingkungan terpisah.

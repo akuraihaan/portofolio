@@ -10,7 +10,7 @@ export const ARTICLE_COLUMNS = 'id,title,slug,category,excerpt,content,thumbnail
 export const SKILL_COLUMNS = 'id,name,category,description,level,status,sort_order,created_at,updated_at,published_at'
 export const EXPERIENCE_COLUMNS = 'id,company,role_title,experience_type,description,responsibilities,achievements,location,organization_url,start_date,end_date,is_current,logo_url,logo_path,status,sort_order,created_at,updated_at,published_at'
 export const EDUCATION_COLUMNS = 'id,institution,degree,level,field_of_study,location,description,related_achievements,start_date,end_date,is_current,logo_url,logo_path,sort_order,is_featured,status,created_at,updated_at,published_at'
-export const CERTIFICATE_COLUMNS = 'id,title,issuer,issue_date,credential_url,credential_id,expiry_date,certificate_url,certificate_path,image_url,status,sort_order,created_at,updated_at,published_at'
+export const CERTIFICATE_COLUMNS = 'id,title,issuer,issue_date,credential_url,credential_id,expiry_date,certificate_url,certificate_path,image_url,file_url,file_path,status,sort_order,created_at,updated_at,published_at'
 export const ACHIEVEMENT_COLUMNS = 'id,title,organizer,result,achievement_date,description,image_url,image_path,document_url,document_path,link_url,status,sort_order,is_featured,created_at,updated_at,published_at'
 export const SERVICE_COLUMNS = 'id,title,slug,description,icon,icon_url,icon_path,features,price_label,cta_label,cta_url,status,sort_order,is_featured,created_at,updated_at,published_at'
 export const TESTIMONIAL_COLUMNS = 'id,author_name,author_role,company,quote,avatar_url,avatar_path,rating,status,sort_order,is_featured,created_at,updated_at,published_at'
@@ -86,7 +86,7 @@ export async function getSiteSettings() {
     const value = normalizeSettingValue(row.value)
     const fields = assetFields[row.key]
     if (!fields) return [row.key, value]
-    const source = row[fields[0]] || row[fields[1]] || value
+    const source = row[fields[1]] || row[fields[0]] || value
     return [row.key, source ? await resolveAssetUrl(source, row.updated_at || source) : '']
   }))
   return { ...result, data: Object.fromEntries(entries) }
@@ -141,12 +141,12 @@ export async function getPublishedEducationsData() {
 
 export async function getPublishedCertificates() {
   const result = await readPublicTable('certificates', publishedQuery, CERTIFICATE_COLUMNS)
-  return { ...result, data: await resolveAssetRows(result.data, ['certificate_url']) }
+  return { ...result, data: await resolveAssetRows(result.data, ['certificate_url', 'file_url']) }
 }
 
 export async function getPublishedAchievements() {
   const result = await readPublicTable('achievements', publishedQuery, ACHIEVEMENT_COLUMNS)
-  return { ...result, data: await resolveAssetRows(result.data, ['image_url']) }
+  return { ...result, data: await resolveAssetRows(result.data, ['image_url', 'document_url']) }
 }
 
 export async function getPublishedServices() {

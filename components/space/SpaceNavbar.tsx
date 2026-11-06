@@ -6,6 +6,9 @@ import {
   Rocket, 
   User, 
   Briefcase, 
+  Award,
+  Cpu,
+  FolderGit2,
   Mail, 
   Menu, 
   X, 
@@ -22,7 +25,10 @@ interface NavItem {
 const navItems: NavItem[] = [
   { id: "hero", label: "Beranda", icon: Rocket },
   { id: "about", label: "Tentang", icon: User },
-  { id: "portfolio", label: "Portfolio", icon: Briefcase },
+  { id: "experience", label: "Pengalaman", icon: Briefcase },
+  { id: "certificates", label: "Sertifikat", icon: Award },
+  { id: "techstack", label: "Keahlian", icon: Cpu },
+  { id: "projects", label: "Proyek", icon: FolderGit2 },
   { id: "contact", label: "Kontak", icon: Mail },
 ];
 

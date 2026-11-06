@@ -80,7 +80,7 @@ export function initializeSmoothScroll() {
     if (!target) return
     event.preventDefault()
     target.scrollIntoView({ behavior: prefersReducedMotion() ? 'auto' : 'smooth', block: 'start' })
-    window.history.replaceState(null, '', href)
+    if (window.location.hash !== href) window.history.pushState(null, '', href)
   }, 'bworieyNavigation')
   document.documentElement.dataset.smoothScrollReady = 'true'
 }

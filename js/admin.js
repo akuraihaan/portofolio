@@ -7,7 +7,11 @@ import { deletePublicImage, uploadPublicImage } from './services/storage-service
 import { bindImageUploaders, renderImageUploader } from './components/image-uploader.js'
 import { renderNavigationAdmin, renderSectionEditorAdmin, renderSectionsAdmin, renderStatisticsAdmin } from './admin-sections.js'
 import { getOwnedPortfolioVersions } from './services/portfolio-version-service.js'
+import { createContent, deleteContent, listContent, updateContent } from './services/content-service.js'
+import { normalizeContentStatus, validateContentPayload } from './content-schema.js'
+import { createSetting, deleteSetting, deleteSettingByKey, getSettingsByKeys, listSettings, saveSettings, updateSetting } from './services/settings-service.js'
 import { delegate, lockBodyScroll } from './ui/jquery-ui.js'
+import { renderTemplateAdmin } from './appearance-admin.js'
 
 const contentFields = {
   projects: [
@@ -28,14 +32,6 @@ const contentFields = {
 }
 
 const profileFields = [['full_name', 'Nama lengkap', 'text', false], ['username', 'Username', 'text', false], ['phone', 'Telepon', 'text', false], ['bio', 'Bio publik', 'textarea', false], ['avatar_url', 'Avatar profile', 'image', false, 'avatar_path', 'profiles/avatars'], ['is_active', 'Aktif di publik', 'boolean', false]]
-
-const heroSettingFields = [
-  ['hero_badge', 'Label kecil', 'text'],
-  ['hero_title', 'Judul utama', 'text'],
-  ['hero_description', 'Deskripsi utama', 'textarea'],
-  ['professional_titles', 'Jabatan profesional', 'titles'],
-  ['availability_label', 'Label ketersediaan', 'text']
-]
 
 export async function initializeAdminRoute(route) {
   if (route.name === 'login') { await renderLoginPage(); return }
@@ -193,14 +189,15 @@ async function renderDashboard(context) {
   content.innerHTML = `<div class="admin-page-heading"><div><p>{ Ringkasan }</p><h1>Selamat datang kembali.</h1><span>Ringkasan ini membantu menentukan pekerjaan konten berikutnya.</span></div><a class="admin-primary-button admin-button-link" href="/admin/preview">Lihat preview</a></div><section class="admin-dashboard-overview"><article class="admin-card admin-completeness-card"><div class="admin-section-heading"><div><p>Kesiapan portfolio</p><h2 data-profile-completeness>Memeriksa...</h2></div><span class="admin-completeness-ring" data-completeness-ring>—</span></div><div class="admin-progress"><span data-completeness-progress></span></div><p class="admin-field-help" data-completeness-note>Memeriksa data identitas dan publikasi.</p></article><div class="admin-stat-grid" id="admin-stats"><article class="admin-card">Memuat ringkasan...</article></div></section><section class="admin-card admin-quick-actions"><div class="admin-section-heading"><div><p>Tindakan cepat</p><h2>Mulai dari sini</h2></div></div><div class="admin-action-grid"><a class="admin-secondary-button admin-button-link" href="/admin/projects?new=1">Tambah proyek</a><a class="admin-secondary-button admin-button-link" href="/admin/experiences?new=1">Tambah pengalaman</a><a class="admin-secondary-button admin-button-link" href="/admin/certificates?new=1">Unggah sertifikat</a><a class="admin-secondary-button admin-button-link" href="/admin/profile">Edit profil</a><a class="admin-secondary-button admin-button-link" href="/admin/preview">Preview website</a></div></section><div class="admin-two-column"><section class="admin-card"><div class="admin-section-heading"><div><p>Prioritas</p><h2>Langkah berikutnya</h2></div></div><div id="admin-next-steps">Memeriksa...</div></section><section class="admin-card"><div class="admin-section-heading"><div><p>Jejak perubahan</p><h2>Aktivitas terbaru</h2></div></div><div id="admin-activity">Memuat...</div></section></div>`
   const count = async (table, filter = null) => { let query = supabase.from(table).select('id', { count: 'exact', head: true }); if (filter) query = filter(query); const { count: total, error } = await query; return error ? null : total ?? 0 }
   const countStatus = async (table, status) => count(table, query => query.eq('status', status))
-  const [publishedProjects, draftProjects, certificates, experiences, unread, media, profileResult, settingsResult, activeVersion] = await Promise.all([
-    countStatus('projects', 'published'), countStatus('projects', 'draft'), count('certificates'), count('experiences'), count('contact_messages', query => query.eq('status', 'unread')), count('media_assets'), supabase.from('profiles').select('*').eq('id', context.user.id).maybeSingle(), supabase.from('site_settings').select('key,value,updated_at').order('updated_at', { ascending: false }).limit(100), supabase.from('portfolio_versions').select('title,slug').eq('owner_id', context.user.id).eq('visibility', 'published').limit(1).maybeSingle()
+  const [publishedProjects, draftProjects, certificates, experiences, unread, media, profileResult, settingsResult, heroResult, activeVersion] = await Promise.all([
+    countStatus('projects', 'published'), countStatus('projects', 'draft'), count('certificates'), count('experiences'), count('contact_messages', query => query.eq('status', 'unread')), count('media_assets'), supabase.from('profiles').select('*').eq('id', context.user.id).maybeSingle(), listSettings({ columns: 'key,value,updated_at', orderBy: 'updated_at', ascending: false, limit: 100 }), supabase.from('page_sections').select('title,description').eq('section_key', 'hero').maybeSingle(), supabase.from('portfolio_versions').select('title,slug').eq('owner_id', context.user.id).eq('visibility', 'published').limit(1).maybeSingle()
   ])
   document.querySelector('#admin-stats').innerHTML = [['Proyek published', publishedProjects], ['Proyek draft', draftProjects], ['Sertifikat', certificates], ['Pengalaman', experiences], ['Pesan belum dibaca', unread], ['Aset media', media]].map(([label, value]) => `<article class="admin-stat-card"><p>${escapeHtml(label)}</p><strong>${value === null ? '—' : value}</strong><span>Data Supabase</span></article>`).join('')
   const profile = profileResult.data || context.profile || {}
   const settings = Object.fromEntries((settingsResult.data || []).map(item => [item.key, item.value]))
   const settingValue = key => { const value = settings[key]; return typeof value === 'string' ? value : value ? JSON.stringify(value) : '' }
-  const checks = [['Nama lengkap', profile.full_name], ['Bio singkat', profile.bio], ['Foto profil', profile.avatar_url], ['Headline hero', settingValue('hero_title')], ['Deskripsi hero', settingValue('hero_description')], ['CV', settingValue('resume_url')]]
+  const hero = heroResult.data || {}
+  const checks = [['Nama lengkap', profile.full_name], ['Bio singkat', profile.bio], ['Foto profil', profile.avatar_url], ['Headline hero', hero.title], ['Deskripsi hero', hero.description], ['CV', settingValue('resume_url')]]
   const complete = checks.filter(([, value]) => String(value || '').trim()).length; const percentage = Math.round((complete / checks.length) * 100)
   document.querySelector('[data-profile-completeness]').textContent = percentage + '% lengkap'
   document.querySelector('[data-completeness-ring]').textContent = percentage + '%'
@@ -229,14 +226,14 @@ async function renderModule(key, context) {
   const canManage = Boolean(config.manage && hasPermission(context, config.manage))
   const content = document.querySelector('#admin-content')
   content.innerHTML = `<div class="admin-page-heading"><div><p>{ ${escapeHtml(config.label)} }</p><h1>${escapeHtml(config.label)}.</h1><span>Kelola data ${escapeHtml(config.label.toLowerCase())} dengan status dan audit trail.</span></div>${canManage ? '<button class="admin-primary-button" data-action="new">Tambah</button>' : ''}</div><div id="module-form"></div><section class="admin-card"><div class="admin-section-heading"><div><p>Database</p><h2>Daftar ${escapeHtml(config.label)}</h2></div><input class="admin-search" data-search placeholder="Cari..."></div><div id="module-status">Memuat...</div><div id="module-list"></div></section>`
-  const formContainer = document.querySelector('#module-form'); const list = document.querySelector('#module-list'); const status = document.querySelector('#module-status'); const statusFilter = document.createElement('select'); statusFilter.className = 'admin-search'; statusFilter.dataset.statusFilter = ''; statusFilter.innerHTML = '<option value="all">Semua status</option><option value="draft">Draft</option><option value="published">Dipublikasikan</option><option value="archived">Diarsipkan</option>'; document.querySelector('[data-search]')?.after(statusFilter); let rows = []
-  const load = async () => { status.textContent = 'Memuat data...'; try { rows = key === 'educations' ? await getAdminEducations() : (await supabase.from(config.table).select('*').order('created_at', { ascending: false }).limit(100)).data ?? []; status.textContent = `${rows.length} data`; renderRows() } catch (loadError) { status.innerHTML = `<span class="admin-form-error">Tidak dapat memuat data. Periksa policy RLS.</span>`; console.error('Admin module load failed:', { code: loadError?.code || null, message: loadError?.message || 'Unknown error', details: loadError?.details || null, hint: loadError?.hint || null }) } }
+  const formContainer = document.querySelector('#module-form'); const list = document.querySelector('#module-list'); const status = document.querySelector('#module-status'); const statusFilter = document.createElement('select'); statusFilter.className = 'admin-search'; statusFilter.dataset.statusFilter = ''; statusFilter.innerHTML = '<option value="all">Semua status</option><option value="draft">Draft</option><option value="published">Dipublikasikan</option><option value="hidden">Disembunyikan</option><option value="archived">Diarsipkan</option>'; document.querySelector('[data-search]')?.after(statusFilter); let rows = []
+  const load = async () => { status.textContent = 'Memuat data...'; try { rows = key === 'educations' ? await getAdminEducations({ includeArchived: statusFilter.value === 'archived' }) : await listContent(config.table, { includeArchived: statusFilter.value === 'archived' }); status.textContent = `${rows.length} data`; renderRows() } catch (loadError) { status.innerHTML = `<span class="admin-form-error">Tidak dapat memuat data. Periksa policy RLS.</span>`; console.error('Admin module load failed:', { code: loadError?.code || null, message: loadError?.message || 'Unknown error', details: loadError?.details || null, hint: loadError?.hint || null }) } }
   const renderRows = () => { const term = document.querySelector('[data-search]').value.toLowerCase(); const filtered = rows.filter(row => JSON.stringify(row).toLowerCase().includes(term) && (statusFilter.value === 'all' || row.status === statusFilter.value)); list.innerHTML = filtered.length ? filtered.map(row => renderGenericRow(key, row, canManage)).join('') : '<p class="admin-empty">Belum ada data.</p>' }
   const openForm = row => { formContainer.innerHTML = renderGenericForm(key, row, fields, canManage); bindImageUploaders(formContainer); bindFileUploaders(formContainer); if (key === 'projects' && row) { loadProjectMediaEditor(row.id, formContainer); bindProjectMediaEditor(formContainer) } formContainer.scrollIntoView({ behavior: 'smooth', block: 'start' }); const form = formContainer.querySelector('form'); form.addEventListener('submit', event => saveGeneric(event, key, row, context, load, formContainer)); form.querySelector('[data-save-draft]')?.addEventListener('click', () => { if (form.elements.status) form.elements.status.value = 'draft'; form.requestSubmit() }); form.querySelector('[data-form-preview]')?.addEventListener('click', event => window.open(event.currentTarget.dataset.formPreview, '_blank', 'noopener,noreferrer')); form.querySelector('[data-cancel-form]')?.addEventListener('click', () => { formContainer.innerHTML = '' }) }
   document.querySelector('[data-action="new"]')?.addEventListener('click', () => openForm(null))
   document.querySelector('[data-search]').addEventListener('input', renderRows)
-  statusFilter.addEventListener('change', renderRows)
-  list.addEventListener('click', async event => { const button = event.target.closest('[data-edit]'); if (button) { const row = rows.find(item => item.id === button.dataset.edit); if (row) openForm(row) } const remove = event.target.closest('[data-delete]'); if (remove) { if (key === 'educations') deleteEducation(remove.dataset.delete).then(load).catch(error => showToast(error.message || 'Pendidikan tidak dapat dihapus.', 'error')); else deleteRecord(config.table, remove.dataset.delete, context, load, key) } const preview = event.target.closest('[data-preview]'); if (preview) { window.open(preview.dataset.preview, '_blank', 'noopener,noreferrer'); return } const duplicate = event.target.closest('[data-duplicate]'); if (duplicate && canManage) { const source = rows.find(item => item.id === duplicate.dataset.duplicate); if (!source) return; const copy = { ...source, title: source.title ? source.title + ' (salinan)' : source.title, slug: source.slug ? source.slug + '-salinan-' + Date.now() : undefined, status: 'draft', published_at: null, created_by: context.user.id, updated_by: context.user.id }; ['id', 'created_at', 'updated_at'].forEach(field => delete copy[field]); const result = await supabase.from(config.table).insert(copy); if (result.error) showToast('Salinan belum berhasil dibuat.', 'error'); else { showToast('Data diduplikat sebagai draft.'); await load() } } })
+  statusFilter.addEventListener('change', load)
+  list.addEventListener('click', async event => { const button = event.target.closest('[data-edit]'); if (button) { const row = rows.find(item => item.id === button.dataset.edit); if (row) openForm(row) } const remove = event.target.closest('[data-delete]'); if (remove) { if (key === 'educations') deleteEducation(remove.dataset.delete).then(load).catch(error => showToast(error.message || 'Pendidikan tidak dapat dihapus.', 'error')); else deleteRecord(config.table, remove.dataset.delete, context, load, key) } const preview = event.target.closest('[data-preview]'); if (preview) { window.open(preview.dataset.preview, '_blank', 'noopener,noreferrer'); return } const duplicate = event.target.closest('[data-duplicate]'); if (duplicate && canManage) { const source = rows.find(item => item.id === duplicate.dataset.duplicate); if (!source) return; const copy = { ...source, title: source.title ? source.title + ' (salinan)' : source.title, slug: source.slug ? source.slug + '-salinan-' + Date.now() : undefined, status: 'draft', published_at: null, created_by: context.user.id, updated_by: context.user.id }; ['id', 'created_at', 'updated_at'].forEach(field => delete copy[field]); try { await createContent(config.table, copy); showToast('Data diduplikat sebagai draft.'); await load() } catch (error) { console.error('Admin duplicate failed:', error); showToast('Salinan belum berhasil dibuat.', 'error') } } })
   const params = new URLSearchParams(window.location.search); if (params.get('status')) statusFilter.value = params.get('status'); await load(); if (params.get('new') === '1' && canManage) openForm(null)
 }
 
@@ -340,11 +337,14 @@ async function renderIdentitySettings(context) {
     ['owner_location', 'Lokasi', 'text'],
     ['owner_email', 'Email publik', 'email'],
     ['site_name', 'Nama situs', 'text'],
-    ['site_tagline', 'Tagline situs', 'textarea']
+    ['site_tagline', 'Tagline situs', 'textarea'],
+    ['site_description', 'Deskripsi situs', 'textarea'],
+    ['resume_label', 'Label tautan CV', 'text'],
+    ['copyright_text', 'Teks copyright', 'text']
   ]
   content.insertAdjacentHTML('afterbegin', '<section class="admin-card admin-form-card"><div class="admin-section-heading"><div><p>Identity</p><h2>Detail publik</h2><span>Nilai ini dipakai di header, footer, kontak, dan metadata portfolio.</span></div></div><form id="identity-settings-form"><p>Memuat identitas publik...</p></form></section>')
   const form = content.querySelector('#identity-settings-form')
-  const result = await supabase.from('site_settings').select('key,value').in('key', fields.map(field => field[0]))
+  const result = await getSettingsByKeys(fields.map(field => field[0]), { columns: 'key,value' })
   if (result.error) { form.innerHTML = '<p class="admin-form-error">Detail publik tidak dapat dimuat.</p>'; return }
   const values = new Map((result.data || []).map(row => [row.key, row.value]))
   form.innerHTML = '<div class="admin-form-grid">' + fields.map(([key, label, type]) => {
@@ -360,7 +360,7 @@ async function renderIdentitySettings(context) {
     const error = form.querySelector('[data-identity-settings-error]')
     setBusy(button, true); error.textContent = ''
     const payload = fields.map(([key]) => ({ key, group_name: 'identity', value: form.elements[key].value.trim(), is_public: true, updated_by: context.user.id }))
-    const save = await supabase.from('site_settings').upsert(payload, { onConflict: 'key' })
+    const save = await saveSettings(payload)
     setBusy(button, false, 'Simpan detail publik')
     if (save.error) { error.textContent = 'Detail publik belum tersimpan. Periksa permission settings.'; return }
     showToast('Detail publik berhasil diperbarui.')
@@ -378,7 +378,7 @@ function renderField(name, label, type, value, required, pathName, folder) {
   if (type === 'image') return renderImageUploader({ name, label, existingUrl: value, required })
   if (type === 'file') return renderFileUploader({ name, label, existingUrl: value })
   if (type === 'boolean') return `<label class="admin-checkbox"><input type="checkbox" name="${name}" ${value ? 'checked' : ''}><span>${escapeHtml(label)}</span></label>`
-  if (type === 'status') return `<label class="admin-field"><span>${escapeHtml(label)}</span><select name="${name}" ${required ? 'required' : ''}><option value="draft" ${value === 'draft' || !value ? 'selected' : ''}>Draft</option><option value="published" ${value === 'published' ? 'selected' : ''}>Dipublikasikan</option><option value="archived" ${value === 'archived' ? 'selected' : ''}>Diarsipkan</option></select></label>`
+  if (type === 'status') return `<label class="admin-field"><span>${escapeHtml(label)}</span><select name="${name}" ${required ? 'required' : ''}><option value="draft" ${value === 'draft' || !value ? 'selected' : ''}>Draft</option><option value="published" ${value === 'published' ? 'selected' : ''}>Dipublikasikan</option><option value="hidden" ${value === 'hidden' ? 'selected' : ''}>Disembunyikan</option><option value="archived" ${value === 'archived' ? 'selected' : ''}>Diarsipkan</option></select></label>`
   if (type === 'tags') return `<label class="admin-field admin-field-wide"><span>${escapeHtml(label)}</span><textarea name="${name}" rows="3" placeholder="Contoh: Supabase&#10;Vite&#10;UI design">${escapeHtml(Array.isArray(value) ? value.join('\n') : value || '')}</textarea><small class="admin-field-help">Pisahkan dengan baris baru atau koma.</small></label>`
   if (type === 'json') return `<label class="admin-field admin-field-wide"><span>${escapeHtml(label)}</span><textarea name="${name}" rows="5" placeholder="Satu item per baris, atau JSON valid">${escapeHtml(typeof value === 'object' ? JSON.stringify(value, null, 2) : value || '')}</textarea><small class="admin-field-help">Gunakan satu item per baris untuk daftar sederhana. Untuk studi kasus, gunakan JSON.</small></label>`
   const input = type === 'textarea' ? `<textarea name="${name}" rows="4" ${required ? 'required' : ''}>${escapeHtml(value)}</textarea>` : `<input name="${name}" type="${type}" value="${escapeHtml(value)}" ${required ? 'required' : ''}>`
@@ -415,6 +415,9 @@ async function saveGeneric(event, key, row, context, reload, formContainer) {
     if (!row) payload.created_by = context.user.id
     payload.updated_by = context.user.id
   }
+  if (Object.prototype.hasOwnProperty.call(payload, 'status')) payload.status = normalizeContentStatus(payload.status)
+  const validation = validateContentPayload(key, payload)
+  if (!validation.ok) { setBusy(button, false, 'Simpan'); error.textContent = validation.errors.join(' '); return }
   let saveError = null
   let savedRow = row
   let projectMediaError = null
@@ -428,10 +431,7 @@ async function saveGeneric(event, key, row, context, reload, formContainer) {
       const saved = row ? updateEducation(row.id, payload) : createEducation(payload)
       await saved
     } else {
-      const request = row ? supabase.from(ADMIN_MODULES[key].table).update(payload).eq('id', row.id).select().single() : supabase.from(ADMIN_MODULES[key].table).insert(payload).select().single()
-      const result = await request
-      saveError = result.error
-      savedRow = result.data || row
+      savedRow = row ? await updateContent(ADMIN_MODULES[key].table, row.id, payload) : await createContent(ADMIN_MODULES[key].table, payload)
     }
     if (!saveError) await cleanupReplacedImages(imageChanges)
   } catch (error) {
@@ -565,70 +565,16 @@ async function renderSettings(context) {
   renderSiteAssetUploader(context)
   const formContainer = document.querySelector('#settings-form'); const list = document.querySelector('#settings-list'); let rows = []
   const renderRows = () => { const term = document.querySelector('[data-setting-search]').value.toLowerCase(); const filtered = rows.filter(row => `${row.key} ${row.group_name}`.toLowerCase().includes(term)); list.innerHTML = filtered.length ? filtered.map(row => `<article class="admin-list-card"><div><p class="admin-list-kicker">${escapeHtml(row.group_name)} · ${row.is_public ? 'public' : 'private'}</p><h3>${escapeHtml(row.key)}</h3><p>${escapeHtml(parseSettingValue(row.value))}</p></div>${canManage ? `<div class="admin-row-actions"><button class="admin-secondary-button" data-setting-edit="${row.id}">Edit</button><button class="admin-danger-button" data-setting-delete="${row.id}">Hapus</button></div>` : ''}</article>`).join('') : '<p class="admin-empty">Belum ada setting.</p>' }
-  const load = async () => { const { data, error } = await supabase.from('site_settings').select('*').order('group_name').order('key'); if (error) { list.innerHTML = '<span class="admin-form-error">Settings tidak dapat dimuat.</span>'; return } rows = data ?? []; renderRows() }
-  const openForm = row => { formContainer.innerHTML = `<section class="admin-card admin-form-card"><form id="settings-edit-form"><div class="admin-form-grid"><label class="admin-field"><span>Key</span><input name="key" value="${escapeHtml(row?.key)}" required ${row ? 'readonly' : ''}></label><label class="admin-field"><span>Group</span><input name="group_name" value="${escapeHtml(row?.group_name || 'general')}" required></label><label class="admin-field admin-field-wide"><span>Value (JSON atau teks)</span><textarea name="value" rows="4">${escapeHtml(parseSettingValue(row?.value))}</textarea></label><label class="admin-checkbox"><input type="checkbox" name="is_public" ${row?.is_public !== false ? 'checked' : ''}><span>Public setting</span></label></div><div class="admin-form-actions"><button class="admin-primary-button" type="submit">Simpan</button><button class="admin-secondary-button" type="button" data-setting-cancel>Batal</button></div><p class="admin-form-error" data-setting-error></p></form></section>`; formContainer.querySelector('form').addEventListener('submit', async event => { event.preventDefault(); const form = event.currentTarget; const button = form.querySelector('button[type="submit"]'); const error = form.querySelector('[data-setting-error]'); let value = form.elements.value.value; try { value = JSON.parse(value) } catch {} setBusy(button, true); const payload = { key: form.elements.key.value.trim(), group_name: form.elements.group_name.value.trim(), value, is_public: form.elements.is_public.checked, updated_by: context.user.id }; const request = row ? supabase.from('site_settings').update(payload).eq('id', row.id) : supabase.from('site_settings').insert(payload); const { error: saveError } = await request; setBusy(button, false, 'Simpan'); if (saveError) { error.textContent = 'Setting belum tersimpan. Periksa key unik dan permission.'; return } formContainer.innerHTML = ''; showToast('Setting berhasil disimpan.'); await load() }) }
-  document.querySelector('[data-setting-new]')?.addEventListener('click', () => openForm(null)); document.querySelector('[data-setting-search]').addEventListener('input', renderRows); list.addEventListener('click', async event => { const edit = event.target.closest('[data-setting-edit]'); if (edit) openForm(rows.find(row => row.id === edit.dataset.settingEdit)); const remove = event.target.closest('[data-setting-delete]'); if (remove && window.confirm('Hapus setting ini?')) { const { error } = await supabase.from('site_settings').delete().eq('id', remove.dataset.settingDelete); if (error) showToast('Setting tidak dapat dihapus.', 'error'); else { showToast('Setting dihapus.'); await load() } } }); await load()
-}
-
-function renderHeroSettingValue(key, value) {
-  if (key === 'professional_titles') {
-    let parsed = value
-    if (typeof parsed === 'string') {
-      try { parsed = JSON.parse(parsed) } catch { parsed = parsed.split(/\r?\n/) }
-    }
-    return Array.isArray(parsed) ? parsed.filter(Boolean).join('\n') : ''
-  }
-  return parseSettingValue(value)
+  const load = async () => { const result = await listSettings({ orderBy: 'group_name' }); if (result.error) { list.innerHTML = '<span class="admin-form-error">Settings tidak dapat dimuat.</span>'; return } rows = result.data ?? []; renderRows() }
+  const openForm = row => { formContainer.innerHTML = `<section class="admin-card admin-form-card"><form id="settings-edit-form"><div class="admin-form-grid"><label class="admin-field"><span>Key</span><input name="key" value="${escapeHtml(row?.key)}" required ${row ? 'readonly' : ''}></label><label class="admin-field"><span>Group</span><input name="group_name" value="${escapeHtml(row?.group_name || 'general')}" required></label><label class="admin-field admin-field-wide"><span>Value (JSON atau teks)</span><textarea name="value" rows="4">${escapeHtml(parseSettingValue(row?.value))}</textarea></label><label class="admin-checkbox"><input type="checkbox" name="is_public" ${row?.is_public !== false ? 'checked' : ''}><span>Public setting</span></label></div><div class="admin-form-actions"><button class="admin-primary-button" type="submit">Simpan</button><button class="admin-secondary-button" type="button" data-setting-cancel>Batal</button></div><p class="admin-form-error" data-setting-error></p></form></section>`; formContainer.querySelector('form').addEventListener('submit', async event => { event.preventDefault(); const form = event.currentTarget; const button = form.querySelector('button[type="submit"]'); const error = form.querySelector('[data-setting-error]'); let value = form.elements.value.value; try { value = JSON.parse(value) } catch {} setBusy(button, true); const payload = { key: form.elements.key.value.trim(), group_name: form.elements.group_name.value.trim(), value, is_public: form.elements.is_public.checked, updated_by: context.user.id }; const result = row ? await updateSetting(row.id, payload) : await createSetting(payload); setBusy(button, false, 'Simpan'); if (result.error) { error.textContent = 'Setting belum tersimpan. Periksa key unik dan permission.'; return } formContainer.innerHTML = ''; showToast('Setting berhasil disimpan.'); await load() }) }
+  document.querySelector('[data-setting-new]')?.addEventListener('click', () => openForm(null)); document.querySelector('[data-setting-search]').addEventListener('input', renderRows); list.addEventListener('click', async event => { const edit = event.target.closest('[data-setting-edit]'); if (edit) openForm(rows.find(row => row.id === edit.dataset.settingEdit)); const remove = event.target.closest('[data-setting-delete]'); if (remove && window.confirm('Hapus setting ini?')) { const { error } = await deleteSetting(remove.dataset.settingDelete); if (error) showToast('Setting tidak dapat dihapus.', 'error'); else { showToast('Setting dihapus.'); await load() } } }); await load()
 }
 
 async function renderHeroSettings(context) {
   if (!hasPermission(context, 'settings.update')) return
   const content = document.querySelector('#admin-content')
   if (!content) return
-  content.insertAdjacentHTML('afterbegin', '<section class="admin-card admin-form-card"><div class="admin-section-heading"><div><p>Homepage · Section 1</p><h2>Hero content</h2><span>Konten ini tampil di bagian paling atas portfolio publik.</span></div></div><form id="hero-settings-form"><p>Memuat konten hero...</p></form></section>')
-  const form = document.querySelector('#hero-settings-form')
-  if (!form) return
-
-  const keys = heroSettingFields.map(field => field[0])
-  const result = await supabase.from('site_settings').select('key,value').in('key', keys)
-  if (result.error) {
-    form.innerHTML = '<p class="admin-form-error">Konten hero tidak dapat dimuat. Periksa permission settings.view.</p>'
-    return
-  }
-
-  const currentValues = new Map((result.data || []).map(row => [row.key, row.value]))
-  form.innerHTML = '<div class="admin-form-grid">' + heroSettingFields.map(([key, label, type]) => {
-    const value = escapeHtml(renderHeroSettingValue(key, currentValues.get(key)))
-    if (type === 'textarea' || type === 'titles') {
-      const hint = type === 'titles' ? '<small class="admin-field-help">Satu jabatan per baris, misalnya Full Stack Developer.</small>' : ''
-      return '<label class="admin-field admin-field-wide"><span>' + label + '</span><textarea name="' + key + '" rows="' + (type === 'titles' ? '3' : '4') + '" placeholder="' + (type === 'titles' ? 'Full Stack Developer&#10;Creative Developer' : '') + '">' + value + '</textarea>' + hint + '</label>'
-    }
-    return '<label class="admin-field"><span>' + label + '</span><input name="' + key + '" type="text" value="' + value + '"></label>'
-  }).join('') + '</div><div class="admin-form-actions"><button class="admin-primary-button" type="submit">Simpan Section 1</button></div><p class="admin-form-error" data-hero-settings-error></p>'
-
-  form.addEventListener('submit', async event => {
-    event.preventDefault()
-    const button = form.querySelector('button[type="submit"]')
-    const errorElement = form.querySelector('[data-hero-settings-error]')
-    const payload = heroSettingFields.map(([key]) => {
-      const rawValue = form.elements[key].value.trim()
-      const value = key === 'professional_titles'
-        ? rawValue.split(/\r?\n/).map(item => item.trim()).filter(Boolean)
-        : rawValue
-      return { key, group_name: 'identity', value, is_public: true, updated_by: context.user.id }
-    })
-
-    errorElement.textContent = ''
-    setBusy(button, true)
-    const saveResult = await supabase.from('site_settings').upsert(payload, { onConflict: 'key' })
-    setBusy(button, false, 'Simpan Section 1')
-    if (saveResult.error) {
-      console.error('Hero settings save error:', saveResult.error)
-      errorElement.textContent = 'Section 1 belum tersimpan. Periksa permission dan struktur tabel site_settings.'
-      return
-    }
-    showToast('Konten Section 1 berhasil diperbarui.')
-  })
+  content.insertAdjacentHTML('afterbegin', '<section class="admin-card admin-form-card"><div class="admin-section-heading"><div><p>Homepage · Section 1</p><h2>Konten hero</h2><span>Judul, badge, deskripsi, tombol, jabatan, dan foto hero dikelola dari satu editor section.</span></div><a class="admin-primary-button admin-button-link" href="/admin/sections/hero">Edit hero</a></div></section>')
 }
 
 function renderSiteAssetUploader(context) {
@@ -645,8 +591,8 @@ function renderSiteAssetUploader(context) {
   const assetForm = document.querySelector('#site-assets-form')
   const assetRows = new Map()
   const load = async () => {
-    let result = await supabase.from('site_settings').select('id,key,value,asset_url,asset_path,hero_image_url,hero_image_path,logo_url,logo_path,favicon_url,favicon_path,og_image_url,og_image_path').in('key', assetFields.map(field => field[0]))
-    if (result.error?.code === '42703') result = await supabase.from('site_settings').select('id,key,value,asset_url,asset_path').in('key', assetFields.map(field => field[0]))
+    let result = await getSettingsByKeys(assetFields.map(field => field[0]), { columns: 'id,key,value,asset_url,asset_path,hero_image_url,hero_image_path,logo_url,logo_path,favicon_url,favicon_path,og_image_url,og_image_path' })
+    if (result.error?.code === '42703') result = await getSettingsByKeys(assetFields.map(field => field[0]), { columns: 'id,key,value,asset_url,asset_path' })
     const { data, error } = result
     if (error) { assetForm.innerHTML = '<p class="admin-form-error">Asset situs tidak dapat dimuat.</p>'; return }
     ;(data || []).forEach(row => assetRows.set(row.key, row))
@@ -670,7 +616,7 @@ function renderSiteAssetUploader(context) {
         const oldRow = assetRows.get(key)
         const uploaded = await uploadPublicImage({ file, folder, userId: context.user.id })
         uploadedImages.push({ key, uploaded, oldPath: oldRow?.[pathName] || oldRow?.asset_path, oldRow, urlName, pathName, saved: false })
-        const { error } = await supabase.from('site_settings').upsert({ key, group_name: 'assets', value: uploaded.publicUrl, [urlName]: uploaded.publicUrl, [pathName]: uploaded.path, asset_url: uploaded.publicUrl, asset_path: uploaded.path, is_public: true, updated_by: context.user.id }, { onConflict: 'key' })
+        const { error } = await saveSettings({ key, group_name: 'assets', value: uploaded.publicUrl, [urlName]: uploaded.publicUrl, [pathName]: uploaded.path, asset_url: uploaded.publicUrl, asset_path: uploaded.path, is_public: true, updated_by: context.user.id })
         if (error) throw error
         uploadedImages[uploadedImages.length - 1].saved = true
         assetRows.set(key, { asset_url: uploaded.publicUrl, asset_path: uploaded.path, [urlName]: uploaded.publicUrl, [pathName]: uploaded.path, value: uploaded.publicUrl })
@@ -680,8 +626,8 @@ function renderSiteAssetUploader(context) {
       await load()
     } catch (saveError) {
       for (const item of uploadedImages.filter(entry => entry.saved)) {
-        if (item.oldRow) await supabase.from('site_settings').update({ value: item.oldRow.value, [item.urlName]: item.oldRow[item.urlName] || null, [item.pathName]: item.oldRow[item.pathName] || null, asset_url: item.oldRow.asset_url || null, asset_path: item.oldRow.asset_path || null }).eq('key', item.key)
-        else await supabase.from('site_settings').delete().eq('key', item.key)
+        if (item.oldRow) await updateSetting(item.oldRow.id, { value: item.oldRow.value, [item.urlName]: item.oldRow[item.urlName] || null, [item.pathName]: item.oldRow[item.pathName] || null, asset_url: item.oldRow.asset_url || null, asset_path: item.oldRow.asset_path || null })
+        else await deleteSettingByKey(item.key)
       }
       await cleanupNewImages(uploadedImages.map(item => ({ newPath: item.uploaded.path })))
       errorElement.textContent = saveError.message || 'Gambar situs belum tersimpan.'
@@ -700,8 +646,8 @@ function renderResumeUploader(context) {
   const form = document.querySelector('#resume-form')
   let current = null
   const load = async () => {
-    const result = await supabase.from('site_settings').select('id,key,value,resume_url,resume_path').eq('key', 'resume_url').maybeSingle()
-    current = result.data || null
+    const result = await getSettingsByKeys(['resume_url'], { columns: 'id,key,value,resume_url,resume_path' })
+    current = result.data?.[0] || null
     const url = current?.resume_url || current?.value || ''
     form.innerHTML = `<label class="admin-field admin-field-wide"><span>File CV</span><input name="resume_file" type="file" accept="application/pdf"><small class="admin-field-help">PDF · maksimal 8 MB. ${url ? 'CV saat ini tersedia di bawah.' : 'Belum ada CV.'}</small></label><div class="admin-form-actions admin-field-wide"><button class="admin-primary-button" type="submit">Simpan CV</button>${url ? `<a class="admin-secondary-button admin-button-link" href="${escapeHtml(url)}" target="_blank" rel="noopener">Preview CV ↗</a>` : ''}</div><p class="admin-form-error admin-field-wide" data-resume-error></p>`
   }
@@ -714,7 +660,7 @@ function renderResumeUploader(context) {
       const upload = await supabase.storage.from('portfolio-public').upload(path, file, { upsert: false, contentType: 'application/pdf', cacheControl: '3600' })
       if (upload.error) throw upload.error
       const publicUrl = supabase.storage.from('portfolio-public').getPublicUrl(path).data.publicUrl
-      const save = await supabase.from('site_settings').upsert({ key: 'resume_url', group_name: 'identity', value: publicUrl, resume_url: publicUrl, resume_path: path, is_public: true, updated_by: context.user.id }, { onConflict: 'key' })
+      const save = await saveSettings({ key: 'resume_url', group_name: 'identity', value: publicUrl, resume_url: publicUrl, resume_path: path, is_public: true, updated_by: context.user.id })
       if (save.error) throw save.error
       if (current?.resume_path && current.resume_path !== path) await deletePublicImage(current.resume_path)
       showToast('CV berhasil diperbarui.'); await load()
@@ -727,7 +673,7 @@ function renderResumeUploader(context) {
 function renderGenericRow(key, row, canManage) {
   const title = row.title || row.name || row.company || row.institution || row.author_name || row.label || row.key || 'Tanpa judul'
   const secondary = row.summary || row.description || row.role_title || row.email || row.group_name || row.url || ''
-  const status = row.status === 'archived' ? 'disembunyikan' : row.status === 'published' ? 'published' : row.status || (row.is_active === false ? 'nonaktif' : 'aktif')
+  const status = row.status === 'hidden' ? 'disembunyikan' : row.status === 'archived' ? 'diarsipkan' : row.status === 'published' ? 'dipublikasikan' : row.status === 'draft' ? 'draf' : row.status || (row.is_active === false ? 'nonaktif' : 'aktif')
   const image = row.thumbnail_url || row.cover_url || row.image_url || row.certificate_url || row.logo_url
   const thumb = image ? `<img class="admin-list-thumb" src="${escapeHtml(image)}" alt="" loading="lazy">` : ''
   const previewUrl = key === 'projects' && row.slug ? '/projects/' + encodeURIComponent(row.slug) : key === 'articles' && row.slug ? '/#notes' : ''
@@ -738,8 +684,7 @@ async function deleteRecord(table, id, context, reload, key = '') {
   if (!window.confirm('Hapus data ini?')) return
   const existing = key ? (await supabase.from(table).select('*').eq('id', id).maybeSingle()).data : null
   const projectMedia = key === 'projects' ? (await supabase.from('project_media').select('media_path').eq('project_id', id)).data || [] : []
-  const { error } = await supabase.from(table).delete().eq('id', id)
-  if (error) { console.error(error); showToast('Data tidak dapat dihapus oleh policy/RLS.', 'error'); return }
+  try { await deleteContent(table, id) } catch (error) { console.error(error); showToast('Data tidak dapat dihapus oleh policy/RLS.', 'error'); return }
   const imagePaths = (contentFields[key] || []).filter(field => ['image', 'file'].includes(field[2])).map(field => existing?.[field[4]]).filter(Boolean)
   await Promise.all([...imagePaths, ...projectMedia.map(item => item.media_path).filter(Boolean)].map(path => deletePublicImage(path)))
   showToast('Data dihapus.'); await reload()
@@ -851,7 +796,7 @@ async function renderSettingPage(context, { group, eyebrow, title, description, 
   const content = document.querySelector('#admin-content')
   content.innerHTML = `<div class="admin-page-heading"><div><p>{ ${escapeHtml(eyebrow)} }</p><h1>${escapeHtml(title)}.</h1><span>${escapeHtml(description)}</span></div></div><section class="admin-card admin-form-card"><div class="admin-section-heading"><div><p>Pengaturan tersimpan</p><h2>Atur tanpa menyentuh kode</h2></div><span class="admin-list-kicker">${escapeHtml(group)}</span></div><form id="settings-page-form" class="admin-form-grid"><p class="admin-empty">Memuat pengaturan...</p></form></section>`
   const form = content.querySelector('#settings-page-form')
-  const result = await supabase.from('site_settings').select('*').eq('group_name', group).order('key')
+  const result = await listSettings({ group })
   const rows = result.data || []
   if (result.error) { form.innerHTML = '<p class="admin-form-error">Pengaturan belum dapat dimuat. Periksa permission settings.view.</p>'; return }
   form.innerHTML = fields.map(field => {
@@ -869,7 +814,7 @@ async function renderSettingPage(context, { group, eyebrow, title, description, 
         const control = form.elements[field.key]
         const value = field.type === 'boolean' ? control.checked : control.value.trim()
         const payload = { group_name: group, key: field.key, value, is_public: field.isPublic !== false, is_translatable: Boolean(field.isTranslatable), description: field.help || null, updated_by: context.user.id }
-        const save = await supabase.from('site_settings').upsert(payload, { onConflict: 'key' })
+        const save = await saveSettings(payload)
         if (save.error) throw save.error
       }
       showToast('Pengaturan berhasil disimpan.')
@@ -889,12 +834,13 @@ async function renderAppearance(context) {
     { key: 'appearance_project_card', label: 'Tampilan kartu proyek', type: 'select', default: 'editorial', options: [{ value: 'editorial', label: 'Editorial' }, { value: 'compact', label: 'Ringkas' }] },
     { key: 'appearance_gallery', label: 'Tampilan galeri', type: 'select', default: 'grid', options: [{ value: 'grid', label: 'Grid' }, { value: 'list', label: 'Daftar' }] }
   ] })
+  await renderTemplateAdmin(context)
 }
 
 async function renderSeo(context) {
   await renderSettingPage(context, { group: 'seo', eyebrow: 'Optimasi mesin pencari', title: 'SEO', description: 'Kelola metadata pencarian dan berbagi sosial dengan nilai yang mudah dipahami.', fields: [
-    { key: 'default_meta_title', label: 'Judul default', type: 'text', default: 'Taufik Raihandani — Web Developer', help: 'Judul yang dipakai jika halaman belum memiliki judul sendiri.' },
-    { key: 'title_template', label: 'Template judul', type: 'text', default: '%s — Taufik Raihandani', help: 'Gunakan %s sebagai pengganti judul halaman.' },
+    { key: 'default_meta_title', label: 'Judul default', type: 'text', default: '', help: 'Judul yang dipakai jika halaman belum memiliki judul sendiri.' },
+    { key: 'title_template', label: 'Template judul', type: 'text', default: '%s', help: 'Gunakan %s sebagai pengganti judul halaman.' },
     { key: 'default_meta_description', label: 'Deskripsi default', type: 'textarea', default: '', help: 'Disarankan 140–160 karakter.' },
     { key: 'social_title', label: 'Judul social sharing', type: 'text', default: '' },
     { key: 'social_description', label: 'Deskripsi social sharing', type: 'textarea', default: '' },
@@ -907,11 +853,11 @@ async function renderSeo(context) {
 
 async function renderContactSettings(context) {
   await renderSettingPage(context, { group: 'contact', eyebrow: 'Kontak publik', title: 'Kontak', description: 'Atur informasi kontak dan field yang tersedia pada formulir publik.', fields: [
-    { key: 'contact_heading', label: 'Heading', type: 'text', default: 'Mari bicarakan kebutuhan proyek Anda.' },
+    { key: 'contact_heading', label: 'Heading', type: 'text', default: '' },
     { key: 'contact_description', label: 'Deskripsi', type: 'textarea', default: '' },
     { key: 'contact_email', label: 'Email', type: 'email', default: '' },
     { key: 'contact_whatsapp', label: 'Nomor WhatsApp', type: 'text', default: '' },
-    { key: 'contact_success_message', label: 'Pesan berhasil', type: 'text', default: 'Pesan berhasil dikirim. Terima kasih.' },
+    { key: 'contact_success_message', label: 'Pesan berhasil', type: 'text', default: '' },
     { key: 'contact_form_active', label: 'Aktifkan formulir kontak', type: 'boolean', default: true },
     { key: 'contact_fields', label: 'Field formulir (JSON)', type: 'text', default: '["name","email","subject","message"]', help: 'Daftar field yang aktif. Field teknis akan diabaikan di halaman publik.' }
   ] })

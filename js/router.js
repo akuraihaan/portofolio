@@ -47,6 +47,8 @@ export function normalizePath(path = window.location.pathname) {
 
 export function getRoute(path = window.location.pathname) {
   const normalized = normalizePath(path)
+  if (/^\/(projects|p|portfolio)\/[^/]+\//.test(normalized)) return { name: 'notFound', path: normalized }
+  try { decodeURIComponent(normalized) } catch { return { name: 'notFound', path: normalized } }
   if (normalized === '/') return { name: 'home', path: normalized }
   if (normalized === '/projects') return { name: 'projects', path: normalized }
   if (normalized === '/login') return { name: 'login', path: normalized }

@@ -87,13 +87,11 @@ export async function getPublishedEducations() {
   return data || []
 }
 
-export async function getAdminEducations() {
+export async function getAdminEducations({ includeArchived = false } = {}) {
   ensureReady()
-  const { data, error } = await supabase
-    .from('educations')
-    .select(EDUCATION_COLUMNS)
-    .order('sort_order', { ascending: true })
-    .order('created_at', { ascending: false })
+  let query = supabase.from('educations').select(EDUCATION_COLUMNS)
+  if (!includeArchived) query = query.neq('status', 'archived')
+  const { data, error } = await query.order('sort_order', { ascending: true }).order('created_at', { ascending: false })
 
   if (error) {
     logEducationError('getAdminEducations failed:', error)
