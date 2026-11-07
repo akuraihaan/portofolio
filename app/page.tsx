@@ -1,16 +1,16 @@
 import { getPublicBundle } from "@/lib/data";
 import { text, safeHref } from "@/lib/domain";
 import { origin } from "@/lib/data";
-import { SpaceMain } from "@/components/space/SpaceMain";
+import { EditorialMain } from "@/components/editorial/EditorialMain";
 
 export async function generateMetadata() {
   const b = await getPublicBundle();
   const s = b.settings;
   const ownerName = text(b.profile?.full_name) || text(s.owner_name) || "Taufik Raihandani";
-  const shortDescription = `Portofolio personal luar angkasa ${ownerName} — Junior Developer & Tech Enthusiast.`;
+  const shortDescription = `BWORIEY — Personal portfolio of ${ownerName}, Computer Education graduate with an interest in web development, software engineering, and educational technology.`;
 
   return {
-    title: `${ownerName} · Space Portfolio | Junior Developer & Tech Enthusiast`,
+    title: `BWORIEY — ${ownerName} · Modern Editorial Tech Portfolio`,
     description: shortDescription,
     alternates: {
       canonical: origin(s),
@@ -19,7 +19,7 @@ export async function generateMetadata() {
         : {}),
     },
     openGraph: {
-      title: `${ownerName} · Space Portfolio`,
+      title: `BWORIEY — ${ownerName} · Personal Portfolio`,
       description: shortDescription,
       ...(safeHref(s.og_image_url)
         ? { images: [safeHref(s.og_image_url)!] }
@@ -34,5 +34,5 @@ export async function generateMetadata() {
 export default async function Home() {
   const bundle = await getPublicBundle();
 
-  return <SpaceMain bundle={bundle} />;
+  return <EditorialMain bundle={bundle} />;
 }
