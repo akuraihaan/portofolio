@@ -1,107 +1,76 @@
 "use client";
 
-import { ArrowUp, Compass } from "lucide-react";
-import { MagneticElement } from "../motion/MagneticElement";
-import { useMotionContext } from "../motion/MotionProvider";
-
-interface EditorialFooterProps {
-  ownerName?: string;
-  socialLinks?: Array<{ platform: string; url: string; label?: string }>;
-}
+import React from "react";
+import { ArrowUp } from "lucide-react";
 
 export function EditorialFooter({
   ownerName = "Taufik Raihandani",
-  socialLinks,
-}: EditorialFooterProps) {
-  const { setCursor, resetCursor } = useMotionContext();
-
+}: {
+  ownerName?: string;
+  socialLinks?: Array<{ platform: string; label: string; url: string }>;
+}) {
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const defaultLinks = [
-    { label: "GitHub", url: "https://github.com/bworiey" },
-    { label: "LinkedIn", url: "https://www.linkedin.com/in/taufik-raihandani" },
-    { label: "Instagram", url: "https://instagram.com/bworiey" },
-  ];
-
-  const links =
-    socialLinks && socialLinks.length > 0
-      ? socialLinks.map((s) => ({ label: s.label || s.platform, url: s.url }))
-      : defaultLinks;
-
   return (
-    <footer className="w-full border-t border-[#171816]/10 dark:border-[#F4F3EE]/10 bg-[#F4F3EE] dark:bg-[#111310] py-20 px-6 md:px-12 select-none overflow-hidden">
-      <div className="max-w-7xl mx-auto flex flex-col justify-between gap-16">
-        {/* Top Row: Brand & Back to Top */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 pb-12 border-b border-[#171816]/10 dark:border-[#F4F3EE]/10">
+    <footer className="w-full border-t border-black/[0.08] dark:border-white/[0.1] bg-[#F5F5F7] dark:bg-[#000000] py-14 px-6 md:px-8 text-xs text-[#86868B] font-sans">
+      <div className="max-w-5xl mx-auto flex flex-col gap-8">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-black/[0.06] dark:border-white/[0.08]">
           <div>
-            <span className="font-display font-black text-2xl tracking-tight text-[#171816] dark:text-[#F4F3EE] block mb-1">
-              BWORIEY®
+            <span className="font-display font-bold text-lg text-[#1D1D1F] dark:text-[#F5F5F7] block">
+              BWORIEY
             </span>
-            <span className="font-mono text-xs text-[#777970] dark:text-[#A1A49A] block">
-              {ownerName} · Computer Education & Web Engineering
+            <span className="text-xs text-[#86868B] block mt-0.5">
+              {ownerName} · S.Pd. Pendidikan Komputer ULM (2026) · Bangkit 2024 Alumnus
             </span>
           </div>
 
-          <MagneticElement strength={0.3}>
-            <button
-              onClick={scrollToTop}
-              onMouseEnter={() => setCursor({ active: true, text: "TOP" })}
-              onMouseLeave={resetCursor}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-[#171816]/15 dark:border-[#F4F3EE]/20 bg-white dark:bg-[#1C1F1A] font-mono text-xs font-bold text-[#171816] dark:text-[#F4F3EE] hover:bg-black/5 dark:hover:bg-white/5 transition-colors self-start sm:self-auto cursor-pointer shadow-sm"
+          <button
+            onClick={scrollToTop}
+            className="self-start sm:self-auto inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium text-[#1D1D1F] dark:text-[#F5F5F7] hover:bg-black/[0.04] dark:hover:bg-white/[0.08] transition-colors cursor-pointer"
+          >
+            <span>Back to top</span>
+            <ArrowUp className="w-3.5 h-3.5" />
+          </button>
+        </div>
+
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 font-mono text-[11px]">
+          <div>
+            <span>LAT -3.3167 / LON 114.5900 · Banjarmasin, Kalimantan Selatan</span>
+          </div>
+
+          <div className="flex items-center gap-4">
+            <a
+              href="https://github.com/bworiey"
+              target="_blank"
+              rel="noreferrer"
+              className="hover:text-[#1D1D1F] dark:hover:text-[#F5F5F7] transition-colors"
             >
-              <span>Back to Top</span>
-              <ArrowUp className="w-4 h-4 text-[#C8F169]" />
-            </button>
-          </MagneticElement>
-        </div>
-
-        {/* Oversized BWORIEY Wordmark */}
-        <div className="py-4 text-center overflow-hidden">
-          <div className="font-display font-black tracking-tighter text-[15vw] leading-none text-[#171816]/10 dark:text-[#F4F3EE]/10 select-none hover:text-[#C8F169]/30 transition-colors duration-500">
-            BWORIEY
-          </div>
-        </div>
-
-        {/* Bottom Metadata & Copyright */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 text-xs font-mono text-[#777970] dark:text-[#A1A49A] pt-8 border-t border-[#171816]/10 dark:border-[#F4F3EE]/10">
-          <div className="md:col-span-5 space-y-1">
-            <span className="text-[10px] uppercase tracking-wider block text-[#777970]/60 dark:text-[#A1A49A]/60">
-              Geographic Coordinates
-            </span>
-            <span className="text-[#171816] dark:text-[#F4F3EE] font-bold block">
-              LAT -3.3167 / LON 114.5900 · Banjarmasin, Kalimantan Selatan
-            </span>
-            <span className="block text-[11px]">
-              Alumnus Universitas Lambung Mangkurat (2026) · S.Pd. Komputer
-            </span>
+              GitHub
+            </a>
+            <span>·</span>
+            <a
+              href="https://linkedin.com/in/taufik-raihandani"
+              target="_blank"
+              rel="noreferrer"
+              className="hover:text-[#1D1D1F] dark:hover:text-[#F5F5F7] transition-colors"
+            >
+              LinkedIn
+            </a>
+            <span>·</span>
+            <a
+              href="https://instagram.com/bworiey"
+              target="_blank"
+              rel="noreferrer"
+              className="hover:text-[#1D1D1F] dark:hover:text-[#F5F5F7] transition-colors"
+            >
+              Instagram
+            </a>
           </div>
 
-          <div className="md:col-span-4 flex items-center flex-wrap gap-4 my-auto">
-            {links.map((link, idx) => (
-              <span key={link.url} className="flex items-center gap-4">
-                <a
-                  href={link.url}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="font-bold hover:text-[#171816] dark:hover:text-[#C8F169] transition-colors relative group"
-                >
-                  <span>{link.label}</span>
-                  <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-[#C8F169] transition-all group-hover:w-full" />
-                </a>
-                {idx < links.length - 1 && <span className="opacity-30">/</span>}
-              </span>
-            ))}
-          </div>
-
-          <div className="md:col-span-3 text-left md:text-right my-auto">
-            <p className="text-[11px]">
-              © {new Date().getFullYear()} BWORIEY. All rights reserved.
-            </p>
-            <p className="text-[10px] opacity-60 mt-0.5">
-              Built with Next.js, Tailwind CSS & Motion.
-            </p>
+          <div>
+            <span>&copy; {new Date().getFullYear()} BWORIEY. Built with Next.js 16 &amp; Motion.</span>
           </div>
         </div>
       </div>

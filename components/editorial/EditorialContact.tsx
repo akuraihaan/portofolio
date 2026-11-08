@@ -1,39 +1,25 @@
 "use client";
 
-import { useState } from "react";
-import { motion } from "framer-motion";
-import confetti from "canvas-confetti";
-import { Mail, Send, Copy, Check, MapPin, MessageSquare, ArrowUpRight, ShieldCheck, Sparkles } from "lucide-react";
+import React, { useState } from "react";
+import { Mail, MapPin, Send, CheckCircle2, Copy, Check } from "lucide-react";
 import { GithubIcon, LinkedinIcon, InstagramIcon } from "../space/SocialIcons";
-import { MagneticElement } from "../motion/MagneticElement";
-import { useMotionContext } from "../motion/MotionProvider";
-import { EASINGS, DURATION } from "../motion/MotionSystem";
 
 interface EditorialContactProps {
   ownerEmail?: string;
   ownerLocation?: string;
   ownerName?: string;
-  socialLinks?: Array<{ platform: string; url: string; label?: string }>;
+  socialLinks?: Array<{ platform: string; label: string; url: string }>;
 }
 
 export function EditorialContact({
   ownerEmail = "raihandani270204@gmail.com",
   ownerLocation = "Banjarmasin, Kalimantan Selatan, Indonesia",
   ownerName = "Taufik Raihandani",
-  socialLinks,
 }: EditorialContactProps) {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    subject: "Kolaborasi",
-    message: "",
-  });
-
-  const [loading, setLoading] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [errorMsg, setErrorMsg] = useState("");
-  const { setCursor, resetCursor } = useMotionContext();
+  const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({ name: "", email: "", message: "" });
 
   const handleCopyEmail = () => {
     navigator.clipboard.writeText(ownerEmail);
@@ -43,330 +29,188 @@ export function EditorialContact({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name.trim() || !formData.email.trim() || !formData.message.trim()) {
-      setErrorMsg("Mohon lengkapi nama, email, dan pesan Anda.");
-      return;
-    }
-
-    if (formData.message.trim().length < 20) {
-      setErrorMsg("Pesan minimal 20 karakter agar dapat tersampaikan secara jelas.");
-      return;
-    }
+    if (!formData.name || !formData.email || !formData.message) return;
 
     setLoading(true);
-    setErrorMsg("");
-
-    const submissionId =
-      typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
-        ? crypto.randomUUID()
-        : "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
-            const r = (Math.random() * 16) | 0;
-            return (c === "x" ? r : (r & 0x3) | 0x8).toString(16);
-          });
-
     try {
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: formData.name.trim(),
-          email: formData.email.trim(),
-          subject: formData.subject,
-          message: formData.message.trim(),
-          submissionId,
-        }),
+        body: JSON.stringify(formData),
       });
 
-      const data = await res.json().catch(() => ({}));
-
-      if (!res.ok) {
-        if (data.fields) {
-          const firstErr = Object.values(data.fields)[0];
-          throw new Error(String(firstErr || data.error || "Gagal mengirim pesan."));
-        }
-        throw new Error(data.error || "Layanan pesan belum dapat merespons.");
+      if (res.ok) {
+        setSubmitted(true);
+        setFormData({ name: "", email: "", message: "" });
+      } else {
+        alert("Pesan gagal terkirim. Silakan coba lagi atau kirim via email langsung.");
       }
-
-      try {
-        confetti({
-          particleCount: 80,
-          spread: 70,
-          origin: { y: 0.6 },
-          colors: ["#C8F169", "#171816", "#F4F3EE", "#10B981"],
-        });
-      } catch {}
-
-      setSubmitted(true);
-      setFormData({ name: "", email: "", subject: "Kolaborasi", message: "" });
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Terjadi kendala saat mengirim pesan.";
-      setErrorMsg(msg);
+    } catch {
+      alert("Terjadi kesalahan jaringan. Silakan hubungi langsung via email.");
     } finally {
       setLoading(false);
     }
   };
 
-  const defaultChannels = [
-    {
-      name: "GitHub",
-      url: "https://github.com/bworiey",
-      handle: "@bworiey",
-      icon: GithubIcon,
-      desc: "Open source & academic repos",
-    },
-    {
-      name: "LinkedIn",
-      url: "https://www.linkedin.com/in/taufik-raihandani",
-      handle: "Taufik Raihandani",
-      icon: LinkedinIcon,
-      desc: "Professional career profile",
-    },
-    {
-      name: "Instagram",
-      url: "https://instagram.com/bworiey",
-      handle: "@bworiey",
-      icon: InstagramIcon,
-      desc: "Personal & creative updates",
-    },
-  ];
-
-  const socialChannels =
-    socialLinks && socialLinks.length > 0
-      ? socialLinks.map((s) => {
-          const platformLower = (s.platform || "").toLowerCase();
-          const icon = platformLower.includes("github")
-            ? GithubIcon
-            : platformLower.includes("linkedin")
-            ? LinkedinIcon
-            : platformLower.includes("instagram")
-            ? InstagramIcon
-            : GithubIcon;
-          return {
-            name: s.label || s.platform || "Social Link",
-            url: s.url,
-            handle: s.label || s.platform || "@bworiey",
-            icon,
-            desc: `${s.platform || "Media sosial"} resmi`,
-          };
-        })
-      : defaultChannels;
-
   return (
     <section
       id="contact"
-      className="w-full max-w-7xl mx-auto py-28 md:py-36 px-6 md:px-12 border-t border-[#171816]/10 dark:border-[#F4F3EE]/10"
+      className="w-full max-w-5xl mx-auto py-24 md:py-32 px-6 md:px-8 border-t border-black/[0.08] dark:border-white/[0.1]"
     >
       {/* Section Header */}
-      <div className="flex flex-col sm:flex-row sm:items-baseline justify-between mb-16 gap-3">
-        <div className="flex items-center gap-3">
-          <span className="font-mono text-xs font-bold tracking-widest text-[#171816] dark:text-[#C8F169] uppercase">
-            07 / CONTACT
-          </span>
-          <span className="h-px w-8 bg-[#171816]/20 dark:bg-[#F4F3EE]/20"></span>
-          <span className="font-mono text-xs text-[#777970] dark:text-[#A1A49A] uppercase tracking-wider">
-            TRANSMISSION & COLLABORATION
-          </span>
-        </div>
-        <span className="font-mono text-[11px] text-[#777970] dark:text-[#A1A49A] tracking-widest">
-          BANJARMASIN (WITA / UTC+8)
+      <div className="flex items-center gap-3 mb-12">
+        <span className="text-xs font-semibold tracking-[0.2em] text-[#86868B] uppercase">
+          07 / Contact
         </span>
+        <div className="h-px flex-1 bg-black/[0.06] dark:bg-white/[0.08]" />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
-        {/* Left Column: Headline, Statements, & Direct Cards (5 cols) */}
-        <div className="lg:col-span-5 flex flex-col gap-6">
-          <motion.h2
-            initial={{ opacity: 0, y: 15 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="fluid-h2 font-display font-black tracking-tight text-[#171816] dark:text-[#F4F3EE]"
-          >
-            Have something worth building?
-          </motion.h2>
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-12 lg:gap-16 items-start">
+        {/* Left Column: Direct Inquiries & Narrative (5 cols) */}
+        <div className="md:col-span-5 space-y-6">
+          <h2 className="font-display font-bold text-3xl sm:text-4xl md:text-5xl tracking-tight text-[#1D1D1F] dark:text-[#F5F5F7] leading-tight">
+            Let&rsquo;s build together.
+          </h2>
 
-          <p className="text-base sm:text-lg text-[#777970] dark:text-[#A1A49A] leading-relaxed font-normal">
-            Saya terbuka untuk peluang kerja sama, rekayasa perangkat lunak, pengembangan media edukasi, dan diskusi teknologi bermakna.
+          <p className="text-base text-[#86868B] leading-relaxed font-normal">
+            Terbuka untuk posisi Full-Stack Engineer, Cloud Engineer, penelitian teknologi pendidikan, atau kolaborasi proyek rekayasa perangkat lunak.
           </p>
 
-          {/* Quick Copy Email Card */}
-          <div className="p-5 rounded-3xl bg-white dark:bg-[#1C1F1A] border border-[#171816]/10 dark:border-[#F4F3EE]/10 shadow-xl flex items-center justify-between">
+          <div className="space-y-4 pt-2">
             <div>
-              <span className="font-mono text-[10px] text-[#777970] dark:text-[#A1A49A] uppercase tracking-wider block mb-0.5">
-                Primary Direct Email
-              </span>
-              <a
-                href={`mailto:${ownerEmail}`}
-                className="font-mono text-xs sm:text-sm font-bold text-[#171816] dark:text-[#F4F3EE] hover:text-[#171816] dark:hover:text-[#C8F169] transition-colors"
-              >
-                {ownerEmail}
-              </a>
+              <span className="text-xs text-[#86868B] block mb-1">Direct Email</span>
+              <div className="flex items-center gap-2">
+                <a
+                  href={`mailto:${ownerEmail}`}
+                  className="font-medium text-sm text-[#1D1D1F] dark:text-[#F5F5F7] hover:underline"
+                >
+                  {ownerEmail}
+                </a>
+                <button
+                  onClick={handleCopyEmail}
+                  className="p-1 rounded text-[#86868B] hover:text-[#1D1D1F] dark:hover:text-[#F5F5F7] cursor-pointer"
+                  title="Copy email address"
+                  aria-label="Copy email"
+                >
+                  {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
+                </button>
+              </div>
             </div>
 
-            <button
-              onClick={handleCopyEmail}
-              className="p-2.5 rounded-xl bg-[#E9E8E1] dark:bg-[#111310] text-[#171816] dark:text-[#F4F3EE] hover:bg-black/10 dark:hover:bg-white/10 transition-colors focus:outline-none cursor-pointer"
-              title="Salin alamat email"
-            >
-              {copied ? <Check className="w-4 h-4 text-[#C8F169]" /> : <Copy className="w-4 h-4" />}
-            </button>
-          </div>
+            <div>
+              <span className="text-xs text-[#86868B] block mb-1">Location</span>
+              <span className="text-sm text-[#1D1D1F] dark:text-[#F5F5F7] font-normal">
+                {ownerLocation}
+              </span>
+            </div>
 
-          {/* Verified Social Channels */}
-          <div className="space-y-2.5">
-            <span className="font-mono text-[10px] text-[#777970] dark:text-[#A1A49A] uppercase tracking-wider block">
-              Verified Profiles
-            </span>
-            {socialChannels.map((ch) => {
-              const Icon = ch.icon;
-              return (
+            <div>
+              <span className="text-xs text-[#86868B] block mb-2">Social Channels</span>
+              <div className="flex items-center gap-3">
                 <a
-                  key={ch.name}
-                  href={ch.url}
+                  href="https://github.com/bworiey"
                   target="_blank"
                   rel="noreferrer"
-                  className="p-4 rounded-2xl bg-white dark:bg-[#1C1F1A] border border-[#171816]/10 dark:border-[#F4F3EE]/10 hover:border-[#171816]/30 dark:hover:border-[#C8F169]/40 shadow-sm flex items-center justify-between transition-colors group"
+                  className="p-2 rounded-full bg-[#F5F5F7] dark:bg-[#161617] text-[#1D1D1F] dark:text-[#F5F5F7] hover:opacity-80 transition-opacity"
+                  aria-label="GitHub"
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-[#E9E8E1] dark:bg-[#111310] flex items-center justify-center text-[#171816] dark:text-[#C8F169]">
-                      <Icon className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <span className="font-display font-bold text-sm text-[#171816] dark:text-[#F4F3EE] block">
-                        {ch.name}
-                      </span>
-                      <span className="font-mono text-[11px] text-[#777970] dark:text-[#A1A49A] block">
-                        {ch.handle}
-                      </span>
-                    </div>
-                  </div>
-                  <ArrowUpRight className="w-4 h-4 text-[#777970] dark:text-[#A1A49A] group-hover:text-[#171816] dark:group-hover:text-[#C8F169] transition-colors" />
+                  <GithubIcon className="w-4 h-4" />
                 </a>
-              );
-            })}
+                <a
+                  href="https://linkedin.com/in/taufik-raihandani"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="p-2 rounded-full bg-[#F5F5F7] dark:bg-[#161617] text-[#1D1D1F] dark:text-[#F5F5F7] hover:opacity-80 transition-opacity"
+                  aria-label="LinkedIn"
+                >
+                  <LinkedinIcon className="w-4 h-4" />
+                </a>
+                <a
+                  href="https://instagram.com/bworiey"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="p-2 rounded-full bg-[#F5F5F7] dark:bg-[#161617] text-[#1D1D1F] dark:text-[#F5F5F7] hover:opacity-80 transition-opacity"
+                  aria-label="Instagram"
+                >
+                  <InstagramIcon className="w-4 h-4" />
+                </a>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Right Column: Interactive Contact Form (7 cols) */}
-        <div className="lg:col-span-7">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="p-8 sm:p-12 rounded-3xl bg-white dark:bg-[#1C1F1A] border border-[#171816]/10 dark:border-[#F4F3EE]/10 shadow-2xl"
-          >
-            {submitted ? (
-              <div className="py-12 text-center space-y-4">
-                <div className="w-16 h-16 rounded-full bg-[#C8F169]/20 text-[#171816] dark:text-[#C8F169] flex items-center justify-center mx-auto mb-4 border border-[#C8F169]/40">
-                  <Check className="w-8 h-8" />
-                </div>
-                <h3 className="font-display font-black text-2xl sm:text-3xl text-[#171816] dark:text-[#F4F3EE]">
-                  Pesan Berhasil Terkirim!
-                </h3>
-                <p className="text-sm text-[#777970] dark:text-[#A1A49A] max-w-md mx-auto leading-relaxed">
-                  Terima kasih atas pesan Anda. Pesan telah disimpan ke inbox Supabase dan saya akan merespons melalui email secepatnya.
-                </p>
-                <button
-                  onClick={() => setSubmitted(false)}
-                  className="mt-6 px-6 py-2.5 rounded-full bg-[#171816] dark:bg-[#C8F169] text-[#F4F3EE] dark:text-[#171816] font-mono text-xs font-bold"
-                >
-                  Kirim Pesan Lain
-                </button>
+        {/* Right Column: Clean Apple-Style Contact Form (7 cols) */}
+        <div className="md:col-span-7 bg-[#F5F5F7] dark:bg-[#161617] rounded-3xl p-6 sm:p-8 border border-black/[0.04] dark:border-white/[0.06]">
+          {submitted ? (
+            <div className="p-8 text-center flex flex-col items-center justify-center space-y-3">
+              <CheckCircle2 className="w-10 h-10 text-emerald-500" />
+              <h3 className="font-display font-bold text-xl text-[#1D1D1F] dark:text-[#F5F5F7]">
+                Pesan Berhasil Terkirim
+              </h3>
+              <p className="text-sm text-[#86868B] max-w-sm">
+                Terima kasih telah menghubungi saya. Saya akan merespons pesan Anda secepatnya.
+              </p>
+              <button
+                onClick={() => setSubmitted(false)}
+                className="mt-4 px-5 py-2 rounded-full text-xs font-medium bg-[#1D1D1F] text-white dark:bg-[#F5F5F7] dark:text-[#1D1D1F]"
+              >
+                Kirim Pesan Lain
+              </button>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="text-xs font-medium text-[#1D1D1F] dark:text-[#F5F5F7] block mb-1.5">
+                  Nama Anda
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  placeholder="John Doe"
+                  className="w-full px-4 py-2.5 rounded-xl bg-white dark:bg-[#0B0B0C] border border-black/[0.08] dark:border-white/[0.1] text-sm text-[#1D1D1F] dark:text-[#F5F5F7] placeholder-[#86868B] focus:outline-none focus:ring-1 focus:ring-[#1D1D1F] dark:focus:ring-white"
+                />
               </div>
-            ) : (
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="pb-4 border-b border-[#171816]/10 dark:border-[#F4F3EE]/10 mb-6 flex items-center justify-between">
-                  <span className="font-mono text-xs font-bold uppercase tracking-wider text-[#171816] dark:text-[#F4F3EE]">
-                    Kirim Pesan Langsung
-                  </span>
-                  <span className="font-mono text-[10px] text-[#777970] dark:text-[#A1A49A]">
-                    SECURE SUPABASE RPC
-                  </span>
-                </div>
 
-                {errorMsg && (
-                  <div className="p-3.5 rounded-xl bg-red-500/10 text-red-600 dark:text-red-400 font-mono text-xs border border-red-500/20">
-                    {errorMsg}
-                  </div>
-                )}
+              <div>
+                <label className="text-xs font-medium text-[#1D1D1F] dark:text-[#F5F5F7] block mb-1.5">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  required
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  placeholder="john@example.com"
+                  className="w-full px-4 py-2.5 rounded-xl bg-white dark:bg-[#0B0B0C] border border-black/[0.08] dark:border-white/[0.1] text-sm text-[#1D1D1F] dark:text-[#F5F5F7] placeholder-[#86868B] focus:outline-none focus:ring-1 focus:ring-[#1D1D1F] dark:focus:ring-white"
+                />
+              </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                  <div className="space-y-2">
-                    <label className="font-mono text-xs font-bold text-[#171816] dark:text-[#F4F3EE] block">
-                      Nama Lengkap *
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="Nama Anda"
-                      value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      className="w-full px-4 py-3 rounded-xl bg-[#F4F3EE] dark:bg-[#111310] border border-[#171816]/10 dark:border-[#F4F3EE]/10 text-sm font-sans text-[#171816] dark:text-[#F4F3EE] focus:outline-none focus:border-[#C8F169]"
-                    />
-                  </div>
+              <div>
+                <label className="text-xs font-medium text-[#1D1D1F] dark:text-[#F5F5F7] block mb-1.5">
+                  Pesan
+                </label>
+                <textarea
+                  required
+                  rows={4}
+                  value={formData.message}
+                  onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                  placeholder="Tuliskan pesan, tawaran kolaborasi, atau pertanyaan Anda..."
+                  className="w-full px-4 py-2.5 rounded-xl bg-white dark:bg-[#0B0B0C] border border-black/[0.08] dark:border-white/[0.1] text-sm text-[#1D1D1F] dark:text-[#F5F5F7] placeholder-[#86868B] focus:outline-none focus:ring-1 focus:ring-[#1D1D1F] dark:focus:ring-white resize-none"
+                />
+              </div>
 
-                  <div className="space-y-2">
-                    <label className="font-mono text-xs font-bold text-[#171816] dark:text-[#F4F3EE] block">
-                      Alamat Email *
-                    </label>
-                    <input
-                      type="email"
-                      required
-                      placeholder="email@domain.com"
-                      value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      className="w-full px-4 py-3 rounded-xl bg-[#F4F3EE] dark:bg-[#111310] border border-[#171816]/10 dark:border-[#F4F3EE]/10 text-sm font-sans text-[#171816] dark:text-[#F4F3EE] focus:outline-none focus:border-[#C8F169]"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="font-mono text-xs font-bold text-[#171816] dark:text-[#F4F3EE] block">
-                    Topik / Subjek
-                  </label>
-                  <select
-                    value={formData.subject}
-                    onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl bg-[#F4F3EE] dark:bg-[#111310] border border-[#171816]/10 dark:border-[#F4F3EE]/10 text-sm font-mono text-[#171816] dark:text-[#F4F3EE] focus:outline-none focus:border-[#C8F169]"
-                  >
-                    <option value="Kolaborasi">Kolaborasi Proyek</option>
-                    <option value="Peluang Kerja">Peluang Kerja / Rekrutmen</option>
-                    <option value="Pengembangan Web">Pengembangan Web & Aplikasi</option>
-                    <option value="Konsultasi Pendidikan">Teknologi Pembelajaran / Edukasi</option>
-                    <option value="Lainnya">Lainnya</option>
-                  </select>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="font-mono text-xs font-bold text-[#171816] dark:text-[#F4F3EE] block">
-                    Pesan Anda *
-                  </label>
-                  <textarea
-                    required
-                    rows={5}
-                    placeholder="Ceritakan proyek, ide, atau tujuan kolaborasi Anda secara ringkas..."
-                    value={formData.message}
-                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl bg-[#F4F3EE] dark:bg-[#111310] border border-[#171816]/10 dark:border-[#F4F3EE]/10 text-sm font-sans text-[#171816] dark:text-[#F4F3EE] focus:outline-none focus:border-[#C8F169]"
-                  />
-                </div>
-
-                <div className="pt-2">
-                  <MagneticElement strength={0.3}>
-                    <button
-                      type="submit"
-                      disabled={loading}
-                      onMouseEnter={() => setCursor({ active: true, text: "SEND" })}
-                      onMouseLeave={resetCursor}
-                      className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-[#171816] dark:bg-[#C8F169] text-[#F4F3EE] dark:text-[#171816] font-mono text-xs font-bold hover:opacity-90 disabled:opacity-50 transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md"
-                    >
-                      <span>{loading ? "Mengirim Pesan…" : "Kirimkan Pesan"}</span>
-                      <Send className="w-4 h-4" />
-                    </button>
-                  </MagneticElement>
-                </div>
-              </form>
-            )}
-          </motion.div>
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full py-3 rounded-full text-sm font-medium bg-[#1D1D1F] text-white dark:bg-[#F5F5F7] dark:text-[#1D1D1F] hover:opacity-90 transition-opacity disabled:opacity-50 cursor-pointer shadow-sm flex items-center justify-center gap-2"
+              >
+                <span>{loading ? "Mengirim..." : "Kirim Pesan"}</span>
+                <Send className="w-3.5 h-3.5" />
+              </button>
+            </form>
+          )}
         </div>
       </div>
     </section>

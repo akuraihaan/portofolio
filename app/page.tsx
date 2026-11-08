@@ -1,7 +1,7 @@
 import { getPublicBundle } from "@/lib/data";
 import { text, safeHref } from "@/lib/domain";
 import { origin } from "@/lib/data";
-import { PixelMain } from "@/components/pixel-sections/PixelMain";
+import { EditorialMain } from "@/components/editorial/EditorialMain";
 
 export async function generateMetadata() {
   const b = await getPublicBundle();
@@ -10,7 +10,7 @@ export async function generateMetadata() {
   const shortDescription = `BWORIEY — Personal portfolio of ${ownerName}, Computer Education graduate with an interest in web development, software engineering, and educational technology.`;
 
   return {
-    title: `BWORIEY — ${ownerName} · Pixel 3D Digital World Portfolio`,
+    title: `BWORIEY — ${ownerName} · Developer & Educational Technologist`,
     description: shortDescription,
     alternates: {
       canonical: origin(s),
@@ -34,5 +34,5 @@ export async function generateMetadata() {
 export default async function Home() {
   const bundle = await getPublicBundle();
 
-  return <PixelMain bundle={bundle} />;
+  return <EditorialMain bundle={bundle} />;
 }
