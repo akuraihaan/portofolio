@@ -5,7 +5,7 @@ export function PrdImport() {
   const [busy, setBusy] = useState(false),
     [report, setReport] = useState<string[]>([]);
   return (
-    <div className="p-6 rounded-3xl bg-white dark:bg-[#14151b] border border-[#e4e1d7] dark:border-[#222530] shadow-sm">
+    <div className="p-6 border-2 border-[#171816]/20 dark:border-white/10 bg-white dark:bg-[#1C1F1A] shadow-pixel dark:shadow-pixel-lime">
       <div className="pb-4 border-b border-black/5 dark:border-white/5 mb-4">
         <h3 className="font-display font-bold text-lg text-charcoal dark:text-white">
           Inisialisasi Data dari PRD

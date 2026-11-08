@@ -69,6 +69,106 @@ html.dark {
   color: #171816;
 }
 
+/* Pixel 3D Digital World Utilities */
+.pixel-grid {
+  background-size: 32px 32px;
+  background-image: 
+    linear-gradient(to right, rgba(23, 24, 22, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(23, 24, 22, 0.05) 1px, transparent 1px);
+}
+
+html.dark .pixel-grid {
+  background-image: 
+    linear-gradient(to right, rgba(244, 243, 238, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(244, 243, 238, 0.05) 1px, transparent 1px);
+}
+
+.pixel-dots {
+  background-image: radial-gradient(rgba(23, 24, 22, 0.12) 1.5px, transparent 1.5px);
+  background-size: 24px 24px;
+}
+
+html.dark .pixel-dots {
+  background-image: radial-gradient(rgba(200, 241, 105, 0.15) 1.5px, transparent 1.5px);
+}
+
+.isometric-plane {
+  transform: rotateX(60deg) rotateZ(-45deg);
+  transform-style: preserve-3d;
+}
+
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.perspective-800 {
+  perspective: 800px;
+}
+
+/* Pixel Stepped Borders & Voxel Box */
+.pixel-border {
+  border: 2px solid #171816;
+  box-shadow: 4px 4px 0px 0px #171816;
+}
+
+html.dark .pixel-border {
+  border: 2px solid rgba(244, 243, 238, 0.2);
+  box-shadow: 4px 4px 0px 0px #C8F169;
+}
+
+.pixel-border-lime {
+  border: 2px solid #171816;
+  box-shadow: 4px 4px 0px 0px #C8F169;
+}
+
+html.dark .pixel-border-lime {
+  border: 2px solid #C8F169;
+  box-shadow: 4px 4px 0px 0px #C8F169;
+}
+
+/* Pixel Button Interaction */
+.pixel-btn {
+  border: 2px solid #171816;
+  box-shadow: 3px 3px 0px 0px #171816;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.pixel-btn:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0px 0px #171816;
+}
+
+.pixel-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0px 0px #171816;
+}
+
+html.dark .pixel-btn {
+  border: 2px solid #F4F3EE;
+  box-shadow: 3px 3px 0px 0px #C8F169;
+}
+
+html.dark .pixel-btn:hover {
+  box-shadow: 4px 4px 0px 0px #C8F169;
+}
+
+html.dark .pixel-btn:active {
+  box-shadow: 1px 1px 0px 0px #C8F169;
+}
+
+/* Scanline Overlay (Retro Computer Terminal) */
+.scanlines {
+  background: linear-gradient(
+    rgba(18, 16, 16, 0) 50%, 
+    rgba(0, 0, 0, 0.08) 50%
+  );
+  background-size: 100% 4px;
+}
+
 html {
   scroll-behavior: smooth;
   scroll-padding-top: 100px;

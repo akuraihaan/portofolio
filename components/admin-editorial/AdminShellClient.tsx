@@ -184,18 +184,18 @@ export function AdminShellClient({
           <div className="p-6 border-b border-[#171816]/10 dark:border-[#F4F3EE]/10 flex items-center justify-between">
             <Link
               href="/admin"
-              className="flex items-center gap-3 group focus:outline-none"
+              className="flex items-center gap-3 group focus:outline-none no-underline"
               onClick={() => setMobileMenuOpen(false)}
             >
-              <div className="w-9 h-9 rounded-xl bg-[#171816] dark:bg-[#C8F169] flex items-center justify-center text-[#F4F3EE] dark:text-[#171816] font-display font-bold text-sm shadow-sm group-hover:scale-105 transition-transform">
+              <div className="w-9 h-9 bg-[#171816] dark:bg-[#C8F169] flex items-center justify-center text-[#C8F169] dark:text-[#171816] font-pixel text-[11px] font-bold border border-black/40 shadow-pixel group-hover:scale-105 transition-transform">
                 BW
               </div>
               <div className="flex flex-col">
-                <span className="font-display font-bold text-base tracking-tight text-[#171816] dark:text-[#F4F3EE] leading-none">
+                <span className="font-display font-black text-base tracking-tight text-[#171816] dark:text-[#F4F3EE] leading-none">
                   BWORIEY
                 </span>
-                <span className="font-mono text-[10px] text-[#777970] dark:text-[#A1A49A] tracking-wider uppercase mt-1">
-                  CMS Workspace
+                <span className="font-pixel text-[8px] text-[#777970] dark:text-[#A1A49A] tracking-wider uppercase mt-1">
+                  CMS WORKBENCH
                 </span>
               </div>
             </Link>

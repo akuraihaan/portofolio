@@ -12,6 +12,7 @@ export default {
         display: ['"Space Grotesk"', 'sans-serif'],
         sans: ['Inter', 'sans-serif'],
         mono: ['"JetBrains Mono"', 'monospace'],
+        pixel: ['"Press Start 2P"', 'monospace'],
       },
       colors: {
         // BWORIEY Contemporary Swiss Creative-Tech Palette
@@ -72,6 +73,13 @@ export default {
         'lime-glow': '0 0 25px -4px rgba(212, 255, 0, 0.45), 0 0 10px -2px rgba(212, 255, 0, 0.3)',
         'editorial': '0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.03)',
         'editorial-hover': '0 10px 30px -10px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04)',
+        'pixel': '4px 4px 0px 0px #171816',
+        'pixel-lg': '6px 6px 0px 0px #171816',
+        'pixel-lime': '4px 4px 0px 0px #C8F169',
+        'pixel-lime-lg': '6px 6px 0px 0px #C8F169',
+        'pixel-white': '4px 4px 0px 0px #F4F3EE',
+        'pixel-inset': 'inset 2px 2px 0px 0px rgba(255,255,255,0.15), inset -2px -2px 0px 0px rgba(0,0,0,0.3)',
+        'voxel-elevated': '0 8px 0px #171816, 0 16px 20px rgba(0,0,0,0.15)',
       },
       animation: {
         'pulse-subtle': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',

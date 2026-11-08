@@ -129,13 +129,13 @@ export default async function Dashboard() {
 
   return (
     <div className="space-y-10">
-      {/* Editorial Welcome Header */}
+      {/* Pixel Workbench Welcome Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-[#171816]/10 dark:border-[#F4F3EE]/10">
         <div>
-          <div className="flex items-center gap-2 mb-2 font-mono text-[11px] font-bold text-[#171816] dark:text-[#C8F169] tracking-widest uppercase">
-            <span>WORKSPACE</span>
+          <div className="flex items-center gap-2 mb-2 font-pixel text-[9px] text-[#171816] dark:text-[#C8F169] tracking-wider uppercase">
+            <span>[SYS.WORKBENCH]</span>
             <span>//</span>
-            <span>CMS DASHBOARD · 2026</span>
+            <span>PIXEL_3D_CMS · 2026</span>
           </div>
           <h1 className="font-display font-black text-3xl sm:text-5xl text-[#171816] dark:text-[#F4F3EE] tracking-tight leading-tight">
             Selamat datang, {actor.profile.full_name || "Taufik Raihandani"}
@@ -146,11 +146,11 @@ export default async function Dashboard() {
         </div>
 
         {/* Live System Status */}
-        <div className="p-4 rounded-2xl bg-white dark:bg-[#1C1F1A] border border-[#171816]/10 dark:border-[#F4F3EE]/10 shadow-sm flex flex-col gap-2 font-mono text-xs shrink-0 min-w-[240px]">
+        <div className="p-4 border-2 border-[#171816] dark:border-[#C8F169] bg-white dark:bg-[#1C1F1A] shadow-pixel dark:shadow-pixel-lime flex flex-col gap-2 font-mono text-xs shrink-0 min-w-[240px]">
           <div className="flex items-center justify-between">
             <span className="text-[#777970] dark:text-[#A1A49A]">Status Web:</span>
             <span className="flex items-center gap-1.5 font-bold text-[#171816] dark:text-[#C8F169]">
-              <span className="w-2 h-2 rounded-full bg-[#C8F169]"></span>
+              <span className="w-2 h-2 bg-[#C8F169] animate-pulse"></span>
               <span>Online (Vercel)</span>
             </span>
           </div>
@@ -188,14 +188,14 @@ export default async function Dashboard() {
               <Link
                 key={item.title}
                 href={item.href}
-                className="group p-6 rounded-3xl bg-white dark:bg-[#1C1F1A] border border-[#171816]/10 dark:border-[#F4F3EE]/10 hover:border-[#171816]/30 dark:hover:border-[#C8F169]/40 transition-all shadow-sm flex flex-col justify-between"
+                className="group p-6 border-2 border-[#171816]/20 dark:border-white/10 bg-white dark:bg-[#1C1F1A] shadow-pixel hover:shadow-pixel-lg dark:shadow-pixel-lime transition-all flex flex-col justify-between no-underline"
               >
                 <div>
                   <div className="flex items-center justify-between mb-4">
-                    <span className="w-10 h-10 rounded-xl bg-[#E9E8E1] dark:bg-[#111310] border border-black/5 dark:border-white/5 flex items-center justify-center text-[#171816] dark:text-[#F4F3EE] group-hover:scale-110 transition-transform">
+                    <span className="w-10 h-10 bg-[#E9E8E1] dark:bg-[#111310] border border-black/10 dark:border-white/10 flex items-center justify-center text-[#171816] dark:text-[#F4F3EE] group-hover:scale-105 transition-transform">
                       <Icon className="w-5 h-5 text-[#171816] dark:text-[#C8F169]" />
                     </span>
-                    <span className={`text-[10px] font-mono px-2.5 py-1 rounded-full border ${item.badgeColor}`}>
+                    <span className={`text-[10px] font-mono px-2.5 py-1 border ${item.badgeColor}`}>
                       {item.badge}
                     </span>
                   </div>
@@ -219,7 +219,7 @@ export default async function Dashboard() {
       </div>
 
       {/* Quick Actions Panel */}
-      <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-[#1C1F1A] border border-[#171816]/10 dark:border-[#F4F3EE]/10 shadow-sm">
+      <div className="p-6 sm:p-8 border-2 border-[#171816]/20 dark:border-white/10 bg-white dark:bg-[#1C1F1A] shadow-pixel dark:shadow-pixel-lime">
         <h3 className="font-display font-black text-xl text-[#171816] dark:text-[#F4F3EE] mb-2">
           Aksi Cepat Pengelolaan
         </h3>
@@ -230,9 +230,9 @@ export default async function Dashboard() {
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
           <Link
             href="/admin/projects/new"
-            className="flex flex-col items-center justify-center text-center p-4 rounded-2xl bg-[#F4F3EE] dark:bg-[#111310] border border-[#171816]/10 dark:border-[#F4F3EE]/10 hover:border-[#C8F169] transition-colors group cursor-pointer"
+            className="flex flex-col items-center justify-center text-center p-4 border border-[#171816]/20 dark:border-white/10 bg-[#F4F3EE] dark:bg-[#111310] hover:border-[#C8F169] transition-colors group cursor-pointer no-underline"
           >
-            <div className="w-10 h-10 rounded-xl bg-[#C8F169]/20 text-[#171816] dark:text-[#C8F169] flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+            <div className="w-10 h-10 bg-[#C8F169]/20 text-[#171816] dark:text-[#C8F169] border border-[#C8F169]/40 flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
               <Plus className="w-5 h-5" />
             </div>
             <span className="font-mono text-xs font-bold text-[#171816] dark:text-[#F4F3EE]">
@@ -242,9 +242,9 @@ export default async function Dashboard() {
 
           <Link
             href="/admin/certificates/new"
-            className="flex flex-col items-center justify-center text-center p-4 rounded-2xl bg-[#F4F3EE] dark:bg-[#111310] border border-[#171816]/10 dark:border-[#F4F3EE]/10 hover:border-[#C8F169] transition-colors group cursor-pointer"
+            className="flex flex-col items-center justify-center text-center p-4 border border-[#171816]/20 dark:border-white/10 bg-[#F4F3EE] dark:bg-[#111310] hover:border-[#C8F169] transition-colors group cursor-pointer no-underline"
           >
-            <div className="w-10 h-10 rounded-xl bg-[#C8F169]/20 text-[#171816] dark:text-[#C8F169] flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+            <div className="w-10 h-10 bg-[#C8F169]/20 text-[#171816] dark:text-[#C8F169] border border-[#C8F169]/40 flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
               <Award className="w-5 h-5" />
             </div>
             <span className="font-mono text-xs font-bold text-[#171816] dark:text-[#F4F3EE]">
@@ -305,7 +305,7 @@ export default async function Dashboard() {
       {/* Recent Updates & Content Readiness */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* Recent Projects List (7 cols) */}
-        <div className="lg:col-span-7 p-6 sm:p-8 rounded-3xl bg-white dark:bg-[#1C1F1A] border border-[#171816]/10 dark:border-[#F4F3EE]/10 shadow-sm">
+        <div className="lg:col-span-7 p-6 sm:p-8 border-2 border-[#171816]/20 dark:border-white/10 bg-white dark:bg-[#1C1F1A] shadow-pixel dark:shadow-pixel-lime">
           <div className="flex items-center justify-between pb-4 border-b border-[#171816]/10 dark:border-[#F4F3EE]/10 mb-4">
             <div>
               <h3 className="font-display font-bold text-lg text-[#171816] dark:text-[#F4F3EE]">
@@ -317,7 +317,7 @@ export default async function Dashboard() {
             </div>
             <Link
               href="/admin/projects"
-              className="font-mono text-xs text-[#171816] dark:text-[#C8F169] hover:underline flex items-center gap-1 font-bold"
+              className="font-mono text-xs text-[#171816] dark:text-[#C8F169] hover:underline flex items-center gap-1 font-bold no-underline"
             >
               <span>Lihat Semua</span>
               <ArrowUpRight className="w-3.5 h-3.5" />
@@ -329,7 +329,7 @@ export default async function Dashboard() {
               recentProjects.data.map((proj) => (
                 <div
                   key={proj.id}
-                  className="p-4 rounded-xl bg-[#F4F3EE] dark:bg-[#111310] border border-[#171816]/5 dark:border-[#F4F3EE]/5 flex items-center justify-between gap-4"
+                  className="p-4 bg-[#F4F3EE] dark:bg-[#111310] border border-[#171816]/10 dark:border-white/10 flex items-center justify-between gap-4"
                 >
                   <div className="truncate">
                     <p className="font-bold text-[#171816] dark:text-[#F4F3EE] truncate">
@@ -342,9 +342,9 @@ export default async function Dashboard() {
 
                   <div className="flex items-center gap-2 shrink-0">
                     <span
-                      className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
+                      className={`px-2 py-0.5 text-[10px] font-pixel ${
                         proj.status === "published"
-                          ? "bg-[#C8F169]/20 text-[#171816] dark:text-[#C8F169] border border-[#C8F169]/30"
+                          ? "bg-[#C8F169] text-[#171816] border border-black/40"
                           : "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20"
                       }`}
                     >
@@ -352,7 +352,7 @@ export default async function Dashboard() {
                     </span>
                     <Link
                       href={`/admin/projects/${proj.id}`}
-                      className="px-3 py-1 rounded-lg bg-white dark:bg-[#1C1F1A] border border-[#171816]/10 dark:border-[#F4F3EE]/10 text-[11px] font-bold text-[#171816] dark:text-[#F4F3EE] hover:border-[#171816]/30 dark:hover:border-[#F4F3EE]/30 transition-colors"
+                      className="px-3 py-1 bg-white dark:bg-[#1C1F1A] border border-[#171816]/20 dark:border-white/20 text-[11px] font-bold text-[#171816] dark:text-[#F4F3EE] hover:border-[#171816] transition-colors no-underline"
                     >
                       Sunting
                     </Link>
