@@ -30,14 +30,14 @@ export function BrandPreloader({ onComplete }: BrandPreloaderProps) {
     const originalOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
 
-    // If user prefers reduced motion, show a quick elegant fade (1.2s total)
+    // If user prefers reduced motion, show a quick elegant fade (1.0s)
     if (prefersReduced) {
       const reducedTimer = setTimeout(() => {
         sessionStorage.setItem("bworiey_brand_bumper_seen", "true");
         document.body.style.overflow = originalOverflow;
         setIsFinished(true);
         onComplete?.();
-      }, 1200);
+      }, 1000);
       return () => {
         clearTimeout(reducedTimer);
         document.body.style.overflow = originalOverflow;
@@ -45,19 +45,18 @@ export function BrandPreloader({ onComplete }: BrandPreloaderProps) {
     }
 
     // Stage 1: Initial dot appearance (0ms)
-    // Stage 2: Logo assembly starts at 350ms
+    // Stage 2: Logo assembly starts at 300ms
     const timerAssembly = setTimeout(() => {
       setStage("assembly");
-    }, 350);
+    }, 300);
 
-    // Stage 3: Brand bumper with line & subtext at 1100ms
+    // Stage 3: Brand bumper with line & subtext at 950ms
     const timerBumper = setTimeout(() => {
       setStage("bumper");
-    }, 1100);
+    }, 950);
 
-    // Stage 4: Exit transition at 2100ms
+    // Stage 4: Exit transition at 2000ms
     const timerExit = setTimeout(async () => {
-      // Ensure fonts and DOM are ready before exiting
       if (document.fonts) {
         await document.fonts.ready;
       }
@@ -69,8 +68,8 @@ export function BrandPreloader({ onComplete }: BrandPreloaderProps) {
         document.body.style.overflow = originalOverflow;
         setIsFinished(true);
         onComplete?.();
-      }, 700);
-    }, 2100);
+      }, 650);
+    }, 2000);
 
     return () => {
       clearTimeout(timerAssembly);
@@ -88,8 +87,8 @@ export function BrandPreloader({ onComplete }: BrandPreloaderProps) {
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.07,
-        delayChildren: 0.1,
+        staggerChildren: 0.065,
+        delayChildren: 0.05,
       },
     },
   };
@@ -97,9 +96,9 @@ export function BrandPreloader({ onComplete }: BrandPreloaderProps) {
   const letterVariants = {
     hidden: {
       opacity: 0,
-      y: 18,
-      scale: 0.92,
-      filter: "blur(4px)",
+      y: 20,
+      scale: 0.9,
+      filter: "blur(6px)",
     },
     visible: {
       opacity: 1,
@@ -107,7 +106,7 @@ export function BrandPreloader({ onComplete }: BrandPreloaderProps) {
       scale: 1,
       filter: "blur(0px)",
       transition: {
-        duration: 0.45,
+        duration: 0.42,
         ease: [0.16, 1, 0.3, 1] as const,
       },
     },
@@ -119,9 +118,13 @@ export function BrandPreloader({ onComplete }: BrandPreloaderProps) {
         <motion.div
           key="brand-bumper-overlay"
           initial={{ clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)", opacity: 1 }}
-          animate={{ clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)", opacity: 1 }}
+          animate={{
+            clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)",
+            opacity: 1,
+          }}
           exit={{
             clipPath: "polygon(0 0, 100% 0, 100% 0, 0 0)",
+            opacity: 0,
             transition: { duration: 0.65, ease: [0.76, 0, 0.24, 1] as const },
           }}
           className="fixed inset-0 z-[99999] bg-[#0E1013] text-[#F4F3EE] flex flex-col items-center justify-center p-6 select-none overflow-hidden"
@@ -138,7 +141,7 @@ export function BrandPreloader({ onComplete }: BrandPreloaderProps) {
           />
 
           {/* Center Stage: Brand Logo Assembly */}
-          <div className="relative z-10 flex flex-col items-center justify-center text-center">
+          <div className="relative z-10 flex flex-col items-center justify-center text-center max-w-full">
             {/* Stage 1: Initial Origin Pixel Dot */}
             <AnimatePresence>
               {stage === "initial" && (
@@ -146,9 +149,9 @@ export function BrandPreloader({ onComplete }: BrandPreloaderProps) {
                   key="origin-dot"
                   initial={{ scale: 0, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
-                  exit={{ scale: 2, opacity: 0 }}
-                  transition={{ duration: 0.35, ease: "easeOut" }}
-                  className="w-3 h-3 bg-[#C8F169] rounded-none shadow-[0_0_12px_#C8F169]"
+                  exit={{ scale: 1.8, opacity: 0 }}
+                  transition={{ duration: 0.3, ease: "easeOut" }}
+                  className="w-3.5 h-3.5 bg-[#C8F169] rounded-none shadow-[0_0_16px_#C8F169]"
                 />
               )}
             </AnimatePresence>
@@ -159,17 +162,17 @@ export function BrandPreloader({ onComplete }: BrandPreloaderProps) {
                 variants={containerVariants}
                 initial="hidden"
                 animate="visible"
-                className="flex items-center justify-center tracking-tight"
+                className="flex items-center justify-center tracking-tight leading-none whitespace-nowrap"
               >
                 {LETTERS.map((char, index) => (
                   <motion.span
                     key={`${char}-${index}`}
                     variants={letterVariants}
-                    className="font-display font-black text-5xl sm:text-7xl md:text-8xl lg:text-9xl tracking-tight text-[#F4F3EE] inline-block"
+                    className="font-display font-black text-[clamp(2.75rem,8.5vw,7.5rem)] tracking-tight text-[#F4F3EE] inline-block leading-none"
                     style={{
                       textShadow:
                         stage === "bumper"
-                          ? "0 4px 20px rgba(200, 241, 105, 0.15)"
+                          ? "0 4px 24px rgba(200, 241, 105, 0.18)"
                           : "none",
                     }}
                   >
@@ -183,24 +186,22 @@ export function BrandPreloader({ onComplete }: BrandPreloaderProps) {
             <AnimatePresence>
               {(stage === "bumper" || stage === "exit") && (
                 <motion.div
-                  initial={{ opacity: 0, y: 6 }}
+                  initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -8 }}
+                  exit={{ opacity: 0, y: -10 }}
                   transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] as const }}
-                  className="flex flex-col items-center mt-3 sm:mt-5"
+                  className="flex flex-col items-center mt-3 sm:mt-4 w-full"
                 >
                   {/* Expanding Thin Accent Line */}
                   <motion.div
                     initial={{ width: 0 }}
                     animate={{ width: "100%" }}
                     transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] as const }}
-                    className="h-[2px] bg-[#C8F169] max-w-[200px] sm:max-w-[260px] w-full mb-3 opacity-90"
+                    className="h-[2px] bg-[#C8F169] w-48 sm:w-64 max-w-full mb-3 opacity-90 shadow-[0_0_8px_rgba(200,241,105,0.4)]"
                   />
 
                   {/* Clean Digital Subtitle */}
-                  <span
-                    className="font-mono text-[9px] sm:text-[11px] font-bold text-[#A1A49A] uppercase tracking-[0.3em] pl-[0.3em]"
-                  >
+                  <span className="font-mono text-[9px] sm:text-[11px] font-bold text-[#A1A49A] uppercase tracking-[0.3em] pl-[0.3em]">
                     PORTFOLIO / DEVELOPER
                   </span>
                 </motion.div>
