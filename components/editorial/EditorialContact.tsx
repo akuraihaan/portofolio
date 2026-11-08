@@ -10,12 +10,14 @@ interface EditorialContactProps {
   ownerEmail?: string;
   ownerLocation?: string;
   ownerName?: string;
+  socialLinks?: Array<{ platform: string; url: string; label?: string }>;
 }
 
 export function EditorialContact({
   ownerEmail = "raihandani270204@gmail.com",
   ownerLocation = "Banjarmasin, Kalimantan Selatan, Indonesia",
   ownerName = "Taufik Raihandani",
+  socialLinks,
 }: EditorialContactProps) {
   const [formData, setFormData] = useState({
     name: "",
@@ -100,7 +102,7 @@ export function EditorialContact({
     }
   };
 
-  const socialChannels = [
+  const defaultChannels = [
     {
       name: "GitHub",
       url: "https://github.com/bworiey",
@@ -123,6 +125,27 @@ export function EditorialContact({
       desc: "Personal & creative updates",
     },
   ];
+
+  const socialChannels =
+    socialLinks && socialLinks.length > 0
+      ? socialLinks.map((s) => {
+          const platformLower = (s.platform || "").toLowerCase();
+          const icon = platformLower.includes("github")
+            ? GithubIcon
+            : platformLower.includes("linkedin")
+            ? LinkedinIcon
+            : platformLower.includes("instagram")
+            ? InstagramIcon
+            : GithubIcon;
+          return {
+            name: s.label || s.platform || "Social Link",
+            url: s.url,
+            handle: s.label || s.platform || "@bworiey",
+            icon,
+            desc: `${s.platform || "Media sosial"} resmi`,
+          };
+        })
+      : defaultChannels;
 
   return (
     <section

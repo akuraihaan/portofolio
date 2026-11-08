@@ -3,7 +3,30 @@
 import { motion } from "framer-motion";
 import { GraduationCap, Award, BookOpen, CheckCircle2, FileText } from "lucide-react";
 
-export function EditorialEducation() {
+export interface EducationRecord {
+  institution?: string;
+  degree?: string;
+  field_of_study?: string;
+  location?: string;
+  period?: string;
+  gpa?: string;
+  description?: string;
+  statusBadge?: string;
+}
+
+export function EditorialEducation({
+  initialEducation,
+}: {
+  initialEducation?: EducationRecord;
+}) {
+  const institution = initialEducation?.institution || "Universitas Lambung Mangkurat";
+  const degree = initialEducation?.degree || "Bachelor of Education (S.Pd.)";
+  const fieldOfStudy = initialEducation?.field_of_study || "Pendidikan Komputer";
+  const location = initialEducation?.location || "Fakultas Keguruan dan Ilmu Pendidikan · Banjarmasin";
+  const period = initialEducation?.period || "2022 – 2026";
+  const gpa = initialEducation?.gpa || "GPA: 3.54 / 4.00 (Sangat Memuaskan)";
+  const statusBadge = initialEducation?.statusBadge || "Status: Sudah Lulus (Graduated)";
+
   return (
     <section
       id="education"
@@ -40,10 +63,10 @@ export function EditorialEducation() {
               </div>
               <div>
                 <h3 className="font-display font-bold text-2xl text-charcoal dark:text-white">
-                  Universitas Lambung Mangkurat
+                  {institution}
                 </h3>
                 <span className="font-mono text-xs text-charcoal/50 dark:text-white/40">
-                  Fakultas Keguruan dan Ilmu Pendidikan · Banjarmasin
+                  {location}
                 </span>
               </div>
             </div>
@@ -51,7 +74,7 @@ export function EditorialEducation() {
             <div className="flex items-center gap-2">
               <span className="px-3 py-1 rounded-full bg-forest/10 dark:bg-lime/20 text-forest dark:text-lime font-mono text-xs font-bold flex items-center gap-1.5">
                 <CheckCircle2 className="w-3.5 h-3.5" />
-                <span>Status: Sudah Lulus (Graduated)</span>
+                <span>{statusBadge}</span>
               </span>
             </div>
           </div>
@@ -60,20 +83,20 @@ export function EditorialEducation() {
             <div className="p-4 rounded-2xl bg-[#faf8f5] dark:bg-[#0c0d10] border border-black/5 dark:border-white/5">
               <span className="text-charcoal/40 dark:text-white/40 block mb-1">Jenjang & Gelar:</span>
               <span className="text-sm font-bold text-charcoal dark:text-white">
-                Bachelor of Education (S.Pd.)
+                {degree}
               </span>
               <span className="text-charcoal/60 dark:text-white/60 block mt-0.5">
-                Pendidikan Komputer
+                {fieldOfStudy}
               </span>
             </div>
 
             <div className="p-4 rounded-2xl bg-[#faf8f5] dark:bg-[#0c0d10] border border-black/5 dark:border-white/5">
               <span className="text-charcoal/40 dark:text-white/40 block mb-1">Masa Studi & Capaian:</span>
               <span className="text-sm font-bold text-charcoal dark:text-white">
-                2022 – 2026
+                {period}
               </span>
               <span className="text-forest dark:text-lime font-bold block mt-0.5">
-                GPA: 3.54 / 4.00 (Sangat Memuaskan)
+                {gpa}
               </span>
             </div>
           </div>

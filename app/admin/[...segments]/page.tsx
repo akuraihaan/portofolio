@@ -236,21 +236,40 @@ export default async function ModulePage({ params, searchParams }: Props) {
       ...(search.status ? { status: search.status } : {}),
     });
   return (
-    <>
-      <p className="eyebrow">Content studio</p>
-      <h1>{definition.label}</h1>
-      <div className="admin-toolbar">
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-4 border-b border-[#e4e1d7] dark:border-[#222530]">
+        <div>
+          <div className="flex items-center gap-2 font-mono text-[11px] font-bold text-forest dark:text-lime uppercase tracking-widest mb-1">
+            <span>MODUL</span>
+            <span>//</span>
+            <span>{key.toUpperCase()}</span>
+          </div>
+          <h1 className="font-display font-bold text-3xl sm:text-4xl text-charcoal dark:text-white tracking-tight">
+            {definition.label}
+          </h1>
+          <p className="text-xs font-mono text-charcoal/60 dark:text-white/50 mt-1">
+            Total {count ?? 0} entri terdata di database Supabase
+          </p>
+        </div>
+
         {!definition.readOnly && key !== "profile" && (
-          <Link className="pill" href={"/admin/" + key + "/new"}>
-            Tambah konten ＋
+          <Link
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-forest dark:bg-lime text-white dark:text-charcoal font-mono text-xs font-bold shadow-sm hover:opacity-90 transition-opacity self-start sm:self-auto"
+            href={"/admin/" + key + "/new"}
+          >
+            <span>Tambah {definition.label}</span>
+            <span>＋</span>
           </Link>
         )}
+      </div>
+
+      <div className="admin-toolbar">
         <form>
           <input
             type="search"
             name="q"
             aria-label="Cari konten"
-            placeholder="Cari judul…"
+            placeholder="Cari judul atau kata kunci…"
             defaultValue={search.q}
           />
           {definition.status && (
@@ -420,18 +439,27 @@ export default async function ModulePage({ params, searchParams }: Props) {
         </p>
       )}
       {!!revisions?.data?.length && (
-        <section>
-          <h2>Revisi privat</h2>
-          {revisions.data.map((r) => (
-            <p key={r.target_id}>
-              <Link href={"/admin/" + key + "/" + r.target_id}>
-                {titleOf(object(r.payload)) || r.target_id}
-              </Link>{" "}
-              · {r.updated_at}
-            </p>
-          ))}
+        <section className="p-6 rounded-2xl bg-[#faf8f5] dark:bg-[#14151b] border border-black/5 dark:border-white/5 mt-8">
+          <h2 className="font-display font-bold text-lg text-charcoal dark:text-white mb-3">
+            Draf Revisi Privat
+          </h2>
+          <div className="space-y-2 font-mono text-xs">
+            {revisions.data.map((r) => (
+              <div key={r.target_id} className="flex items-center justify-between p-3 rounded-xl bg-white dark:bg-[#0c0d10] border border-black/5 dark:border-white/5">
+                <Link
+                  href={"/admin/" + key + "/" + r.target_id}
+                  className="font-bold text-forest dark:text-lime hover:underline"
+                >
+                  {titleOf(object(r.payload)) || r.target_id}
+                </Link>
+                <span className="text-charcoal/40 dark:text-white/40">
+                  {r.updated_at ? String(r.updated_at).slice(0, 16) : ""}
+                </span>
+              </div>
+            ))}
+          </div>
         </section>
       )}
-    </>
+    </div>
   );
 }

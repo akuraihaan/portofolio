@@ -6,13 +6,14 @@ import { ThemeProvider } from "./ThemeContext";
 import { EditorialNavbar } from "./EditorialNavbar";
 import { EditorialHero } from "./EditorialHero";
 import { EditorialAbout } from "./EditorialAbout";
-import { EditorialSkills } from "./EditorialSkills";
+import { EditorialSkills, type SkillCategory } from "./EditorialSkills";
 import { EditorialProjects, type EditorialProjectItem } from "./EditorialProjects";
-import { EditorialExperience } from "./EditorialExperience";
-import { EditorialEducation } from "./EditorialEducation";
+import { EditorialExperience, type ExperienceRecord } from "./EditorialExperience";
+import { EditorialEducation, type EducationRecord } from "./EditorialEducation";
 import { EditorialCertificates, type EditorialCertificateItem } from "./EditorialCertificates";
 import { EditorialContact } from "./EditorialContact";
 import { EditorialFooter } from "./EditorialFooter";
+import { Code2, Server, Cloud, HeartHandshake } from "lucide-react";
 
 interface EditorialMainProps {
   bundle?: Bundle;
@@ -91,6 +92,100 @@ export function EditorialMain({ bundle }: EditorialMainProps) {
     };
   });
 
+  // Map database skills if available
+  const rawSkills = bundle?.collections?.skills?.data || [];
+  let dbSkillCategories: SkillCategory[] | undefined = undefined;
+
+  if (rawSkills.length > 0) {
+    const iconMap: Record<string, typeof Code2> = {
+      frontend: Code2,
+      backend: Server,
+      cloud: Cloud,
+      tools: Cloud,
+      other: HeartHandshake,
+    };
+
+    const grouped: Record<string, Array<{ name: string; level: "Advanced" | "Intermediate" | "Familiar"; note: string }>> = {};
+
+    for (const item of rawSkills) {
+      const cat = text(item.category) || "General Competencies";
+      if (!grouped[cat]) grouped[cat] = [];
+      const numLevel = Number(item.level);
+      const level: "Advanced" | "Intermediate" | "Familiar" =
+        numLevel >= 80 ? "Advanced" : numLevel >= 50 ? "Intermediate" : "Familiar";
+      grouped[cat].push({
+        name: text(item.name) || "Skill",
+        level,
+        note: text(item.description) || "Kompetensi terverifikasi",
+      });
+    }
+
+    dbSkillCategories = Object.entries(grouped).map(([title, skills], idx) => {
+      const lower = title.toLowerCase();
+      let icon = Code2;
+      if (lower.includes("backend") || lower.includes("server") || lower.includes("api")) icon = Server;
+      else if (lower.includes("cloud") || lower.includes("devops") || lower.includes("infra")) icon = Cloud;
+      else if (lower.includes("soft") || lower.includes("professional") || lower.includes("pedagogi")) icon = HeartHandshake;
+
+      return {
+        title,
+        categoryNumber: String(idx + 1).padStart(2, "0"),
+        icon,
+        description: `Kumpulan keahlian dalam bidang ${title} yang diterapkan pada sistem produksi dan riset.`,
+        skills,
+      };
+    });
+  }
+
+  // Map database experiences if available
+  const rawExp = bundle?.collections?.experiences?.data || [];
+  const dbExperiences: ExperienceRecord[] = rawExp.map((row, idx) => {
+    const rawResp = row.responsibilities;
+    const responsibilities: string[] = Array.isArray(rawResp)
+      ? rawResp.map(String)
+      : typeof rawResp === "string"
+      ? rawResp.split(/[\n,]+/).map((s) => s.trim()).filter(Boolean)
+      : [];
+
+    const startDate = row.start_date ? String(row.start_date).slice(0, 7) : "2024";
+    const endDate = row.is_current ? "Present" : row.end_date ? String(row.end_date).slice(0, 7) : "";
+    const period = endDate ? `${startDate} – ${endDate}` : startDate;
+
+    return {
+      id: text(row.id) || `exp-${idx}`,
+      role: text(row.role_title) || "Role",
+      organization: text(row.company) || "Organisasi",
+      period,
+      location: text(row.location) || "Banjarmasin, Indonesia",
+      typeBadge: text(row.experience_type) || "Pengalaman",
+      description: text(row.description) || "",
+      responsibilities: responsibilities.length > 0 ? responsibilities : ["Pengembangan & implementasi teknis"],
+    };
+  });
+
+  // Map database education if available
+  const rawEdu = bundle?.collections?.educations?.data || [];
+  let dbEducation: EducationRecord | undefined = undefined;
+  if (rawEdu.length > 0) {
+    const firstEdu = rawEdu[0];
+    dbEducation = {
+      institution: text(firstEdu.institution) || undefined,
+      degree: text(firstEdu.degree) || undefined,
+      field_of_study: text(firstEdu.field_of_study) || undefined,
+      location: text(firstEdu.location) || undefined,
+      period: firstEdu.start_date ? `${String(firstEdu.start_date).slice(0, 4)} – ${firstEdu.end_date ? String(firstEdu.end_date).slice(0, 4) : "2026"}` : undefined,
+      gpa: text(firstEdu.description)?.includes("GPA") ? text(firstEdu.description) : undefined,
+    };
+  }
+
+  // Map database social links if available
+  const rawSocial = bundle?.collections?.social_links?.data || [];
+  const dbSocial = rawSocial.map((row) => ({
+    platform: text(row.platform) || "Social",
+    label: text(row.label) || text(row.platform) || "Link",
+    url: safeHref(row.url) || "#",
+  }));
+
   return (
     <ThemeProvider>
       <div className="relative min-h-screen bg-[#faf8f5] dark:bg-[#0c0d10] text-charcoal dark:text-dark-text font-sans selection:bg-forest dark:selection:bg-lime selection:text-white dark:selection:text-charcoal transition-colors duration-300">
@@ -119,7 +214,9 @@ export function EditorialMain({ bundle }: EditorialMainProps) {
           />
 
           {/* D. Skills Section (02 / SKILLS) */}
-          <EditorialSkills />
+          <EditorialSkills
+            initialCategories={dbSkillCategories}
+          />
 
           {/* E. Featured Projects (03 / SELECTED WORKS) */}
           <EditorialProjects
@@ -127,10 +224,14 @@ export function EditorialMain({ bundle }: EditorialMainProps) {
           />
 
           {/* F. Experience Section (04 / EXPERIENCE) */}
-          <EditorialExperience />
+          <EditorialExperience
+            initialExperiences={dbExperiences.length > 0 ? dbExperiences : undefined}
+          />
 
           {/* G. Education Section (05 / EDUCATION) */}
-          <EditorialEducation />
+          <EditorialEducation
+            initialEducation={dbEducation}
+          />
 
           {/* H. Certificates & Achievements (06 / AWARDS & CREDENTIALS) */}
           <EditorialCertificates
@@ -142,11 +243,15 @@ export function EditorialMain({ bundle }: EditorialMainProps) {
             ownerEmail={ownerEmail}
             ownerLocation={ownerLocation}
             ownerName={ownerName}
+            socialLinks={dbSocial.length > 0 ? dbSocial : undefined}
           />
         </main>
 
         {/* J. Footer */}
-        <EditorialFooter ownerName={ownerName} />
+        <EditorialFooter
+          ownerName={ownerName}
+          socialLinks={dbSocial.length > 0 ? dbSocial : undefined}
+        />
       </div>
     </ThemeProvider>
   );

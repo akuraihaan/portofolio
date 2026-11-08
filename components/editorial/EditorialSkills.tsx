@@ -3,13 +3,13 @@
 import { motion } from "framer-motion";
 import { Code2, Server, Cloud, HeartHandshake, Layers, Terminal, Sparkles } from "lucide-react";
 
-interface SkillItem {
+export interface SkillItem {
   name: string;
   level: "Advanced" | "Intermediate" | "Familiar";
   note: string;
 }
 
-interface SkillCategory {
+export interface SkillCategory {
   title: string;
   categoryNumber: string;
   icon: typeof Code2;
@@ -17,7 +17,7 @@ interface SkillCategory {
   skills: SkillItem[];
 }
 
-const skillCategories: SkillCategory[] = [
+export const defaultSkillCategories: SkillCategory[] = [
   {
     title: "Frontend Development",
     categoryNumber: "01",
@@ -72,7 +72,16 @@ const skillCategories: SkillCategory[] = [
   },
 ];
 
-export function EditorialSkills() {
+export function EditorialSkills({
+  initialCategories,
+}: {
+  initialCategories?: SkillCategory[];
+}) {
+  const displayCategories =
+    initialCategories && initialCategories.length > 0
+      ? initialCategories
+      : defaultSkillCategories;
+
   return (
     <section
       id="skills"
@@ -112,8 +121,8 @@ export function EditorialSkills() {
 
       {/* 4 Categorized Panels */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {skillCategories.map((cat, idx) => {
-          const CategoryIcon = cat.icon;
+        {displayCategories.map((cat, idx) => {
+          const CategoryIcon = cat.icon || Code2;
           return (
             <motion.div
               key={cat.title}

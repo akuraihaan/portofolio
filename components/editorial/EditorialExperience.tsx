@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { Briefcase, Calendar, MapPin, ArrowUpRight, GraduationCap } from "lucide-react";
 
-interface ExperienceRecord {
+export interface ExperienceRecord {
   id: string;
   role: string;
   organization: string;
@@ -14,7 +14,7 @@ interface ExperienceRecord {
   responsibilities: string[];
 }
 
-const verifiedExperiences: ExperienceRecord[] = [
+export const defaultExperiences: ExperienceRecord[] = [
   {
     id: "teaching-assistant-smp13",
     role: "Teaching Assistant – Informatics",
@@ -62,7 +62,16 @@ const verifiedExperiences: ExperienceRecord[] = [
   },
 ];
 
-export function EditorialExperience() {
+export function EditorialExperience({
+  initialExperiences,
+}: {
+  initialExperiences?: ExperienceRecord[];
+}) {
+  const experiences =
+    initialExperiences && initialExperiences.length > 0
+      ? initialExperiences
+      : defaultExperiences;
+
   return (
     <section
       id="experience"
@@ -102,7 +111,7 @@ export function EditorialExperience() {
 
       {/* Editorial Timeline List with Spotlight Dimming on Hover */}
       <div className="group/timeline flex flex-col space-y-6">
-        {verifiedExperiences.map((item, idx) => (
+        {experiences.map((item, idx) => (
           <motion.div
             key={item.id}
             initial={{ opacity: 0, y: 20 }}

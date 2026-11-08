@@ -5,12 +5,27 @@ import { GithubIcon, LinkedinIcon, InstagramIcon } from "../space/SocialIcons";
 
 interface EditorialFooterProps {
   ownerName?: string;
+  socialLinks?: Array<{ platform: string; url: string; label?: string }>;
 }
 
-export function EditorialFooter({ ownerName = "Taufik Raihandani" }: EditorialFooterProps) {
+export function EditorialFooter({
+  ownerName = "Taufik Raihandani",
+  socialLinks,
+}: EditorialFooterProps) {
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
+
+  const defaultLinks = [
+    { label: "GitHub", url: "https://github.com/bworiey" },
+    { label: "LinkedIn", url: "https://www.linkedin.com/in/taufik-raihandani" },
+    { label: "Instagram", url: "https://instagram.com/bworiey" },
+  ];
+
+  const links =
+    socialLinks && socialLinks.length > 0
+      ? socialLinks.map((s) => ({ label: s.label || s.platform, url: s.url }))
+      : defaultLinks;
 
   return (
     <footer className="w-full border-t border-[#e4e1d7] dark:border-[#222530] bg-[#faf8f5] dark:bg-[#0c0d10] py-16 px-6 md:px-12">
@@ -49,33 +64,20 @@ export function EditorialFooter({ ownerName = "Taufik Raihandani" }: EditorialFo
             </span>
           </div>
 
-          <div className="md:col-span-4 flex items-center gap-4">
-            <a
-              href="https://github.com/bworiey"
-              target="_blank"
-              rel="noreferrer"
-              className="hover:text-charcoal dark:hover:text-white transition-colors"
-            >
-              GitHub
-            </a>
-            <span>/</span>
-            <a
-              href="https://www.linkedin.com/in/taufik-raihandani"
-              target="_blank"
-              rel="noreferrer"
-              className="hover:text-charcoal dark:hover:text-white transition-colors"
-            >
-              LinkedIn
-            </a>
-            <span>/</span>
-            <a
-              href="https://instagram.com/bworiey"
-              target="_blank"
-              rel="noreferrer"
-              className="hover:text-charcoal dark:hover:text-white transition-colors"
-            >
-              Instagram
-            </a>
+          <div className="md:col-span-4 flex items-center flex-wrap gap-4">
+            {links.map((link, idx) => (
+              <span key={link.url} className="flex items-center gap-4">
+                <a
+                  href={link.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="hover:text-charcoal dark:hover:text-white transition-colors"
+                >
+                  {link.label}
+                </a>
+                {idx < links.length - 1 && <span>/</span>}
+              </span>
+            ))}
           </div>
 
           <div className="md:col-span-3 text-left md:text-right">

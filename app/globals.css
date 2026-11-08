@@ -541,52 +541,130 @@ dialog::backdrop {
   font-size: 16px;
 }
 .admin-main {
-  padding: 43px;
   min-width: 0;
 }
 .admin-main h1 {
-  font-size: 62px;
+  font-family: var(--font-space), "Space Grotesk", sans-serif;
+  font-size: 2.25rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: inherit;
+  margin-bottom: 0.5rem;
 }
 .admin-main h2 {
-  font-size: 42px;
+  font-family: var(--font-space), "Space Grotesk", sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 1.5rem 0 1rem;
 }
 .admin-toolbar {
   display: flex;
   flex-wrap: wrap;
   gap: 14px;
   align-items: center;
-  margin: 29px 0;
+  margin: 24px 0;
 }
 .admin-toolbar form {
   display: flex;
-  gap: 14px;
+  gap: 12px;
   flex: 1;
   min-width: 200px;
 }
+.admin-toolbar input,
+.admin-toolbar select {
+  padding: 10px 16px;
+  border-radius: 12px;
+  border: 1px solid #e4e1d7;
+  background: #ffffff;
+  color: #141518;
+  font-family: var(--font-mono), "JetBrains Mono", monospace;
+  font-size: 13px;
+}
+.dark .admin-toolbar input,
+.dark .admin-toolbar select {
+  border-color: #222530;
+  background: #14151b;
+  color: #f3f4f6;
+}
+.admin-toolbar form button {
+  padding: 10px 20px;
+  border-radius: 12px;
+  background: #0c382f;
+  color: #ffffff;
+  border: none;
+  font-family: var(--font-mono), "JetBrains Mono", monospace;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+.admin-toolbar form button:hover {
+  opacity: 0.9;
+}
+.dark .admin-toolbar form button {
+  background: #d4ff00;
+  color: #141518;
+}
 .table-wrap {
-  overflow: auto;
+  overflow-x: auto;
+  border: 1px solid #e4e1d7;
+  border-radius: 16px;
+  background: #ffffff;
+  margin: 24px 0;
+}
+.dark .table-wrap {
+  border-color: #222530;
+  background: #14151b;
 }
 table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 16px;
+  font-size: 14px;
 }
 th,
 td {
   text-align: left;
-  padding: 14px;
-  border-bottom: 1px solid var(--ash);
+  padding: 14px 18px;
   vertical-align: top;
   overflow-wrap: anywhere;
 }
 th {
-  font-weight: 400;
-  color: var(--blue);
+  font-family: var(--font-mono), "JetBrains Mono", monospace;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: #faf8f5;
+  color: #0c382f;
+  border-bottom: 1px solid #e4e1d7;
+}
+.dark th {
+  background: #0c0d10;
+  color: #d4ff00;
+  border-bottom: 1px solid #222530;
+}
+td {
+  border-bottom: 1px solid #f0eee6;
+  color: inherit;
+}
+.dark td {
+  border-bottom: 1px solid #1c1e27;
+}
+tbody tr:last-child td {
+  border-bottom: none;
+}
+tbody tr:hover {
+  background: #faf8f5;
+}
+.dark tbody tr:hover {
+  background: #181a22;
 }
 .editor-fields {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 29px;
+  gap: 24px;
+  margin-top: 24px;
 }
 .editor-field.wide {
   grid-column: 1/-1;
@@ -595,18 +673,59 @@ th {
   min-width: 0;
 }
 .editor-field > label {
+  display: block;
+  font-family: var(--font-mono), "JetBrains Mono", monospace;
+  font-size: 12px;
+  font-weight: 700;
   margin-bottom: 8px;
+  color: inherit;
+}
+.editor-field input,
+.editor-field textarea,
+.editor-field select {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1px solid #e4e1d7;
+  background: #ffffff;
+  color: #141518;
+  font-size: 14px;
+  transition: border-color 0.15s ease;
+}
+.dark .editor-field input,
+.dark .editor-field textarea,
+.dark .editor-field select {
+  border-color: #222530;
+  background: #14151b;
+  color: #f3f4f6;
+}
+.editor-field input:focus,
+.editor-field textarea:focus,
+.editor-field select:focus {
+  outline: none;
+  border-color: #0c382f;
+}
+.dark .editor-field input:focus,
+.dark .editor-field textarea:focus,
+.dark .editor-field select:focus {
+  border-color: #d4ff00;
 }
 .editor-actions {
   position: sticky;
   bottom: 0;
-  background: var(--cream);
-  border-top: 1px solid var(--ash);
-  padding: 20px 0;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid #e4e1d7;
+  padding: 16px 0;
   display: flex;
-  gap: 14px;
+  gap: 12px;
   flex-wrap: wrap;
-  z-index: 10;
+  z-index: 20;
+  margin-top: 32px;
+}
+.dark .editor-actions {
+  background: rgba(20, 21, 27, 0.95);
+  border-color: #222530;
 }
 .json-node {
   border-left: 1px solid var(--ash);

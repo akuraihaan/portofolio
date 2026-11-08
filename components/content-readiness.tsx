@@ -41,30 +41,42 @@ export async function ContentReadiness({ client }: { client: SupabaseClient }) {
       });
   }
   return (
-    <section className="flat-card" aria-labelledby="readiness-title">
-      <h2 id="readiness-title">Isi yang perlu dilengkapi</h2>
+    <section className="p-6 rounded-3xl bg-white dark:bg-[#14151b] border border-[#e4e1d7] dark:border-[#222530] shadow-sm" aria-labelledby="readiness-title">
+      <div className="pb-4 border-b border-black/5 dark:border-white/5 mb-4">
+        <h3 id="readiness-title" className="font-display font-bold text-lg text-charcoal dark:text-white">
+          Kesiapan Konten Portofolio
+        </h3>
+        <p className="font-mono text-xs text-charcoal/50 dark:text-white/40">
+          Audit otomatis kelengkapan data publikasi
+        </p>
+      </div>
+
       {sections.error || projects.error || settings.error ? (
-        <p role="status">
+        <p role="status" className="p-3 rounded-xl bg-amber-500/10 text-amber-700 dark:text-amber-300 font-mono text-xs border border-amber-500/20">
           Pemeriksaan belum lengkap. Periksa koneksi dan migrasi database.
         </p>
       ) : null}
+
       {notes.length ? (
-        <ul>
-          {notes.map((note) => (
-            <li key={note.href}>
-              <Link href={note.href}>{note.label} ↗</Link>
+        <ul className="space-y-2 font-mono text-xs my-4">
+          {notes.slice(0, 5).map((note) => (
+            <li key={note.href} className="p-2.5 rounded-xl bg-[#faf8f5] dark:bg-[#0c0d10] border border-black/5 dark:border-white/5 hover:border-black/20 dark:hover:border-white/20 transition-colors">
+              <Link href={note.href} className="flex items-center justify-between text-charcoal/80 dark:text-white/80 hover:text-forest dark:hover:text-lime">
+                <span>{note.label}</span>
+                <span className="font-bold">↗</span>
+              </Link>
             </li>
           ))}
         </ul>
       ) : (
-        <p>
-          Field utama sudah terisi. Periksa ketepatan isi dan bukti sebelum
-          menerbitkan.
-        </p>
+        <div className="p-4 rounded-xl bg-emerald-500/10 text-emerald-800 dark:text-emerald-300 font-mono text-xs border border-emerald-500/20 my-4 flex items-center gap-2">
+          <span>✓</span>
+          <span>Seluruh field utama portofolio lengkap dan siap diterbitkan.</span>
+        </div>
       )}
-      <p>
-        Tambahkan hasil, tanggal, tautan demo, dan bukti hanya jika tersedia.
-        Proyek tanpa media tetap tampil sebagai teks.
+
+      <p className="text-xs text-charcoal/50 dark:text-white/40 font-mono">
+        Tambahkan tautan demo, hasil penelitian, dan sertifikat hanya jika bukti riil tersedia.
       </p>
     </section>
   );
