@@ -5,7 +5,7 @@ import { text, safeHref } from "@/lib/domain";
 import { ThemeProvider } from "./ThemeContext";
 import { MotionProvider } from "../motion/MotionProvider";
 import { CursorFollower } from "../motion/CursorFollower";
-import { Preloader } from "../motion/Preloader";
+import { BrandPreloader } from "../motion/BrandPreloader";
 import { EditorialNavbar } from "./EditorialNavbar";
 import { EditorialHero } from "./EditorialHero";
 import { EditorialAbout } from "./EditorialAbout";
@@ -192,8 +192,8 @@ export function EditorialMain({ bundle }: EditorialMainProps) {
   return (
     <ThemeProvider>
       <MotionProvider>
-        {/* Preloader & Magnetic Custom Cursor */}
-        <Preloader />
+        {/* Brand Bumper Preloader & Magnetic Custom Cursor */}
+        <BrandPreloader />
         <CursorFollower />
 
         <div className="relative min-h-screen bg-[#F4F3EE] dark:bg-[#111310] text-[#171816] dark:text-[#F4F3EE] font-sans selection:bg-[#C8F169] selection:text-[#171816] transition-colors duration-300">

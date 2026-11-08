@@ -6,7 +6,7 @@ import { text, safeHref } from "@/lib/domain";
 import { ThemeProvider } from "../editorial/ThemeContext";
 import { MotionProvider } from "../motion/MotionProvider";
 import { CursorFollower } from "../motion/CursorFollower";
-import { PixelPreloader } from "../pixel3d/PixelPreloader";
+import { BrandPreloader } from "../motion/BrandPreloader";
 import { PixelGridBackdrop } from "../pixel3d/PixelGridBackdrop";
 import { ScrollProgress } from "../pixel3d/ScrollProgress";
 import { PixelNavbar } from "./PixelNavbar";
@@ -152,8 +152,8 @@ export function PixelMain({ bundle }: PixelMainProps) {
   return (
     <ThemeProvider>
       <MotionProvider>
-        {/* Pixel Opening Sequence */}
-        <PixelPreloader onComplete={() => setPreloaderDone(true)} />
+        {/* Animated BWORIEY Brand Bumper */}
+        <BrandPreloader onComplete={() => setPreloaderDone(true)} />
 
         {/* Global Motion Cursor Follower */}
         <CursorFollower />
