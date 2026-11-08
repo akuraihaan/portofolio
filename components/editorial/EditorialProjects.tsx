@@ -10,12 +10,19 @@ import {
   CheckCircle2, 
   Sparkles, 
   BookOpen,
-  Code2,
-  Calendar,
-  Layers,
-  Search
+  Code2, 
+  Calendar, 
+  Layers, 
+  Search,
+  ChevronRight,
+  Terminal,
+  Cpu
 } from "lucide-react";
 import { GithubIcon } from "../space/SocialIcons";
+import { HoverPerspective } from "../motion/HoverPerspective";
+import { MagneticElement } from "../motion/MagneticElement";
+import { useMotionContext } from "../motion/MotionProvider";
+import { EASINGS, DURATION } from "../motion/MotionSystem";
 
 export interface EditorialProjectItem {
   id: string;
@@ -42,627 +49,571 @@ export interface EditorialProjectItem {
   };
 }
 
-const confirmedProjects: EditorialProjectItem[] = [
+export const defaultProjects: EditorialProjectItem[] = [
   {
     id: "flowwind-learn",
     number: "01",
     title: "Flowwind Learn",
-    subtitle: "Penerapan Learning Analytics pada Web Pembelajaran Interaktif Framework CSS Tailwind Dasar dengan Model Tutorial",
-    category: "Final Year Project / Web Development",
+    subtitle: "Penerapan Learning Analytics pada Web Pembelajaran Interaktif Framework CSS Tailwind Dasar",
+    category: "Web Development",
     year: "2026",
     role: "Lead Developer & Researcher",
     summary:
-      "Platform pembelajaran interaktif untuk mempelajari Tailwind CSS melalui materi tutorial, praktik kode, live preview, dan fitur learning analytics untuk memantau aktivitas serta perkembangan pembelajaran.",
+      "Platform pembelajaran interaktif untuk mempelajari Tailwind CSS melalui materi tutorial, praktik kode, live preview di browser, dan sistem learning analytics.",
     description:
-      "Dikembangkan sebagai tugas akhir S.Pd. Pendidikan Komputer di Universitas Lambung Mangkurat. Platform ini menyajikan materi CSS dasar hingga framework Tailwind CSS secara langsung di browser tanpa perlu instalasi lingkungan lokal. Fitur learning analytics memetakan interaksi siswa, waktu pengerjaan tugas, dan tingkat penguasaan konsep untuk membantu instruktur/guru.",
-    technologies: ["Laravel", "PHP", "Tailwind CSS", "JavaScript", "MySQL"],
+      "Dikembangkan sebagai tugas akhir S.Pd. Pendidikan Komputer di Universitas Lambung Mangkurat. Platform ini menyajikan materi CSS dasar hingga Tailwind CSS langsung di browser tanpa build tool lokal. Fitur learning analytics memetakan waktu pengerjaan tugas dan tingkat penguasaan sintaks untuk membantu instruktur.",
+    technologies: ["Laravel", "PHP", "Tailwind CSS", "JavaScript", "MySQL", "Learning Analytics"],
     highlights: [
-      "Interactive learning experience with tutorial model",
-      "In-browser code editor and live preview",
-      "Real-time learning progress tracking",
-      "Learning analytics dashboard for instructors",
+      "In-browser interactive code editor with live render preview",
+      "Algoritma pencatatan analitik belajar siswa",
+      "Kurikulum tutorial bertahap dari CSS murni ke Tailwind",
+      "Dasbor evaluasi instruktur Informatika",
     ],
     cover_url: "https://txsqhxhnamgteofarqfz.supabase.co/storage/v1/object/public/portfolio-public/projects/cover-flowwind.png",
     project_url: null,
     repository_url: "https://github.com/bworiey/web-pembelajaran-interaktif-tailwind",
     case_study: {
       background:
-        "Banyak siswa dan mahasiswa pemula mengalami kesulitan saat beralih dari CSS murni ke paradigma utility-first framework seperti Tailwind CSS karena kendala konfigurasi build tool. Flowwind Learn diciptakan untuk menyediakan media tutorial berbasis web yang interaktif.",
+        "Banyak siswa dan mahasiswa pemula mengalami hambatan mental saat beralih dari CSS biasa ke paradigma utility-first framework seperti Tailwind CSS karena rumitnya konfigurasi build tool. Flowwind Learn diciptakan untuk menyediakan media tutorial berbasis web yang interaktif tanpa instalasi lokal.",
       features:
-        "Modul materi bertingkat (Basic CSS ke Tailwind CSS), editor kode langsung dengan live render iframe, kuis pemahaman, dan dasbor analytics pelacakan kemajuan belajar.",
+        "Modul materi bertingkat, live code editor dengan preview iframe terisolasi, kuis pemahaman konsep, dan dasbor analytics pelacakan kemajuan belajar siswa.",
       contribution:
-        "Merancang arsitektur sistem full-stack dengan Laravel & MySQL, menyusun konten tutorial pedagogis, serta mengimplementasikan algoritma perekaman analitik belajar.",
+        "Merancang arsitektur sistem full-stack dengan Laravel & MySQL, menyusun konten tutorial instruksional pedagogis, serta mengimplementasikan algoritma perekaman metrik belajar.",
       outcome:
-        "Media pembelajaran dinyatakan valid oleh validator ahli materi dan media, serta berhasil diujicobakan dalam pembelajaran Informatika.",
+        "Media pembelajaran dinyatakan sangat valid oleh validator ahli materi dan media, serta berhasil diujicobakan dalam pembelajaran Informatika.",
+      process:
+        "Menggunakan model pengembangan Waterfall yang disesuaikan dengan metodologi Research and Development (R&D) pendidikan komputasi.",
     },
   },
   {
     id: "combridge-bisindo",
     number: "02",
-    title: "ComBridge",
-    subtitle: "BISINDO Sign Language Recognition & Translation Service",
-    category: "Bangkit Academy Capstone Project",
+    title: "ComBridge BISINDO",
+    subtitle: "BISINDO Sign Language Recognition & Translation Cloud Service",
+    category: "Cloud Computing",
     year: "2024–2025",
     role: "Cloud Engineer",
     summary:
-      "Aplikasi Android untuk mengenali bahasa isyarat BISINDO dan menerjemahkannya menjadi huruf. Kontribusi saya berfokus pada pengembangan layanan cloud dan RESTful API.",
+      "Aplikasi Android untuk mengenali bahasa isyarat BISINDO dan menerjemahkannya secara realtime. Bertanggung jawab atas infrastruktur cloud dan API backend.",
     description:
       "Proyek capstone tim lintas disiplin pada program Bangkit Academy 2024 Batch 2 (Google, GoTo, Tokopedia, Traveloka). Aplikasi menjembatani komunikasi komunitas Tuli Indonesia dengan masyarakat umum menggunakan machine learning computer vision dan infrastruktur cloud yang skalabel.",
-    technologies: ["Google Cloud Platform", "Cloud Run", "RESTful API", "Android", "Express.js"],
+    technologies: ["Google Cloud Platform", "Cloud Run", "RESTful API", "Express.js", "Docker"],
     highlights: [
-      "Cross-discipline team collaboration (Cloud, ML, Mobile)",
-      "Serverless deployment on Google Cloud Run",
-      "Low-latency RESTful API development",
-      "Assistive technology for BISINDO accessibility",
+      "Arsitektur serverless microservices di Google Cloud Run",
+      "Low-latency RESTful API untuk inferensi model ML",
+      "Kolaborasi tim lintas divisi (Cloud, ML, Mobile Dev)",
+      "Teknologi asistif ramah aksesibilitas",
     ],
     cover_url: null,
     project_url: null,
     repository_url: "https://github.com/bworiey",
     case_study: {
       background:
-        "Komunikasi bahasa isyarat BISINDO memerlukan alat bantu inklusif berbasis smartphone agar interaksi sehari-hari antara teman Tuli dan masyarakat dengar dapat berlangsung tanpa hambatan.",
+        "Keterbatasan akses komunikasi antara teman Tuli dan masyarakat yang tidak memahami BISINDO memerlukan solusi penerjemah portabel yang cepat dan dapat diakses di mana saja.",
       features:
-        "Deteksi gerakan tangan real-time melalui kamera ponsel, penerjemahan huruf abjad BISINDO, dan sinkronisasi kamus isyarat berbasis cloud.",
+        "Deteksi gerakan tangan berbasis kamera ponsel, klasifikasi karakter isyarat menggunakan computer vision, dan sinkronisasi kamus kata.",
       contribution:
-        "Bertanggung jawab sebagai Cloud Engineer: merancang endpoint RESTful API, mengelola Google Cloud Storage untuk dataset gambar, dan mendeploy backend service ke Cloud Run.",
+        "Merancang dan menerapkan arsitektur backend di Google Cloud Run, mengonfigurasi bucket Cloud Storage, dan memastikan endpoint API memiliki latensi rendah.",
       outcome:
-        "Berhasil menyelesaikan Capstone Project Bangkit Academy Batch 2 dengan predikat lulus dan evaluasi arsitektur cloud yang handal.",
+        "Layanan berhasil lulus evaluasi capstone Bangkit Academy 2024 dengan performa tinggi di bawah pengujian beban pengguna.",
     },
   },
   {
     id: "game-dayak-ngaju",
     number: "03",
-    title: "Game Edukasi Kuis Bahasa Dayak Ngaju",
-    subtitle: "Interactive Language Learning Web Game",
-    category: "Academic Project",
-    year: "2023",
-    role: "Web & Game Developer",
+    title: "Game Budaya Dayak Ngaju",
+    subtitle: "Interactive 2D Cultural Heritage Educational Game",
+    category: "Game & Media Edukasi",
+    year: "2024",
+    role: "Game Developer & Designer",
     summary:
-      "Game kuis berbasis web untuk memperkenalkan kosakata dan bahasa Dayak Ngaju melalui pengalaman belajar interaktif.",
+      "Game edukasi interaktif 2D bertema pelestarian warisan budaya suku Dayak Ngaju Kalimantan yang ditujukan bagi generasi muda.",
     description:
-      "Media pembelajaran gamifikasi untuk melestarikan bahasa daerah Dayak Ngaju bagi generasi muda, memadukan elemen kuis pilihan ganda, umpan balik visual, dan audio lokal.",
-    technologies: ["HTML5", "CSS3", "JavaScript", "Audio API"],
+      "Media pembelajaran interaktif yang dirancang untuk mengenalkan rumah adat betang, pakaian tradisional, senjata mandau, dan nilai kearifan lokal suku Dayak Ngaju melalui alur gameplay petualangan dan kuis kebudayaan.",
+    technologies: ["Construct 3", "JavaScript", "Game Design", "Pixel Art"],
     highlights: [
-      "Pelestarian bahasa daerah melalui media interaktif",
-      "Sistem skor dan evaluasi kuis otomatis",
-      "Desain responsif untuk perangkat komputer dan tablet",
+      "Pelestarian kearifan lokal Kalimantan Tengah",
+      "Mekanik gameplay platformer interaktif dengan kuis budaya",
+      "Asset visual otentik motif Dayak",
     ],
     cover_url: null,
     project_url: null,
-    repository_url: null,
+    repository_url: "https://github.com/bworiey",
     case_study: {
       background:
-        "Minat generasi muda terhadap bahasa daerah Kalimantan Tengah kian menurun. Diperlukan media edukasi berbasis game agar proses belajar terasa menyenangkan.",
-      features: "Level kuis bertingkat, bank soal kosakata sehari-hari, dan sistem skor instan.",
-      contribution: "Mengembangkan logika permainan dengan JavaScript murni dan merancang antarmuka kuis.",
-      outcome: "Digunakan sebagai media demonstrasi pada mata kuliah media pembelajaran interaktif.",
+        "Minimnya media digital interaktif mengenai kebudayaan suku Dayak Ngaju yang dapat menarik minat siswa sekolah dasar dan menengah.",
+      features:
+        "Eksplorasi wilayah adat, dialog naratif dengan tokoh tetua adat, tantangan memecahkan teka-teki budaya, dan papan skor kuis.",
+      contribution:
+        "Mengembangkan logika game loop, interaksi objek, integrasi audio latar tradisional, dan pengujian respons pengguna.",
+      outcome:
+        "Digunakan sebagai peraga pembelajaran seni budaya dan muatan lokal Kalimantan.",
     },
   },
   {
     id: "game-ikan-lahan-basah",
     number: "04",
-    title: "Game Edukasi Mengenal Ikan di Lahan Basah",
-    subtitle: "Wetland Biodiversity Educational Multimedia",
-    category: "Academic Project",
-    year: "2023",
-    role: "Interactive Developer",
+    title: "Game Ikan Lahan Basah",
+    subtitle: "Wetland Biodiversity Interactive Educational Simulation",
+    category: "Game & Media Edukasi",
+    year: "2024",
+    role: "Lead Developer",
     summary:
-      "Game edukasi yang memperkenalkan berbagai jenis ikan yang hidup di ekosistem lahan basah Kalimantan.",
+      "Game simulasi interaktif edukasi keanekaragaman hayati fauna ikan endemik ekosistem lahan basah Kalimantan Selatan.",
     description:
-      "Proyek media pembelajaran kontekstual yang mengangkat keanekaragaman hayati perairan lahan basah (seperti ikan gabus, seluang, dan patin) dengan konsep drag-and-drop dan ensiklopedia mini.",
-    technologies: ["Construct", "HTML5", "JavaScript"],
+      "Mengintegrasikan keunggulan lokal lahan basah (wetland environment) ke dalam media pembelajaran digital interaktif. Pemain diajak mengenali jenis-jenis ikan lokal seperti gabus, haruan, dan papuyu beserta peran ekologisnya.",
+    technologies: ["HTML5 Canvas", "JavaScript", "Construct", "Audio Engineering"],
     highlights: [
-      "Edukasi keanekaragaman hayati lahan basah",
-      "Interaksi drag-and-drop ramah anak",
-      "Ilustrasi visual fauna lokal",
+      "Integrasi visi keilmuan Lahan Basah ULM",
+      "Karakteristik visual spesies ikan lokal",
+      "Sistem kuis skor adaptif",
     ],
     cover_url: null,
     project_url: null,
-    repository_url: null,
+    repository_url: "https://github.com/bworiey",
   },
   {
     id: "konversi-satuan-panjang",
     number: "05",
-    title: "Aplikasi Konversi Satuan Panjang",
-    subtitle: "Mathematical Metric Conversion Tool",
-    category: "Academic Project",
+    title: "Media Konversi Satuan Panjang",
+    subtitle: "Web-Based Visual Mathematics Measurement Tool",
+    category: "Web Development",
     year: "2023",
-    role: "Software Developer",
+    role: "Frontend Developer",
     summary:
-      "Aplikasi Python untuk membantu proses konversi satuan panjang dalam perhitungan matematika.",
+      "Aplikasi web alat bantu visual untuk memahami konsep tangga konversi satuan panjang (km hingga mm) secara dinamis.",
     description:
-      "Alat bantu perhitungan metrik dari kilometer hingga milimeter dengan validasi input angka dan penghitungan konversi otomatis bertingkat.",
-    technologies: ["Python", "CLI / Algorithm"],
-    highlights: ["Algoritma konversi metrik presisi", "Validasi kesalahan input pengguna"],
+      "Membantu siswa memvisualisasikan aturan perkalian dan pembagian tiap anak tangga konversi ukuran dengan representasi interaktif visual.",
+    technologies: ["HTML5", "CSS3", "JavaScript", "Responsive UI"],
+    highlights: [
+      "Alat visual tangga konversi interaktif",
+      "Kalkulasi waktu-nyata tanpa reload halaman",
+      "Animasi penjelasan langkah demi langkah",
+    ],
     cover_url: null,
     project_url: null,
-    repository_url: null,
+    repository_url: "https://github.com/bworiey",
   },
   {
     id: "pencatatan-android",
     number: "06",
-    title: "Aplikasi Pencatatan Berbasis Android",
-    subtitle: "Mobile Daily Notes & Task Registry",
-    category: "Academic Project",
-    year: "2024",
-    role: "Mobile Developer",
+    title: "Aplikasi Pencatatan Android",
+    subtitle: "Offline-First Mobile Note Taking Application",
+    category: "Mobile Development",
+    year: "2023",
+    role: "Android Developer",
     summary:
-      "Aplikasi Android sederhana untuk kebutuhan pencatatan harian dan pengelolaan tugas.",
+      "Aplikasi mobile pencatatan aktivitas dan to-do list berbasis Android dengan penyimpanan lokal SQLite.",
     description:
-      "Aplikasi native Android untuk menyimpan, menyunting, dan menghapus catatan personal secara offline menggunakan penyimpanan basis data lokal SQLite.",
-    technologies: ["Android Studio", "Java / Kotlin", "SQLite"],
-    highlights: ["Operasi CRUD basis data lokal", "Antarmuka Material Design mobile"],
+      "Menerapkan konsep arsitektur Android, SQLite database helper, RecyclerView dengan ViewHolder pattern, dan Material Design UI.",
+    technologies: ["Java / Kotlin", "Android SDK", "SQLite", "Material Design"],
+    highlights: [
+      "Offline-first local database persistence",
+      "CRUD catatan dengan filter kategori",
+      "Desain antarmuka bersih dan ringan",
+    ],
     cover_url: null,
     project_url: null,
-    repository_url: null,
+    repository_url: "https://github.com/bworiey",
   },
 ];
 
-interface EditorialProjectsProps {
+export function EditorialProjects({
+  initialProjects,
+}: {
   initialProjects?: EditorialProjectItem[];
-}
+}) {
+  const projects =
+    initialProjects && initialProjects.length > 0
+      ? initialProjects
+      : defaultProjects;
 
-export function EditorialProjects({ initialProjects }: EditorialProjectsProps) {
   const [selectedProject, setSelectedProject] = useState<EditorialProjectItem | null>(null);
-  const [filterCategory, setFilterCategory] = useState<string>("All");
+  const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const { setCursor, resetCursor } = useMotionContext();
 
-  const projectsToDisplay = initialProjects && initialProjects.length > 0 ? initialProjects : confirmedProjects;
+  const categories = ["All", ...Array.from(new Set(projects.map((p) => p.category)))];
 
-  const categories = ["All", "Final Year / Web", "Bangkit Capstone", "Academic Project"];
-
-  const filteredProjects = projectsToDisplay.filter((p) => {
-    const matchesCat =
-      filterCategory === "All" ||
-      (filterCategory === "Final Year / Web" && p.category.includes("Final Year")) ||
-      (filterCategory === "Bangkit Capstone" && p.category.includes("Bangkit")) ||
-      (filterCategory === "Academic Project" && p.category.includes("Academic"));
-
-    if (!matchesCat) return false;
-    if (!searchQuery.trim()) return true;
-
-    const q = searchQuery.toLowerCase();
-    const inTitle = p.title.toLowerCase().includes(q);
-    const inSummary = p.summary.toLowerCase().includes(q);
-    const inTech = p.technologies.some((t) => t.toLowerCase().includes(q));
-    return inTitle || inSummary || inTech;
+  const filteredProjects = projects.filter((p) => {
+    const matchesCategory = selectedCategory === "All" || p.category === selectedCategory;
+    const matchesSearch =
+      p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      p.summary.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      p.technologies.some((t) => t.toLowerCase().includes(searchQuery.toLowerCase()));
+    return matchesCategory && matchesSearch;
   });
 
   return (
     <section
       id="projects"
-      className="w-full max-w-7xl mx-auto py-24 md:py-32 px-6 md:px-12 border-t border-[#e4e1d7] dark:border-[#222530]"
+      className="w-full max-w-7xl mx-auto py-28 md:py-36 px-6 md:px-12 border-t border-[#171816]/10 dark:border-[#F4F3EE]/10"
     >
       {/* Section Header */}
-      <div className="flex flex-col sm:flex-row sm:items-baseline justify-between mb-16 gap-2">
+      <div className="flex flex-col sm:flex-row sm:items-baseline justify-between mb-16 gap-3">
         <div className="flex items-center gap-3">
-          <span className="font-mono text-xs font-bold tracking-widest text-forest dark:text-lime uppercase">
+          <span className="font-mono text-xs font-bold tracking-widest text-[#171816] dark:text-[#C8F169] uppercase">
             03 / SELECTED WORKS
           </span>
-          <span className="h-px w-8 bg-black/15 dark:bg-white/20"></span>
-          <span className="font-mono text-xs text-charcoal/50 dark:text-white/40">
-            PROVEN DELIVERABLES
+          <span className="h-px w-8 bg-[#171816]/20 dark:bg-[#F4F3EE]/20"></span>
+          <span className="font-mono text-xs text-[#777970] dark:text-[#A1A49A] uppercase tracking-wider">
+            FEATURED ARTIFACTS
           </span>
         </div>
-        <span className="font-mono text-[11px] text-charcoal/40 dark:text-white/40">
-          INDEX: {filteredProjects.length} OF {projectsToDisplay.length} ENTRIES
+        <span className="font-mono text-[11px] text-[#777970] dark:text-[#A1A49A] tracking-widest">
+          {projects.length} PROJECTS CATALOGUED
         </span>
       </div>
 
-      {/* Headline & Filter Row */}
-      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-12">
-        <div>
-          <motion.h2
-            initial={{ opacity: 0, y: 15 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="font-display text-3xl sm:text-5xl font-bold tracking-tight text-charcoal dark:text-white leading-[1.15] mb-3"
-          >
-            Real projects, tangible utility.
-          </motion.h2>
-          <p className="text-charcoal/70 dark:text-white/70 text-base max-w-xl leading-relaxed">
-            Dari sistem pembelajaran web beranalitik data hingga layanan cloud ramah disabilitas. Seluruh proyek berbasis data dan dokumentasi riil.
+      {/* Main Headline */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12">
+        <div className="lg:col-span-8">
+          <h2 className="fluid-h2 font-display font-black tracking-tight text-[#171816] dark:text-[#F4F3EE] mb-4">
+            Useful things, built with intent.
+          </h2>
+          <p className="text-[#777970] dark:text-[#A1A49A] text-base sm:text-lg max-w-2xl leading-relaxed">
+            Koleksi proyek nyata yang mencakup rekayasa aplikasi web, arsitektur komputasi awan, media pembelajaran interaktif, dan aplikasi mobile.
           </p>
         </div>
+      </div>
 
-        {/* Filter Pills and Search */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-          <div className="flex flex-wrap items-center gap-1.5 p-1 rounded-full bg-[#eeece4] dark:bg-[#14151b] border border-black/5 dark:border-white/10">
-            {categories.map((cat) => (
+      {/* Filter and Search Bar */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-16 pb-6 border-b border-[#171816]/10 dark:border-[#F4F3EE]/10">
+        {/* Category Pills */}
+        <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-none no-scrollbar">
+          {categories.map((cat) => {
+            const isActive = selectedCategory === cat;
+            return (
               <button
                 key={cat}
-                onClick={() => setFilterCategory(cat)}
-                className={`px-3 py-1 rounded-full text-xs font-mono transition-all ${
-                  filterCategory === cat
-                    ? "bg-charcoal dark:bg-lime text-white dark:text-charcoal font-semibold shadow-sm"
-                    : "text-charcoal/60 dark:text-white/60 hover:text-charcoal dark:hover:text-white"
+                onClick={() => setSelectedCategory(cat)}
+                className={`px-4 py-2 rounded-full font-mono text-xs font-bold transition-all cursor-pointer whitespace-nowrap border ${
+                  isActive
+                    ? "bg-[#171816] dark:bg-[#C8F169] text-[#F4F3EE] dark:text-[#171816] border-transparent shadow-sm"
+                    : "bg-[#E9E8E1]/60 dark:bg-[#1C1F1A] text-[#777970] dark:text-[#A1A49A] border-[#171816]/10 dark:border-[#F4F3EE]/10 hover:border-[#171816]/30 dark:hover:border-[#F4F3EE]/30"
                 }`}
               >
                 {cat}
               </button>
-            ))}
-          </div>
+            );
+          })}
+        </div>
 
-          <div className="relative">
-            <Search className="w-3.5 h-3.5 text-charcoal/40 dark:text-white/40 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-            <input
-              type="text"
-              placeholder="Search by tech or title..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-8 pr-3 py-1.5 rounded-full bg-[#eeece4] dark:bg-[#14151b] border border-black/5 dark:border-white/10 text-charcoal dark:text-white text-xs font-mono placeholder:text-charcoal/40 dark:placeholder:text-white/40 focus:outline-none focus:border-charcoal dark:focus:border-lime w-full sm:w-48"
-            />
-          </div>
+        {/* Search Input */}
+        <div className="relative min-w-[260px]">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#777970] dark:text-[#A1A49A]" />
+          <input
+            type="text"
+            placeholder="Cari proyek atau teknologi…"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-10 pr-4 py-2.5 rounded-full bg-[#E9E8E1]/60 dark:bg-[#1C1F1A] border border-[#171816]/10 dark:border-[#F4F3EE]/10 text-xs font-mono text-[#171816] dark:text-[#F4F3EE] placeholder-[#777970] dark:placeholder-[#A1A49A] focus:outline-none focus:border-[#C8F169]"
+          />
         </div>
       </div>
 
-      {/* Editorial Layout: Asymmetric Featured Card for #1, then Grid for others */}
-      <div className="space-y-8">
-        {filteredProjects.map((project, idx) => {
-          const isFeaturedHero = idx === 0 && filterCategory === "All" && !searchQuery;
+      {/* Full-width Alternating Project Showcase */}
+      <div className="space-y-20 sm:space-y-28">
+        {filteredProjects.map((project, index) => {
+          const isEven = index % 2 === 0;
 
-          if (isFeaturedHero) {
-            // High-impact Full Width Editorial Card
-            return (
-              <motion.div
-                key={project.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                className="group p-6 sm:p-10 rounded-3xl bg-white dark:bg-[#14151b] border border-[#e4e1d7] dark:border-[#222530] shadow-editorial dark:shadow-none grid grid-cols-1 lg:grid-cols-12 gap-8 items-center"
-              >
-                <div className="lg:col-span-7 flex flex-col justify-between">
-                  <div>
-                    <div className="flex items-center gap-3 mb-4">
-                      <span className="font-mono text-xs font-bold px-2.5 py-0.5 rounded bg-forest/10 dark:bg-lime/20 text-forest dark:text-lime">
-                        {project.number} // FEATURED FINAL PROJECT
-                      </span>
-                      <span className="font-mono text-xs text-charcoal/50 dark:text-white/40">
-                        {project.year} · {project.role}
-                      </span>
+          return (
+            <motion.article
+              key={project.id}
+              initial={{ opacity: 0, y: 35 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-10%" }}
+              transition={{ duration: DURATION.slow, ease: EASINGS.editorial }}
+              onMouseEnter={() => setCursor({ active: true, text: "CASE STUDY" })}
+              onMouseLeave={resetCursor}
+              onClick={() => setSelectedProject(project)}
+              className="group cursor-pointer grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center p-6 sm:p-10 rounded-3xl bg-white dark:bg-[#1C1F1A] border border-[#171816]/10 dark:border-[#F4F3EE]/10 hover:border-[#171816]/30 dark:hover:border-[#C8F169]/40 shadow-xl transition-all duration-300"
+            >
+              {/* Media Column (6 cols) */}
+              <div className={`lg:col-span-6 ${isEven ? "lg:order-1" : "lg:order-2"}`}>
+                <HoverPerspective maxTilt={5}>
+                  <div className="relative w-full aspect-[16/10] rounded-2xl overflow-hidden bg-[#F4F3EE] dark:bg-[#111310] border border-[#171816]/10 dark:border-[#F4F3EE]/10 shadow-inner flex flex-col justify-between p-6">
+                    {project.cover_url ? (
+                      /* eslint-disable-next-line @next/next/no-img-element */
+                      <img
+                        src={project.cover_url}
+                        alt={project.title}
+                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                      />
+                    ) : (
+                      <>
+                        <div className="flex items-center justify-between text-xs font-mono text-[#777970] dark:text-[#A1A49A]">
+                          <span className="flex items-center gap-1.5 font-bold text-[#171816] dark:text-[#F4F3EE]">
+                            <Terminal className="w-3.5 h-3.5 text-[#C8F169]" />
+                            <span>{project.category}</span>
+                          </span>
+                          <span>{project.year}</span>
+                        </div>
+
+                        <div className="my-auto text-center py-6">
+                          <span className="font-display font-black text-3xl sm:text-4xl text-[#171816] dark:text-[#F4F3EE] block mb-2">
+                            {project.title}
+                          </span>
+                          <span className="font-mono text-xs text-[#777970] dark:text-[#A1A49A]">
+                            {project.role}
+                          </span>
+                        </div>
+
+                        <div className="flex items-center justify-between text-[11px] font-mono text-[#777970] dark:text-[#A1A49A] pt-3 border-t border-[#171816]/5 dark:border-[#F4F3EE]/5">
+                          <span>BWORIEY ARTIFACT // #{project.number}</span>
+                          <span className="text-[#171816] dark:text-[#C8F169] font-bold">CLICK TO INSPECT →</span>
+                        </div>
+                      </>
+                    )}
+
+                    {/* Hover Badge Inset */}
+                    <div className="absolute top-4 right-4 px-3 py-1.5 rounded-full bg-[#171816]/80 dark:bg-[#111310]/80 backdrop-blur-md font-mono text-[10px] font-bold text-[#F4F3EE] flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <span>OPEN STORY</span>
+                      <ArrowUpRight className="w-3 h-3 text-[#C8F169]" />
                     </div>
+                  </div>
+                </HoverPerspective>
+              </div>
 
-                    <h3 className="font-display text-2xl sm:text-4xl font-bold text-charcoal dark:text-white tracking-tight leading-tight mb-3">
-                      {project.title}
-                    </h3>
-                    <p className="font-mono text-xs text-forest dark:text-lime font-medium mb-4">
-                      {project.subtitle}
-                    </p>
+              {/* Text Information Column (6 cols) */}
+              <div className={`lg:col-span-6 flex flex-col justify-center ${isEven ? "lg:order-2" : "lg:order-1"}`}>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="font-mono text-xs font-bold uppercase tracking-widest text-[#777970] dark:text-[#A1A49A]">
+                    {project.category} · {project.year}
+                  </span>
+                  <span className="font-display font-black text-4xl sm:text-6xl text-[#171816]/10 dark:text-[#F4F3EE]/10 select-none">
+                    #{project.number}
+                  </span>
+                </div>
 
-                    <p className="text-sm sm:text-base text-charcoal/70 dark:text-white/70 leading-relaxed mb-6">
-                      {project.summary}
-                    </p>
+                <h3 className="font-display font-black text-3xl sm:text-4xl text-[#171816] dark:text-[#F4F3EE] tracking-tight mb-2 group-hover:text-[#171816] dark:group-hover:text-[#C8F169] transition-colors">
+                  {project.title}
+                </h3>
 
-                    {/* Highlights bullet points */}
-                    {project.highlights && (
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-6 text-xs font-mono text-charcoal/80 dark:text-white/80">
-                        {project.highlights.map((h, i) => (
-                          <div key={i} className="flex items-center gap-2">
-                            <span className="w-1.5 h-1.5 rounded-full bg-forest dark:bg-lime"></span>
-                            <span>{h}</span>
-                          </div>
-                        ))}
+                {project.subtitle && (
+                  <p className="font-mono text-xs text-[#777970] dark:text-[#A1A49A] mb-4 font-semibold">
+                    {project.subtitle}
+                  </p>
+                )}
+
+                <p className="text-sm sm:text-base text-[#171816]/80 dark:text-[#F4F3EE]/80 leading-relaxed mb-6 font-normal">
+                  {project.summary}
+                </p>
+
+                {/* Tech Pills */}
+                <div className="flex flex-wrap gap-2 mb-6">
+                  {project.technologies.map((tech) => (
+                    <span
+                      key={tech}
+                      className="px-3 py-1 rounded-full bg-[#E9E8E1] dark:bg-[#111310] border border-[#171816]/10 dark:border-[#F4F3EE]/10 font-mono text-xs text-[#171816] dark:text-[#F4F3EE]"
+                    >
+                      {tech}
+                    </span>
+                  ))}
+                </div>
+
+                {/* Case Study Trigger Link */}
+                <div className="flex items-center gap-4 pt-4 border-t border-[#171816]/10 dark:border-[#F4F3EE]/10">
+                  <span className="inline-flex items-center gap-1.5 font-mono text-xs font-bold text-[#171816] dark:text-[#C8F169] group-hover:translate-x-1 transition-transform">
+                    <span>Baca Studi Kasus Lengkap</span>
+                    <ArrowUpRight className="w-4 h-4" />
+                  </span>
+
+                  {project.repository_url && (
+                    <a
+                      href={project.repository_url}
+                      target="_blank"
+                      rel="noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      className="p-2 rounded-full border border-[#171816]/10 dark:border-[#F4F3EE]/15 text-[#777970] dark:text-[#A1A49A] hover:text-[#171816] dark:hover:text-[#F4F3EE] hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+                      title="Buka Repositori GitHub"
+                    >
+                      <GithubIcon className="w-4 h-4" />
+                    </a>
+                  )}
+                </div>
+              </div>
+            </motion.article>
+          );
+        })}
+      </div>
+
+      {/* Case Study Modal Drawer */}
+      <AnimatePresence>
+        {selectedProject && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-10">
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSelectedProject(null)}
+              className="fixed inset-0 bg-[#111310]/80 backdrop-blur-md"
+            />
+
+            {/* Modal Dialog Content */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              transition={{ duration: 0.35, ease: EASINGS.editorial }}
+              className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-3xl bg-[#F4F3EE] dark:bg-[#111310] border border-[#171816]/15 dark:border-[#F4F3EE]/15 shadow-2xl p-6 sm:p-10 z-10 text-[#171816] dark:text-[#F4F3EE]"
+            >
+              {/* Close Button */}
+              <button
+                onClick={() => setSelectedProject(null)}
+                className="absolute top-6 right-6 p-2 rounded-full bg-[#E9E8E1] dark:bg-[#1C1F1A] text-[#171816] dark:text-[#F4F3EE] hover:bg-black/10 dark:hover:bg-white/10 transition-colors focus:outline-none cursor-pointer"
+                aria-label="Tutup studi kasus"
+              >
+                <X className="w-5 h-5" />
+              </button>
+
+              {/* Modal Header */}
+              <div className="pb-6 border-b border-[#171816]/10 dark:border-[#F4F3EE]/10 mb-8">
+                <div className="flex items-center gap-2 font-mono text-xs font-bold text-[#777970] dark:text-[#A1A49A] uppercase tracking-wider mb-2">
+                  <span>PROJECT ARTIFACT // #{selectedProject.number}</span>
+                  <span>·</span>
+                  <span>{selectedProject.category}</span>
+                </div>
+
+                <h2 className="font-display font-black text-3xl sm:text-5xl text-[#171816] dark:text-[#F4F3EE] tracking-tight mb-2">
+                  {selectedProject.title}
+                </h2>
+
+                {selectedProject.subtitle && (
+                  <p className="font-mono text-xs sm:text-sm text-[#777970] dark:text-[#A1A49A] font-semibold mb-4">
+                    {selectedProject.subtitle}
+                  </p>
+                )}
+
+                {/* Metadata Row */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 font-mono text-xs pt-4 border-t border-[#171816]/5 dark:border-[#F4F3EE]/5">
+                  <div>
+                    <span className="text-[#777970] dark:text-[#A1A49A] text-[10px] uppercase block">Peran</span>
+                    <span className="font-bold">{selectedProject.role}</span>
+                  </div>
+                  <div>
+                    <span className="text-[#777970] dark:text-[#A1A49A] text-[10px] uppercase block">Tahun</span>
+                    <span className="font-bold">{selectedProject.year}</span>
+                  </div>
+                  <div>
+                    <span className="text-[#777970] dark:text-[#A1A49A] text-[10px] uppercase block">Status</span>
+                    <span className="font-bold text-[#171816] dark:text-[#C8F169]">Verified Production</span>
+                  </div>
+                  <div>
+                    <span className="text-[#777970] dark:text-[#A1A49A] text-[10px] uppercase block">Repositori</span>
+                    {selectedProject.repository_url ? (
+                      <a
+                        href={selectedProject.repository_url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="font-bold text-[#171816] dark:text-[#C8F169] hover:underline flex items-center gap-1"
+                      >
+                        <span>GitHub</span>
+                        <ArrowUpRight className="w-3 h-3" />
+                      </a>
+                    ) : (
+                      <span className="text-[#777970] dark:text-[#A1A49A]">Arsip Akademik</span>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Modal Body: Overview & Narrative */}
+              <div className="space-y-8 font-sans">
+                <div>
+                  <h3 className="font-display font-bold text-xl text-[#171816] dark:text-[#F4F3EE] mb-3">
+                    Ringkasan Proyek
+                  </h3>
+                  <p className="text-base text-[#171816]/85 dark:text-[#F4F3EE]/85 leading-relaxed">
+                    {selectedProject.description}
+                  </p>
+                </div>
+
+                {/* Case Study Details if provided */}
+                {selectedProject.case_study && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-[#171816]/10 dark:border-[#F4F3EE]/10">
+                    {selectedProject.case_study.background && (
+                      <div className="p-5 rounded-2xl bg-[#E9E8E1] dark:bg-[#1C1F1A] border border-[#171816]/10 dark:border-[#F4F3EE]/10">
+                        <h4 className="font-mono text-xs font-bold uppercase tracking-wider text-[#777970] dark:text-[#A1A49A] mb-2">
+                          Latar Belakang & Masalah
+                        </h4>
+                        <p className="text-xs sm:text-sm text-[#171816]/80 dark:text-[#F4F3EE]/80 leading-relaxed">
+                          {selectedProject.case_study.background}
+                        </p>
+                      </div>
+                    )}
+
+                    {selectedProject.case_study.contribution && (
+                      <div className="p-5 rounded-2xl bg-[#E9E8E1] dark:bg-[#1C1F1A] border border-[#171816]/10 dark:border-[#F4F3EE]/10">
+                        <h4 className="font-mono text-xs font-bold uppercase tracking-wider text-[#777970] dark:text-[#A1A49A] mb-2">
+                          Kontribusi Teknis
+                        </h4>
+                        <p className="text-xs sm:text-sm text-[#171816]/80 dark:text-[#F4F3EE]/80 leading-relaxed">
+                          {selectedProject.case_study.contribution}
+                        </p>
+                      </div>
+                    )}
+
+                    {selectedProject.case_study.features && (
+                      <div className="p-5 rounded-2xl bg-[#E9E8E1] dark:bg-[#1C1F1A] border border-[#171816]/10 dark:border-[#F4F3EE]/10">
+                        <h4 className="font-mono text-xs font-bold uppercase tracking-wider text-[#777970] dark:text-[#A1A49A] mb-2">
+                          Fitur & Arsitektur
+                        </h4>
+                        <p className="text-xs sm:text-sm text-[#171816]/80 dark:text-[#F4F3EE]/80 leading-relaxed">
+                          {selectedProject.case_study.features}
+                        </p>
+                      </div>
+                    )}
+
+                    {selectedProject.case_study.outcome && (
+                      <div className="p-5 rounded-2xl bg-[#E9E8E1] dark:bg-[#1C1F1A] border border-[#171816]/10 dark:border-[#F4F3EE]/10">
+                        <h4 className="font-mono text-xs font-bold uppercase tracking-wider text-[#777970] dark:text-[#A1A49A] mb-2">
+                          Hasil & Validasi
+                        </h4>
+                        <p className="text-xs sm:text-sm text-[#171816]/80 dark:text-[#F4F3EE]/80 leading-relaxed">
+                          {selectedProject.case_study.outcome}
+                        </p>
                       </div>
                     )}
                   </div>
+                )}
 
-                  {/* Bottom Tech Pills & Actions */}
-                  <div>
-                    <div className="flex flex-wrap gap-1.5 mb-6">
-                      {project.technologies.map((t) => (
-                        <span
-                          key={t}
-                          className="px-2.5 py-1 rounded-md bg-[#faf8f5] dark:bg-[#0c0d10] border border-black/5 dark:border-white/10 text-xs font-mono text-charcoal/80 dark:text-white/80"
-                        >
-                          {t}
-                        </span>
-                      ))}
-                    </div>
-
-                    <div className="flex items-center gap-4 pt-4 border-t border-black/5 dark:border-white/10">
-                      <button
-                        onClick={() => setSelectedProject(project)}
-                        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-charcoal dark:bg-lime text-white dark:text-charcoal text-xs font-mono font-bold hover:opacity-90 transition-opacity"
-                      >
-                        <BookOpen className="w-3.5 h-3.5" />
-                        <span>Detail Studi Kasus</span>
-                      </button>
-
-                      {project.repository_url && (
-                        <a
-                          href={project.repository_url}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="inline-flex items-center gap-1.5 text-xs font-mono text-charcoal/70 dark:text-white/70 hover:text-charcoal dark:hover:text-white transition-colors"
-                        >
-                          <GithubIcon className="w-3.5 h-3.5" />
-                          <span>Repository</span>
-                          <ArrowUpRight className="w-3 h-3" />
-                        </a>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Right Visual Graphic for Hero Project */}
-                <div className="lg:col-span-5 h-full flex flex-col justify-center">
-                  <div className="w-full aspect-[4/3] rounded-2xl bg-[#faf8f5] dark:bg-[#0c0d10] border border-black/5 dark:border-white/10 p-6 flex flex-col justify-between relative overflow-hidden group-hover:border-black/20 dark:group-hover:border-white/20 transition-all">
-                    <div className="flex items-center justify-between font-mono text-[11px] text-charcoal/40 dark:text-white/40">
-                      <span>MODULE // TUTORIAL MODEL</span>
-                      <span>STATUS: VALIDATED</span>
-                    </div>
-
-                    <div className="my-auto text-center space-y-2 py-4">
-                      <div className="w-12 h-12 rounded-xl bg-forest/10 dark:bg-lime/20 border border-forest/20 dark:border-lime/30 flex items-center justify-center mx-auto text-forest dark:text-lime">
-                        <Code2 className="w-6 h-6" />
-                      </div>
-                      <span className="font-display font-bold text-lg text-charcoal dark:text-white block">
-                        Interactive Code & Analytics
-                      </span>
-                      <span className="font-mono text-xs text-charcoal/50 dark:text-white/50 block">
-                        Tailwind CSS Compiler + Progress Tracker
-                      </span>
-                    </div>
-
-                    <div className="pt-3 border-t border-black/5 dark:border-white/10 flex items-center justify-between font-mono text-[10px] text-charcoal/50 dark:text-white/40">
-                      <span>Universitas Lambung Mangkurat</span>
-                      <span className="text-forest dark:text-lime font-bold">Skripsi 2026</span>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            );
-          }
-
-          return null;
-        })}
-
-        {/* 2-Column Grid for Subsequent Projects */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {filteredProjects.map((project, idx) => {
-            const isFeaturedHero = idx === 0 && filterCategory === "All" && !searchQuery;
-            if (isFeaturedHero) return null; // Already rendered above
-
-            return (
-              <motion.div
-                key={project.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: idx * 0.05 }}
-                className="group p-6 sm:p-8 rounded-2xl bg-white dark:bg-[#14151b] border border-[#e4e1d7] dark:border-[#222530] shadow-editorial dark:shadow-none flex flex-col justify-between hover:border-black/25 dark:hover:border-white/25 transition-all"
-              >
+                {/* Tech Stack Listing */}
                 <div>
-                  <div className="flex items-center justify-between font-mono text-xs mb-3">
-                    <span className="font-bold text-forest dark:text-lime">
-                      {project.number} // {project.category}
-                    </span>
-                    <span className="text-charcoal/40 dark:text-white/40">
-                      {project.year}
-                    </span>
-                  </div>
-
-                  <h3 className="font-display text-xl sm:text-2xl font-bold text-charcoal dark:text-white tracking-tight mb-1 group-hover:text-forest dark:group-hover:text-lime transition-colors">
-                    {project.title}
-                  </h3>
-                  {project.subtitle && (
-                    <p className="font-mono text-[11px] text-charcoal/60 dark:text-white/60 mb-3">
-                      {project.subtitle}
-                    </p>
-                  )}
-
-                  <div className="text-xs font-mono text-charcoal/50 dark:text-white/40 mb-3">
-                    Peran: <span className="font-semibold text-charcoal dark:text-white">{project.role}</span>
-                  </div>
-
-                  <p className="text-sm text-charcoal/70 dark:text-white/70 leading-relaxed mb-6">
-                    {project.summary}
-                  </p>
-
-                  {/* Highlights if any */}
-                  {project.highlights && project.highlights.length > 0 && (
-                    <div className="space-y-1 mb-5 text-xs font-mono text-charcoal/80 dark:text-white/80">
-                      {project.highlights.slice(0, 3).map((h, i) => (
-                        <div key={i} className="flex items-start gap-2">
-                          <span className="text-forest dark:text-lime font-bold">›</span>
-                          <span>{h}</span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                <div>
-                  {/* Tech stack */}
-                  <div className="flex flex-wrap gap-1.5 mb-6 pt-3 border-t border-black/5 dark:border-white/10">
-                    {project.technologies.map((t) => (
+                  <h4 className="font-mono text-xs font-bold uppercase tracking-wider text-[#777970] dark:text-[#A1A49A] mb-3">
+                    Teknologi & Lingkungan Kerja
+                  </h4>
+                  <div className="flex flex-wrap gap-2">
+                    {selectedProject.technologies.map((t) => (
                       <span
                         key={t}
-                        className="px-2 py-0.5 rounded bg-[#faf8f5] dark:bg-[#0c0d10] border border-black/5 dark:border-white/10 text-[11px] font-mono text-charcoal/80 dark:text-white/80"
+                        className="px-3.5 py-1.5 rounded-full bg-[#E9E8E1] dark:bg-[#1C1F1A] border border-[#171816]/10 dark:border-[#F4F3EE]/10 font-mono text-xs font-bold text-[#171816] dark:text-[#F4F3EE]"
                       >
                         {t}
                       </span>
                     ))}
                   </div>
-
-                  {/* Action buttons */}
-                  <div className="flex items-center justify-between pt-2">
-                    <button
-                      onClick={() => setSelectedProject(project)}
-                      className="inline-flex items-center gap-1.5 text-xs font-mono font-bold text-charcoal dark:text-white hover:text-forest dark:hover:text-lime transition-colors"
-                    >
-                      <BookOpen className="w-3.5 h-3.5" />
-                      <span>Studi Kasus</span>
-                      <ArrowUpRight className="w-3.5 h-3.5" />
-                    </button>
-
-                    <div className="flex items-center gap-3">
-                      {project.repository_url && (
-                        <a
-                          href={project.repository_url}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="p-1.5 rounded-lg border border-black/10 dark:border-white/10 text-charcoal/70 dark:text-white/70 hover:text-charcoal dark:hover:text-white transition-colors"
-                          title="Repository GitHub"
-                        >
-                          <GithubIcon className="w-3.5 h-3.5" />
-                        </a>
-                      )}
-                      {project.project_url && (
-                        <a
-                          href={project.project_url}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-forest dark:bg-lime text-white dark:text-charcoal text-[11px] font-mono font-bold"
-                        >
-                          <span>Live</span>
-                          <ExternalLink className="w-3 h-3" />
-                        </a>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Case Study Modal */}
-      <AnimatePresence>
-        {selectedProject && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/60 dark:bg-black/80 backdrop-blur-sm overflow-y-auto">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.96 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.96 }}
-              transition={{ duration: 0.2 }}
-              className="relative w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-3xl bg-[#faf8f5] dark:bg-[#14151b] border border-[#e4e1d7] dark:border-[#222530] p-6 sm:p-10 shadow-2xl"
-            >
-              <button
-                onClick={() => setSelectedProject(null)}
-                className="absolute top-6 right-6 p-2 rounded-full bg-black/5 dark:bg-white/10 text-charcoal dark:text-white hover:bg-black/10 dark:hover:bg-white/20 transition-colors"
-              >
-                <X className="w-4 h-4" />
-              </button>
-
-              <div className="font-mono text-xs text-forest dark:text-lime font-bold mb-2">
-                {selectedProject.number} // {selectedProject.category} · {selectedProject.year}
-              </div>
-
-              <h3 className="font-display text-2xl sm:text-3xl font-bold text-charcoal dark:text-white mb-2 pr-10">
-                {selectedProject.title}
-              </h3>
-              {selectedProject.subtitle && (
-                <p className="font-mono text-xs text-charcoal/60 dark:text-white/60 mb-6">
-                  {selectedProject.subtitle}
-                </p>
-              )}
-
-              <div className="p-4 rounded-xl bg-white dark:bg-[#0c0d10] border border-black/5 dark:border-white/5 mb-6 font-mono text-xs flex flex-wrap gap-4">
-                <div>
-                  <span className="text-charcoal/40 dark:text-white/40 block">Peran:</span>
-                  <span className="font-bold text-charcoal dark:text-white">{selectedProject.role}</span>
-                </div>
-                <div>
-                  <span className="text-charcoal/40 dark:text-white/40 block">Tahun:</span>
-                  <span className="font-bold text-charcoal dark:text-white">{selectedProject.year}</span>
-                </div>
-              </div>
-
-              {/* Case Study Structured Sections */}
-              <div className="space-y-6 text-sm text-charcoal/80 dark:text-white/80 leading-relaxed">
-                <div>
-                  <h4 className="font-mono text-xs font-bold uppercase tracking-wider text-forest dark:text-lime mb-2">
-                    01 // Ikhtisar & Deskripsi Proyek
-                  </h4>
-                  <p>{selectedProject.description || selectedProject.summary}</p>
                 </div>
 
-                {selectedProject.case_study?.background && (
-                  <div>
-                    <h4 className="font-mono text-xs font-bold uppercase tracking-wider text-forest dark:text-lime mb-2">
-                      02 // Latar Belakang & Masalah
-                    </h4>
-                    <p>{selectedProject.case_study.background}</p>
-                  </div>
-                )}
+                {/* Modal Footer Actions */}
+                <div className="pt-6 border-t border-[#171816]/10 dark:border-[#F4F3EE]/10 flex flex-wrap items-center justify-between gap-4 font-mono text-xs">
+                  <button
+                    onClick={() => setSelectedProject(null)}
+                    className="px-5 py-2.5 rounded-full border border-[#171816]/20 dark:border-[#F4F3EE]/20 hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
+                  >
+                    ← Kembali ke Galeri
+                  </button>
 
-                {selectedProject.case_study?.features && (
-                  <div>
-                    <h4 className="font-mono text-xs font-bold uppercase tracking-wider text-forest dark:text-lime mb-2">
-                      03 // Fitur & Solusi yang Diimplementasikan
-                    </h4>
-                    <p>{selectedProject.case_study.features}</p>
-                  </div>
-                )}
-
-                {selectedProject.case_study?.contribution && (
-                  <div>
-                    <h4 className="font-mono text-xs font-bold uppercase tracking-wider text-forest dark:text-lime mb-2">
-                      04 // Peran & Kontribusi Spesifik
-                    </h4>
-                    <p>{selectedProject.case_study.contribution}</p>
-                  </div>
-                )}
-
-                {selectedProject.case_study?.outcome && (
-                  <div>
-                    <h4 className="font-mono text-xs font-bold uppercase tracking-wider text-forest dark:text-lime mb-2">
-                      05 // Hasil & Dampak
-                    </h4>
-                    <p>{selectedProject.case_study.outcome}</p>
-                  </div>
-                )}
-
-                {/* Tech List */}
-                <div className="pt-4 border-t border-black/10 dark:border-white/10">
-                  <h4 className="font-mono text-xs font-bold uppercase tracking-wider text-charcoal/50 dark:text-white/50 mb-3">
-                    Teknologi yang Digunakan
-                  </h4>
-                  <div className="flex flex-wrap gap-2">
-                    {selectedProject.technologies.map((tech) => (
-                      <span
-                        key={tech}
-                        className="px-3 py-1 rounded-md bg-white dark:bg-[#0c0d10] border border-black/5 dark:border-white/10 text-xs font-mono text-charcoal dark:text-white"
-                      >
-                        {tech}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* Modal Actions */}
-              <div className="mt-8 pt-4 border-t border-black/10 dark:border-white/10 flex items-center justify-between">
-                <button
-                  onClick={() => setSelectedProject(null)}
-                  className="px-4 py-2 rounded-full border border-black/10 dark:border-white/10 text-xs font-mono font-medium hover:bg-black/5 dark:hover:bg-white/5 text-charcoal dark:text-white transition-colors"
-                >
-                  Tutup
-                </button>
-
-                <div className="flex items-center gap-3">
                   {selectedProject.repository_url && (
                     <a
                       href={selectedProject.repository_url}
                       target="_blank"
                       rel="noreferrer"
-                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full border border-black/10 dark:border-white/10 text-xs font-mono font-semibold text-charcoal dark:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+                      className="px-6 py-2.5 rounded-full bg-[#171816] dark:bg-[#C8F169] text-[#F4F3EE] dark:text-[#171816] font-bold hover:opacity-90 transition-opacity inline-flex items-center gap-2"
                     >
-                      <GithubIcon className="w-3.5 h-3.5" />
-                      <span>Lihat Kode</span>
-                    </a>
-                  )}
-                  {selectedProject.project_url && (
-                    <a
-                      href={selectedProject.project_url}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-forest dark:bg-lime text-white dark:text-charcoal text-xs font-mono font-bold hover:opacity-90 transition-opacity"
-                    >
-                      <span>Kunjungi Demo</span>
-                      <ExternalLink className="w-3.5 h-3.5" />
+                      <span>Lihat Kode di GitHub</span>
+                      <ArrowUpRight className="w-4 h-4" />
                     </a>
                   )}
                 </div>
@@ -674,4 +625,3 @@ export function EditorialProjects({ initialProjects }: EditorialProjectsProps) {
     </section>
   );
 }
-

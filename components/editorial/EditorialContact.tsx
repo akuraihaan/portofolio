@@ -3,8 +3,11 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import confetti from "canvas-confetti";
-import { Mail, Send, Copy, Check, MapPin, MessageSquare, ArrowUpRight, ShieldCheck } from "lucide-react";
+import { Mail, Send, Copy, Check, MapPin, MessageSquare, ArrowUpRight, ShieldCheck, Sparkles } from "lucide-react";
 import { GithubIcon, LinkedinIcon, InstagramIcon } from "../space/SocialIcons";
+import { MagneticElement } from "../motion/MagneticElement";
+import { useMotionContext } from "../motion/MotionProvider";
+import { EASINGS, DURATION } from "../motion/MotionSystem";
 
 interface EditorialContactProps {
   ownerEmail?: string;
@@ -30,6 +33,7 @@ export function EditorialContact({
   const [submitted, setSubmitted] = useState(false);
   const [copied, setCopied] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+  const { setCursor, resetCursor } = useMotionContext();
 
   const handleCopyEmail = () => {
     navigator.clipboard.writeText(ownerEmail);
@@ -88,7 +92,7 @@ export function EditorialContact({
           particleCount: 80,
           spread: 70,
           origin: { y: 0.6 },
-          colors: ["#d4ff00", "#0c382f", "#141518", "#10b981"],
+          colors: ["#C8F169", "#171816", "#F4F3EE", "#10B981"],
         });
       } catch {}
 
@@ -150,20 +154,20 @@ export function EditorialContact({
   return (
     <section
       id="contact"
-      className="w-full max-w-7xl mx-auto py-24 md:py-32 px-6 md:px-12 border-t border-[#e4e1d7] dark:border-[#222530]"
+      className="w-full max-w-7xl mx-auto py-28 md:py-36 px-6 md:px-12 border-t border-[#171816]/10 dark:border-[#F4F3EE]/10"
     >
       {/* Section Header */}
-      <div className="flex flex-col sm:flex-row sm:items-baseline justify-between mb-16 gap-2">
+      <div className="flex flex-col sm:flex-row sm:items-baseline justify-between mb-16 gap-3">
         <div className="flex items-center gap-3">
-          <span className="font-mono text-xs font-bold tracking-widest text-forest dark:text-lime uppercase">
+          <span className="font-mono text-xs font-bold tracking-widest text-[#171816] dark:text-[#C8F169] uppercase">
             07 / CONTACT
           </span>
-          <span className="h-px w-8 bg-black/15 dark:bg-white/20"></span>
-          <span className="font-mono text-xs text-charcoal/50 dark:text-white/40">
+          <span className="h-px w-8 bg-[#171816]/20 dark:bg-[#F4F3EE]/20"></span>
+          <span className="font-mono text-xs text-[#777970] dark:text-[#A1A49A] uppercase tracking-wider">
             TRANSMISSION & COLLABORATION
           </span>
         </div>
-        <span className="font-mono text-[11px] text-charcoal/40 dark:text-white/40">
+        <span className="font-mono text-[11px] text-[#777970] dark:text-[#A1A49A] tracking-widest">
           BANJARMASIN (WITA / UTC+8)
         </span>
       </div>
@@ -175,24 +179,24 @@ export function EditorialContact({
             initial={{ opacity: 0, y: 15 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="font-display text-4xl sm:text-6xl font-bold tracking-tight text-charcoal dark:text-white leading-[1.08]"
+            className="fluid-h2 font-display font-black tracking-tight text-[#171816] dark:text-[#F4F3EE]"
           >
             Have something worth building?
           </motion.h2>
 
-          <p className="text-base sm:text-lg text-charcoal/70 dark:text-white/70 leading-relaxed font-normal">
-            I&apos;m open to opportunities, collaborations, and meaningful conversations around technology.
+          <p className="text-base sm:text-lg text-[#777970] dark:text-[#A1A49A] leading-relaxed font-normal">
+            Saya terbuka untuk peluang kerja sama, rekayasa perangkat lunak, pengembangan media edukasi, dan diskusi teknologi bermakna.
           </p>
 
           {/* Quick Copy Email Card */}
-          <div className="p-5 rounded-2xl bg-white dark:bg-[#14151b] border border-[#e4e1d7] dark:border-[#222530] shadow-editorial dark:shadow-none flex items-center justify-between">
+          <div className="p-5 rounded-3xl bg-white dark:bg-[#1C1F1A] border border-[#171816]/10 dark:border-[#F4F3EE]/10 shadow-xl flex items-center justify-between">
             <div>
-              <span className="font-mono text-[10px] text-charcoal/40 dark:text-white/40 uppercase block mb-0.5">
+              <span className="font-mono text-[10px] text-[#777970] dark:text-[#A1A49A] uppercase tracking-wider block mb-0.5">
                 Primary Direct Email
               </span>
               <a
                 href={`mailto:${ownerEmail}`}
-                className="font-mono text-xs sm:text-sm font-bold text-charcoal dark:text-white hover:text-forest dark:hover:text-lime transition-colors"
+                className="font-mono text-xs sm:text-sm font-bold text-[#171816] dark:text-[#F4F3EE] hover:text-[#171816] dark:hover:text-[#C8F169] transition-colors"
               >
                 {ownerEmail}
               </a>
@@ -200,16 +204,16 @@ export function EditorialContact({
 
             <button
               onClick={handleCopyEmail}
-              className="p-2 rounded-xl bg-[#f0eee6] dark:bg-[#1f212a] text-charcoal dark:text-white hover:bg-black/10 dark:hover:bg-white/10 transition-colors focus:outline-none"
+              className="p-2.5 rounded-xl bg-[#E9E8E1] dark:bg-[#111310] text-[#171816] dark:text-[#F4F3EE] hover:bg-black/10 dark:hover:bg-white/10 transition-colors focus:outline-none cursor-pointer"
               title="Salin alamat email"
             >
-              {copied ? <Check className="w-4 h-4 text-forest dark:text-lime" /> : <Copy className="w-4 h-4" />}
+              {copied ? <Check className="w-4 h-4 text-[#C8F169]" /> : <Copy className="w-4 h-4" />}
             </button>
           </div>
 
           {/* Verified Social Channels */}
           <div className="space-y-2.5">
-            <span className="font-mono text-[10px] text-charcoal/40 dark:text-white/40 uppercase tracking-wider block">
+            <span className="font-mono text-[10px] text-[#777970] dark:text-[#A1A49A] uppercase tracking-wider block">
               Verified Profiles
             </span>
             {socialChannels.map((ch) => {
@@ -220,155 +224,151 @@ export function EditorialContact({
                   href={ch.url}
                   target="_blank"
                   rel="noreferrer"
-                  className="group p-3.5 rounded-xl bg-white dark:bg-[#14151b] border border-[#e4e1d7] dark:border-[#222530] shadow-editorial dark:shadow-none flex items-center justify-between hover:border-black/20 dark:hover:border-white/20 transition-all"
+                  className="p-4 rounded-2xl bg-white dark:bg-[#1C1F1A] border border-[#171816]/10 dark:border-[#F4F3EE]/10 hover:border-[#171816]/30 dark:hover:border-[#C8F169]/40 shadow-sm flex items-center justify-between transition-colors group"
                 >
                   <div className="flex items-center gap-3">
-                    <span className="w-8 h-8 rounded-lg bg-[#faf8f5] dark:bg-[#0c0d10] flex items-center justify-center text-charcoal dark:text-white">
-                      <Icon className="w-4 h-4 text-forest dark:text-lime" />
-                    </span>
+                    <div className="w-8 h-8 rounded-lg bg-[#E9E8E1] dark:bg-[#111310] flex items-center justify-center text-[#171816] dark:text-[#C8F169]">
+                      <Icon className="w-4 h-4" />
+                    </div>
                     <div>
-                      <span className="font-mono text-xs font-bold text-charcoal dark:text-white block group-hover:text-forest dark:group-hover:text-lime transition-colors">
+                      <span className="font-display font-bold text-sm text-[#171816] dark:text-[#F4F3EE] block">
                         {ch.name}
                       </span>
-                      <span className="font-mono text-[11px] text-charcoal/50 dark:text-white/40 block">
-                        {ch.desc}
+                      <span className="font-mono text-[11px] text-[#777970] dark:text-[#A1A49A] block">
+                        {ch.handle}
                       </span>
                     </div>
                   </div>
-                  <ArrowUpRight className="w-4 h-4 text-charcoal/40 dark:text-white/40 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                  <ArrowUpRight className="w-4 h-4 text-[#777970] dark:text-[#A1A49A] group-hover:text-[#171816] dark:group-hover:text-[#C8F169] transition-colors" />
                 </a>
               );
             })}
           </div>
         </div>
 
-        {/* Right Column: Functional Message Form connected to backend (7 cols) */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="lg:col-span-7 p-6 sm:p-10 rounded-3xl bg-white dark:bg-[#14151b] border border-[#e4e1d7] dark:border-[#222530] shadow-editorial dark:shadow-none"
-        >
-          <div className="flex items-center gap-2 pb-4 mb-6 border-b border-black/5 dark:border-white/10 font-mono text-xs">
-            <MessageSquare className="w-4 h-4 text-forest dark:text-lime" />
-            <span className="font-bold text-charcoal dark:text-white uppercase tracking-wider">
-              Send a Direct Message
-            </span>
-          </div>
-
-          {submitted ? (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="py-12 text-center space-y-3 font-mono"
-            >
-              <div className="w-12 h-12 rounded-full bg-forest/10 dark:bg-lime/20 text-forest dark:text-lime flex items-center justify-center mx-auto">
-                <Check className="w-6 h-6" />
-              </div>
-              <h3 className="font-display font-bold text-xl text-charcoal dark:text-white">
-                Pesan Berhasil Terkirim
-              </h3>
-              <p className="text-xs text-charcoal/70 dark:text-white/70 max-w-sm mx-auto leading-relaxed font-sans">
-                Terima kasih! Pesan Anda telah tersimpan di sistem basis data dan saya akan segera membalasnya melalui email Anda.
-              </p>
-              <button
-                onClick={() => setSubmitted(false)}
-                className="mt-4 px-4 py-2 rounded-full border border-black/10 dark:border-white/10 text-xs text-charcoal dark:text-white hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
-              >
-                Kirim Pesan Lain
-              </button>
-            </motion.div>
-          ) : (
-            <form onSubmit={handleSubmit} className="space-y-4 font-mono text-xs">
-              {errorMsg && (
-                <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 text-xs">
-                  {errorMsg}
+        {/* Right Column: Interactive Contact Form (7 cols) */}
+        <div className="lg:col-span-7">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="p-8 sm:p-12 rounded-3xl bg-white dark:bg-[#1C1F1A] border border-[#171816]/10 dark:border-[#F4F3EE]/10 shadow-2xl"
+          >
+            {submitted ? (
+              <div className="py-12 text-center space-y-4">
+                <div className="w-16 h-16 rounded-full bg-[#C8F169]/20 text-[#171816] dark:text-[#C8F169] flex items-center justify-center mx-auto mb-4 border border-[#C8F169]/40">
+                  <Check className="w-8 h-8" />
                 </div>
-              )}
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-charcoal/60 dark:text-white/50 uppercase tracking-wider text-[10px] mb-1.5 font-bold">
-                    Nama Lengkap *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. John Doe"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#faf8f5] dark:bg-[#0c0d10] border border-black/10 dark:border-white/10 text-charcoal dark:text-white placeholder:text-charcoal/30 dark:placeholder:text-white/30 focus:outline-none focus:border-charcoal dark:focus:border-lime transition-colors"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-charcoal/60 dark:text-white/50 uppercase tracking-wider text-[10px] mb-1.5 font-bold">
-                    Alamat Email *
-                  </label>
-                  <input
-                    type="email"
-                    required
-                    placeholder="name@domain.com"
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#faf8f5] dark:bg-[#0c0d10] border border-black/10 dark:border-white/10 text-charcoal dark:text-white placeholder:text-charcoal/30 dark:placeholder:text-white/30 focus:outline-none focus:border-charcoal dark:focus:border-lime transition-colors"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-charcoal/60 dark:text-white/50 uppercase tracking-wider text-[10px] mb-1.5 font-bold">
-                  Topik Diskusi *
-                </label>
-                <select
-                  value={formData.subject}
-                  onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#faf8f5] dark:bg-[#0c0d10] border border-black/10 dark:border-white/10 text-charcoal dark:text-white focus:outline-none focus:border-charcoal dark:focus:border-lime transition-colors"
+                <h3 className="font-display font-black text-2xl sm:text-3xl text-[#171816] dark:text-[#F4F3EE]">
+                  Pesan Berhasil Terkirim!
+                </h3>
+                <p className="text-sm text-[#777970] dark:text-[#A1A49A] max-w-md mx-auto leading-relaxed">
+                  Terima kasih atas pesan Anda. Pesan telah disimpan ke inbox Supabase dan saya akan merespons melalui email secepatnya.
+                </p>
+                <button
+                  onClick={() => setSubmitted(false)}
+                  className="mt-6 px-6 py-2.5 rounded-full bg-[#171816] dark:bg-[#C8F169] text-[#F4F3EE] dark:text-[#171816] font-mono text-xs font-bold"
                 >
-                  <option value="Kolaborasi">Kolaborasi Proyek</option>
-                  <option value="Pekerjaan">Tawaran Pekerjaan / Internship</option>
-                  <option value="Pertanyaan proyek">Pertanyaan Proyek Teknis</option>
-                  <option value="Lainnya">Diskusi Lainnya</option>
-                </select>
+                  Kirim Pesan Lain
+                </button>
               </div>
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="pb-4 border-b border-[#171816]/10 dark:border-[#F4F3EE]/10 mb-6 flex items-center justify-between">
+                  <span className="font-mono text-xs font-bold uppercase tracking-wider text-[#171816] dark:text-[#F4F3EE]">
+                    Kirim Pesan Langsung
+                  </span>
+                  <span className="font-mono text-[10px] text-[#777970] dark:text-[#A1A49A]">
+                    SECURE SUPABASE RPC
+                  </span>
+                </div>
 
-              <div>
-                <label className="block text-charcoal/60 dark:text-white/50 uppercase tracking-wider text-[10px] mb-1.5 font-bold">
-                  Pesan Anda (Min. 20 Karakter) *
-                </label>
-                <textarea
-                  rows={4}
-                  required
-                  placeholder="Ceritakan tentang proyek, peluang, atau pertanyaan yang ingin Anda diskusikan..."
-                  value={formData.message}
-                  onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#faf8f5] dark:bg-[#0c0d10] border border-black/10 dark:border-white/10 text-charcoal dark:text-white placeholder:text-charcoal/30 dark:placeholder:text-white/30 focus:outline-none focus:border-charcoal dark:focus:border-lime transition-colors resize-none"
-                />
-              </div>
-
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full py-3.5 rounded-full bg-charcoal dark:bg-lime text-white dark:text-charcoal font-bold text-xs uppercase tracking-wider hover:opacity-90 disabled:opacity-50 transition-opacity flex items-center justify-center gap-2 shadow-sm"
-              >
-                {loading ? (
-                  <span>Mengirimkan Pesan...</span>
-                ) : (
-                  <>
-                    <span>Kirim Pesan</span>
-                    <Send className="w-3.5 h-3.5" />
-                  </>
+                {errorMsg && (
+                  <div className="p-3.5 rounded-xl bg-red-500/10 text-red-600 dark:text-red-400 font-mono text-xs border border-red-500/20">
+                    {errorMsg}
+                  </div>
                 )}
-              </button>
 
-              <p className="text-[10px] text-charcoal/40 dark:text-white/40 text-center font-mono">
-                Transmisi pesan terenkripsi dan disimpan langsung ke Supabase RPC backend.
-              </p>
-            </form>
-          )}
-        </motion.div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                  <div className="space-y-2">
+                    <label className="font-mono text-xs font-bold text-[#171816] dark:text-[#F4F3EE] block">
+                      Nama Lengkap *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="Nama Anda"
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      className="w-full px-4 py-3 rounded-xl bg-[#F4F3EE] dark:bg-[#111310] border border-[#171816]/10 dark:border-[#F4F3EE]/10 text-sm font-sans text-[#171816] dark:text-[#F4F3EE] focus:outline-none focus:border-[#C8F169]"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="font-mono text-xs font-bold text-[#171816] dark:text-[#F4F3EE] block">
+                      Alamat Email *
+                    </label>
+                    <input
+                      type="email"
+                      required
+                      placeholder="email@domain.com"
+                      value={formData.email}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      className="w-full px-4 py-3 rounded-xl bg-[#F4F3EE] dark:bg-[#111310] border border-[#171816]/10 dark:border-[#F4F3EE]/10 text-sm font-sans text-[#171816] dark:text-[#F4F3EE] focus:outline-none focus:border-[#C8F169]"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="font-mono text-xs font-bold text-[#171816] dark:text-[#F4F3EE] block">
+                    Topik / Subjek
+                  </label>
+                  <select
+                    value={formData.subject}
+                    onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                    className="w-full px-4 py-3 rounded-xl bg-[#F4F3EE] dark:bg-[#111310] border border-[#171816]/10 dark:border-[#F4F3EE]/10 text-sm font-mono text-[#171816] dark:text-[#F4F3EE] focus:outline-none focus:border-[#C8F169]"
+                  >
+                    <option value="Kolaborasi">Kolaborasi Proyek</option>
+                    <option value="Peluang Kerja">Peluang Kerja / Rekrutmen</option>
+                    <option value="Pengembangan Web">Pengembangan Web & Aplikasi</option>
+                    <option value="Konsultasi Pendidikan">Teknologi Pembelajaran / Edukasi</option>
+                    <option value="Lainnya">Lainnya</option>
+                  </select>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="font-mono text-xs font-bold text-[#171816] dark:text-[#F4F3EE] block">
+                    Pesan Anda *
+                  </label>
+                  <textarea
+                    required
+                    rows={5}
+                    placeholder="Ceritakan proyek, ide, atau tujuan kolaborasi Anda secara ringkas..."
+                    value={formData.message}
+                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                    className="w-full px-4 py-3 rounded-xl bg-[#F4F3EE] dark:bg-[#111310] border border-[#171816]/10 dark:border-[#F4F3EE]/10 text-sm font-sans text-[#171816] dark:text-[#F4F3EE] focus:outline-none focus:border-[#C8F169]"
+                  />
+                </div>
+
+                <div className="pt-2">
+                  <MagneticElement strength={0.3}>
+                    <button
+                      type="submit"
+                      disabled={loading}
+                      onMouseEnter={() => setCursor({ active: true, text: "SEND" })}
+                      onMouseLeave={resetCursor}
+                      className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-[#171816] dark:bg-[#C8F169] text-[#F4F3EE] dark:text-[#171816] font-mono text-xs font-bold hover:opacity-90 disabled:opacity-50 transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md"
+                    >
+                      <span>{loading ? "Mengirim Pesan…" : "Kirimkan Pesan"}</span>
+                      <Send className="w-4 h-4" />
+                    </button>
+                  </MagneticElement>
+                </div>
+              </form>
+            )}
+          </motion.div>
+        </div>
       </div>
     </section>
   );
 }
-

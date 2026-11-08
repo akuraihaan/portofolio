@@ -2,7 +2,10 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Award, Calendar, ExternalLink, Eye, X, ShieldCheck, Trophy, Sparkles } from "lucide-react";
+import { Award, Calendar, ExternalLink, Eye, X, ShieldCheck, Trophy, Sparkles, Download, FileText, ArrowUpRight } from "lucide-react";
+import { HoverPerspective } from "../motion/HoverPerspective";
+import { useMotionContext } from "../motion/MotionProvider";
+import { EASINGS, DURATION } from "../motion/MotionSystem";
 
 export interface EditorialCertificateItem {
   id: string;
@@ -16,7 +19,7 @@ export interface EditorialCertificateItem {
   description?: string;
 }
 
-const verifiedCredentials: EditorialCertificateItem[] = [
+export const defaultCredentials: EditorialCertificateItem[] = [
   {
     id: "peksiminas-2nd",
     title: "2nd Place – Social Campaign Media Design Competition",
@@ -95,152 +98,143 @@ const verifiedCredentials: EditorialCertificateItem[] = [
   },
 ];
 
-interface EditorialCertificatesProps {
+export function EditorialCertificates({
+  initialCertificates,
+}: {
   initialCertificates?: EditorialCertificateItem[];
-}
+}) {
+  const certificates =
+    initialCertificates && initialCertificates.length > 0
+      ? initialCertificates
+      : defaultCredentials;
 
-export function EditorialCertificates({ initialCertificates }: EditorialCertificatesProps) {
-  const [selectedCert, setSelectedCert] = useState<EditorialCertificateItem | null>(null);
+  const [activeTab, setActiveTab] = useState<"all" | "awards" | "credentials">("all");
+  const [selectedPreview, setSelectedPreview] = useState<EditorialCertificateItem | null>(null);
+  const { setCursor, resetCursor } = useMotionContext();
 
-  const certificatesToDisplay =
-    initialCertificates && initialCertificates.length > 0 ? initialCertificates : verifiedCredentials;
+  const filtered = certificates.filter((item) => {
+    if (activeTab === "awards") return item.isAward;
+    if (activeTab === "credentials") return !item.isAward;
+    return true;
+  });
 
   return (
     <section
       id="certificates"
-      className="w-full max-w-7xl mx-auto py-24 md:py-32 px-6 md:px-12 border-t border-[#e4e1d7] dark:border-[#222530]"
+      className="w-full max-w-7xl mx-auto py-28 md:py-36 px-6 md:px-12 border-t border-[#171816]/10 dark:border-[#F4F3EE]/10"
     >
       {/* Section Header */}
-      <div className="flex flex-col sm:flex-row sm:items-baseline justify-between mb-16 gap-2">
+      <div className="flex flex-col sm:flex-row sm:items-baseline justify-between mb-16 gap-3">
         <div className="flex items-center gap-3">
-          <span className="font-mono text-xs font-bold tracking-widest text-forest dark:text-lime uppercase">
+          <span className="font-mono text-xs font-bold tracking-widest text-[#171816] dark:text-[#C8F169] uppercase">
             06 / AWARDS & CREDENTIALS
           </span>
-          <span className="h-px w-8 bg-black/15 dark:bg-white/20"></span>
-          <span className="font-mono text-xs text-charcoal/50 dark:text-white/40">
-            CURATED DIGITAL ARCHIVE
+          <span className="h-px w-8 bg-[#171816]/20 dark:bg-[#F4F3EE]/20"></span>
+          <span className="font-mono text-xs text-[#777970] dark:text-[#A1A49A] uppercase tracking-wider">
+            DIGITAL CREDENTIAL ARCHIVE
           </span>
         </div>
-        <span className="font-mono text-[11px] text-charcoal/40 dark:text-white/40">
-          INDEX: {certificatesToDisplay.length} CREDENTIALS RECORDED
+        <span className="font-mono text-[11px] text-[#777970] dark:text-[#A1A49A] tracking-widest">
+          VERIFIED ARCHIVE · {certificates.length} RECORDS
         </span>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12">
         <div className="lg:col-span-8">
-          <motion.h2
-            initial={{ opacity: 0, y: 15 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="font-display text-3xl sm:text-5xl font-bold tracking-tight text-charcoal dark:text-white leading-[1.15] mb-3"
-          >
-            Certificates & recognition.
-          </motion.h2>
-          <p className="text-charcoal/70 dark:text-white/70 text-base max-w-xl leading-relaxed">
-            Pengakuan kompetensi resmi, penghargaan kompetisi desain media, dan rekognisi program teknologi berskala nasional.
+          <h2 className="fluid-h2 font-display font-black tracking-tight text-[#171816] dark:text-[#F4F3EE] mb-4">
+            Validated knowledge and achievements.
+          </h2>
+          <p className="text-[#777970] dark:text-[#A1A49A] text-base sm:text-lg max-w-xl leading-relaxed">
+            Arsip kredensial akademik, sertifikasi industri, pemakalah seminar ilmiah, dan penghargaan kompetisi desain media.
           </p>
         </div>
       </div>
 
-      {/* Grid of Credentials */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {certificatesToDisplay.map((cert, idx) => {
-          const previewImg = cert.certificate_url;
-          const targetUrl = cert.credential_url || cert.certificate_url;
+      {/* Filter Tabs */}
+      <div className="flex items-center gap-2 mb-10 overflow-x-auto pb-2 scrollbar-none no-scrollbar">
+        {[
+          { id: "all", label: "Semua Kredensial" },
+          { id: "awards", label: "Penghargaan & Juara" },
+          { id: "credentials", label: "Sertifikasi & Publikasi" },
+        ].map((tab) => {
+          const isActive = activeTab === tab.id;
+          return (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id as typeof activeTab)}
+              className={`px-4 py-2 rounded-full font-mono text-xs font-bold transition-all cursor-pointer border ${
+                isActive
+                  ? "bg-[#171816] dark:bg-[#C8F169] text-[#F4F3EE] dark:text-[#171816] border-transparent shadow-sm"
+                  : "bg-[#E9E8E1]/60 dark:bg-[#1C1F1A] text-[#777970] dark:text-[#A1A49A] border-[#171816]/10 dark:border-[#F4F3EE]/10 hover:border-[#171816]/30 dark:hover:border-[#F4F3EE]/30"
+              }`}
+            >
+              {tab.label}
+            </button>
+          );
+        })}
+      </div>
 
+      {/* Credential Cards Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {filtered.map((cert) => {
           return (
             <motion.div
-              key={cert.id || idx}
+              key={cert.id}
+              layout
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: idx * 0.06 }}
-              className="group p-5 rounded-2xl bg-white dark:bg-[#14151b] border border-[#e4e1d7] dark:border-[#222530] shadow-editorial dark:shadow-none flex flex-col justify-between hover:border-black/25 dark:hover:border-white/25 transition-all"
+              transition={{ duration: DURATION.normal, ease: EASINGS.editorial }}
+              onMouseEnter={() => setCursor({ active: true, text: "VIEW" })}
+              onMouseLeave={resetCursor}
+              onClick={() => setSelectedPreview(cert)}
+              className="group p-6 rounded-3xl bg-white dark:bg-[#1C1F1A] border border-[#171816]/10 dark:border-[#F4F3EE]/10 hover:border-[#171816]/30 dark:hover:border-[#C8F169]/40 shadow-xl transition-all cursor-pointer flex flex-col justify-between"
             >
               <div>
-                {/* Visual Thumbnail Frame */}
-                <div
-                  onClick={() => setSelectedCert(cert)}
-                  className="relative h-44 w-full rounded-xl bg-[#faf8f5] dark:bg-[#0c0d10] border border-black/5 dark:border-white/5 overflow-hidden cursor-pointer flex items-center justify-center mb-4 group/img"
-                >
-                  {previewImg ? (
-                    <img
-                      src={previewImg}
-                      alt={cert.title}
-                      className="w-full h-full object-cover object-center group-hover/img:scale-105 transition-transform duration-300"
-                      loading="lazy"
-                    />
-                  ) : (
-                    <div className="flex flex-col items-center justify-center p-4 text-center">
-                      <div className="w-10 h-10 rounded-full bg-forest/10 dark:bg-lime/20 flex items-center justify-center text-forest dark:text-lime mb-2">
-                        {cert.isAward ? <Trophy className="w-5 h-5" /> : <Award className="w-5 h-5" />}
-                      </div>
-                      <span className="font-mono text-[10px] text-charcoal/50 dark:text-white/40">
-                        Official Credential Record
-                      </span>
-                    </div>
-                  )}
-
-                  {/* Hover Overlay */}
-                  <div className="absolute inset-0 bg-charcoal/40 dark:bg-black/60 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white dark:bg-lime text-charcoal font-mono text-[11px] font-bold shadow-md">
-                      <Eye className="w-3.5 h-3.5" />
-                      View Certificate
+                <div className="flex items-center justify-between pb-3 border-b border-[#171816]/10 dark:border-[#F4F3EE]/10 mb-4">
+                  <div className="flex items-center gap-2">
+                    <span className="w-8 h-8 rounded-xl bg-[#E9E8E1] dark:bg-[#111310] flex items-center justify-center text-[#171816] dark:text-[#C8F169]">
+                      {cert.isAward ? (
+                        <Trophy className="w-4 h-4 text-[#C8F169]" />
+                      ) : (
+                        <Award className="w-4 h-4" />
+                      )}
+                    </span>
+                    <span className="font-mono text-[10px] uppercase font-bold tracking-wider text-[#777970] dark:text-[#A1A49A]">
+                      {cert.category || "Credential"}
                     </span>
                   </div>
-                </div>
 
-                {/* Metadata Badges */}
-                <div className="flex items-center justify-between font-mono text-[10px] mb-2.5">
-                  <span
-                    className={`px-2 py-0.5 rounded-md font-bold ${
-                      cert.isAward
-                        ? "bg-forest/10 dark:bg-lime/20 text-forest dark:text-lime border border-forest/20 dark:border-lime/30"
-                        : "bg-[#f0eee6] dark:bg-[#1f212a] text-charcoal/70 dark:text-white/70"
-                    }`}
-                  >
-                    {cert.category || (cert.isAward ? "Award" : "Certificate")}
-                  </span>
-                  <span className="text-charcoal/40 dark:text-white/40 flex items-center gap-1">
-                    <Calendar className="w-3 h-3" />
-                    {cert.issue_date}
+                  <span className="font-mono text-[11px] text-[#777970] dark:text-[#A1A49A]">
+                    {cert.issue_date.slice(0, 4)}
                   </span>
                 </div>
 
-                <h3 className="font-display font-bold text-base text-charcoal dark:text-white leading-snug mb-1.5 group-hover:text-forest dark:group-hover:text-lime transition-colors">
+                <h3 className="font-display font-bold text-lg text-[#171816] dark:text-[#F4F3EE] mb-2 group-hover:text-[#171816] dark:group-hover:text-[#C8F169] transition-colors">
                   {cert.title}
                 </h3>
-                <p className="font-mono text-[11px] text-charcoal/60 dark:text-white/50 mb-3">
+
+                <p className="font-mono text-xs text-[#777970] dark:text-[#A1A49A] mb-4">
                   {cert.issuer}
                 </p>
 
                 {cert.description && (
-                  <p className="text-xs text-charcoal/70 dark:text-white/70 leading-relaxed line-clamp-2">
+                  <p className="text-xs text-[#171816]/75 dark:text-[#F4F3EE]/75 leading-relaxed font-sans mb-4">
                     {cert.description}
                   </p>
                 )}
               </div>
 
-              {/* Bottom Actions */}
-              <div className="pt-4 mt-4 border-t border-black/5 dark:border-white/10 flex items-center justify-between font-mono text-xs">
-                <button
-                  onClick={() => setSelectedCert(cert)}
-                  className="font-bold text-forest dark:text-lime hover:underline flex items-center gap-1"
-                >
-                  <span>Preview</span>
-                  <span>→</span>
-                </button>
+              <div className="pt-3 border-t border-[#171816]/10 dark:border-[#F4F3EE]/10 flex items-center justify-between font-mono text-[11px]">
+                <span className="text-[#171816] dark:text-[#C8F169] font-bold flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                  <span>Pratinjau Kredensial</span>
+                  <ArrowUpRight className="w-3.5 h-3.5" />
+                </span>
 
-                {targetUrl && (
-                  <a
-                    href={targetUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="p-1 rounded-md text-charcoal/40 dark:text-white/40 hover:text-charcoal dark:hover:text-white transition-colors"
-                    title="Buka dokumen kredensial"
-                  >
-                    <ExternalLink className="w-3.5 h-3.5" />
-                  </a>
+                {cert.certificate_url && (
+                  <span className="text-[10px] px-2 py-0.5 rounded bg-[#C8F169]/20 text-[#171816] dark:text-[#C8F169] font-bold">
+                    Dokumen Siap
+                  </span>
                 )}
               </div>
             </motion.div>
@@ -248,81 +242,90 @@ export function EditorialCertificates({ initialCertificates }: EditorialCertific
         })}
       </div>
 
-      {/* Lightbox Modal */}
+      {/* Lightbox / Document Preview Modal */}
       <AnimatePresence>
-        {selectedCert && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/70 dark:bg-black/85 backdrop-blur-sm">
+        {selectedPreview && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-10">
             <motion.div
-              initial={{ opacity: 0, scale: 0.96 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.96 }}
-              transition={{ duration: 0.2 }}
-              className="relative w-full max-w-3xl rounded-3xl bg-[#faf8f5] dark:bg-[#14151b] border border-[#e4e1d7] dark:border-[#222530] p-6 sm:p-8 shadow-2xl"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSelectedPreview(null)}
+              className="fixed inset-0 bg-[#111310]/85 backdrop-blur-md"
+            />
+
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              transition={{ duration: 0.35, ease: EASINGS.editorial }}
+              className="relative w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-3xl bg-[#F4F3EE] dark:bg-[#111310] border border-[#171816]/15 dark:border-[#F4F3EE]/15 shadow-2xl p-6 sm:p-8 z-10 text-[#171816] dark:text-[#F4F3EE]"
             >
               <button
-                onClick={() => setSelectedCert(null)}
-                className="absolute top-5 right-5 p-2 rounded-full bg-black/5 dark:bg-white/10 text-charcoal dark:text-white hover:bg-black/10 dark:hover:bg-white/20 transition-colors"
+                onClick={() => setSelectedPreview(null)}
+                className="absolute top-6 right-6 p-2 rounded-full bg-[#E9E8E1] dark:bg-[#1C1F1A] text-[#171816] dark:text-[#F4F3EE] hover:bg-black/10 dark:hover:bg-white/10 transition-colors focus:outline-none cursor-pointer"
               >
-                <X className="w-4 h-4" />
+                <X className="w-5 h-5" />
               </button>
 
-              <div className="flex items-center gap-2 font-mono text-xs text-forest dark:text-lime font-bold mb-2">
-                <ShieldCheck className="w-4 h-4" />
-                <span>{selectedCert.issuer}</span>
-                <span>• {selectedCert.issue_date}</span>
+              <div className="pb-4 border-b border-[#171816]/10 dark:border-[#F4F3EE]/10 mb-6 pr-10">
+                <span className="font-mono text-xs font-bold text-[#777970] dark:text-[#A1A49A] uppercase tracking-wider block mb-1">
+                  {selectedPreview.category || "Verified Credential"} · {selectedPreview.issue_date}
+                </span>
+                <h3 className="font-display font-black text-2xl sm:text-3xl text-[#171816] dark:text-[#F4F3EE]">
+                  {selectedPreview.title}
+                </h3>
+                <p className="font-mono text-xs text-[#777970] dark:text-[#A1A49A] mt-1">
+                  Penerbit: {selectedPreview.issuer}
+                </p>
               </div>
 
-              <h3 className="font-display text-xl sm:text-2xl font-bold text-charcoal dark:text-white mb-4 pr-8">
-                {selectedCert.title}
-              </h3>
-
-              {/* Certificate Image Viewer */}
-              <div className="relative w-full rounded-2xl overflow-hidden bg-black/5 dark:bg-black/40 border border-black/5 dark:border-white/5 max-h-[55vh] flex items-center justify-center mb-6">
-                {selectedCert.certificate_url ? (
+              {/* Certificate Image / Document Preview */}
+              <div className="w-full rounded-2xl overflow-hidden bg-black/5 dark:bg-white/5 border border-[#171816]/10 dark:border-[#F4F3EE]/10 flex items-center justify-center p-2 mb-6">
+                {selectedPreview.certificate_url ? (
+                  /* eslint-disable-next-line @next/next/no-img-element */
                   <img
-                    src={selectedCert.certificate_url}
-                    alt={selectedCert.title}
-                    className="w-full h-auto max-h-[55vh] object-contain"
+                    src={selectedPreview.certificate_url}
+                    alt={selectedPreview.title}
+                    className="w-full max-h-[55vh] object-contain rounded-xl shadow-sm"
                   />
                 ) : (
-                  <div className="py-16 text-center text-charcoal/50 dark:text-white/40">
-                    <Award className="w-12 h-12 mx-auto mb-2 opacity-50" />
-                    <p className="text-xs font-mono">Dokumen kredensial digital terverifikasi.</p>
+                  <div className="py-16 text-center">
+                    <Award className="w-16 h-16 text-[#C8F169] mx-auto mb-3" />
+                    <p className="font-display font-bold text-lg text-[#171816] dark:text-[#F4F3EE]">
+                      Kredensial Digital Terverifikasi
+                    </p>
+                    <p className="font-mono text-xs text-[#777970] dark:text-[#A1A49A] mt-1">
+                      Kredensial tercatat pada sistem penerbit resmi Bangkit Academy.
+                    </p>
                   </div>
                 )}
               </div>
 
-              {selectedCert.description && (
-                <p className="text-xs text-charcoal/70 dark:text-white/70 leading-relaxed mb-6 font-mono">
-                  {selectedCert.description}
+              {selectedPreview.description && (
+                <p className="text-xs sm:text-sm text-[#171816]/80 dark:text-[#F4F3EE]/80 leading-relaxed font-sans mb-6">
+                  {selectedPreview.description}
                 </p>
               )}
 
-              {/* Modal Actions */}
-              <div className="flex items-center justify-between pt-4 border-t border-black/10 dark:border-white/10 font-mono text-xs">
-                <span className="text-charcoal/50 dark:text-white/40">
-                  ID: {selectedCert.id}
-                </span>
+              <div className="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-[#171816]/10 dark:border-[#F4F3EE]/10 font-mono text-xs">
+                <button
+                  onClick={() => setSelectedPreview(null)}
+                  className="px-5 py-2.5 rounded-full border border-[#171816]/20 dark:border-[#F4F3EE]/20 hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
+                >
+                  Tutup
+                </button>
 
-                <div className="flex items-center gap-3">
-                  {selectedCert.credential_url && (
-                    <a
-                      href={selectedCert.credential_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-forest dark:bg-lime text-white dark:text-charcoal font-bold hover:opacity-90 transition-opacity"
-                    >
-                      <span>Buka Tautan Asli</span>
-                      <ExternalLink className="w-3.5 h-3.5" />
-                    </a>
-                  )}
-                  <button
-                    onClick={() => setSelectedCert(null)}
-                    className="px-4 py-2 rounded-full border border-black/10 dark:border-white/10 text-charcoal dark:text-white hover:bg-black/5 dark:hover:bg-white/5 transition-colors font-medium"
+                {selectedPreview.credential_url && (
+                  <a
+                    href={selectedPreview.credential_url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="px-6 py-2.5 rounded-full bg-[#171816] dark:bg-[#C8F169] text-[#F4F3EE] dark:text-[#171816] font-bold hover:opacity-90 transition-opacity inline-flex items-center gap-2"
                   >
-                    Tutup
-                  </button>
-                </div>
+                    <span>Verifikasi Kredensial ↗</span>
+                  </a>
+                )}
               </div>
             </motion.div>
           </div>
@@ -331,4 +334,3 @@ export function EditorialCertificates({ initialCertificates }: EditorialCertific
     </section>
   );
 }
-

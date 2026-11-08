@@ -1,7 +1,9 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { Briefcase, Calendar, MapPin, ArrowUpRight, GraduationCap } from "lucide-react";
+import { useRef } from "react";
+import { motion, useScroll, useSpring } from "framer-motion";
+import { Briefcase, Calendar, MapPin, ArrowUpRight, GraduationCap, CheckCircle2 } from "lucide-react";
+import { EASINGS, DURATION } from "../motion/MotionSystem";
 
 export interface ExperienceRecord {
   id: string;
@@ -25,9 +27,9 @@ export const defaultExperiences: ExperienceRecord[] = [
     description:
       "Mendukung proses pembelajaran Informatika serta membantu pelaksanaan kegiatan belajar mengajar bagi siswa sekolah menengah.",
     responsibilities: [
-      "Pendampingan praktikum komputer & logika algoritma",
-      "Penyusunan materi pengantar literasi digital & keselamatan siber",
-      "Membantu guru dalam evaluasi asesmen pembelajaran siswa",
+      "Pendampingan praktikum komputer & logika algoritma siswa",
+      "Penyusunan materi pengantar literasi digital & keamanan informasi",
+      "Membantu guru dalam evaluasi dan asesmen pembelajaran",
     ],
   },
   {
@@ -48,7 +50,7 @@ export const defaultExperiences: ExperienceRecord[] = [
   {
     id: "bangkit-cohort",
     role: "Cloud Computing Cohort",
-    organization: "Bangkit Academy Batch II (Dicoding Indonesia)",
+    organization: "Bangkit Academy Batch II (Google, GoTo, Tokopedia, Traveloka)",
     period: "September 2024 – January 2025",
     location: "Jakarta, ID (Remote Cohort)",
     typeBadge: "Studi Independen Bersertifikat",
@@ -72,98 +74,122 @@ export function EditorialExperience({
       ? initialExperiences
       : defaultExperiences;
 
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start center", "end center"],
+  });
+
+  const scaleY = useSpring(scrollYProgress, {
+    stiffness: 250,
+    damping: 30,
+  });
+
   return (
     <section
       id="experience"
-      className="w-full max-w-7xl mx-auto py-24 md:py-32 px-6 md:px-12 border-t border-[#e4e1d7] dark:border-[#222530]"
+      className="w-full max-w-7xl mx-auto py-28 md:py-36 px-6 md:px-12 border-t border-[#171816]/10 dark:border-[#F4F3EE]/10"
     >
       {/* Section Header */}
-      <div className="flex flex-col sm:flex-row sm:items-baseline justify-between mb-16 gap-2">
+      <div className="flex flex-col sm:flex-row sm:items-baseline justify-between mb-16 gap-3">
         <div className="flex items-center gap-3">
-          <span className="font-mono text-xs font-bold tracking-widest text-forest dark:text-lime uppercase">
+          <span className="font-mono text-xs font-bold tracking-widest text-[#171816] dark:text-[#C8F169] uppercase">
             04 / EXPERIENCE
           </span>
-          <span className="h-px w-8 bg-black/15 dark:bg-white/20"></span>
-          <span className="font-mono text-xs text-charcoal/50 dark:text-white/40">
+          <span className="h-px w-8 bg-[#171816]/20 dark:bg-[#F4F3EE]/20"></span>
+          <span className="font-mono text-xs text-[#777970] dark:text-[#A1A49A] uppercase tracking-wider">
             CHRONOLOGICAL TIMELINE
           </span>
         </div>
-        <span className="font-mono text-[11px] text-charcoal/40 dark:text-white/40">
+        <span className="font-mono text-[11px] text-[#777970] dark:text-[#A1A49A] tracking-widest">
           CONFIRMED ENGAGEMENTS (2024–2025)
         </span>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-16">
         <div className="lg:col-span-8">
-          <motion.h2
-            initial={{ opacity: 0, y: 15 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="font-display text-3xl sm:text-5xl font-bold tracking-tight text-charcoal dark:text-white leading-[1.15] mb-3"
-          >
+          <h2 className="fluid-h2 font-display font-black tracking-tight text-[#171816] dark:text-[#F4F3EE] mb-4">
             Practical experience in teaching and technology.
-          </motion.h2>
-          <p className="text-charcoal/70 dark:text-white/70 text-base max-w-xl leading-relaxed">
+          </h2>
+          <p className="text-[#777970] dark:text-[#A1A49A] text-base sm:text-lg max-w-xl leading-relaxed">
             Pengalaman nyata dalam mendampingi pengajaran Informatika, memfasilitasi workshop pemrograman anak, serta menyelesaikan program intensif komputasi awan.
           </p>
         </div>
       </div>
 
-      {/* Editorial Timeline List with Spotlight Dimming on Hover */}
-      <div className="group/timeline flex flex-col space-y-6">
-        {experiences.map((item, idx) => (
-          <motion.div
-            key={item.id}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: idx * 0.08 }}
-            className="group/item relative p-6 sm:p-8 rounded-2xl bg-white dark:bg-[#14151b] border border-[#e4e1d7] dark:border-[#222530] shadow-editorial dark:shadow-none grid grid-cols-1 lg:grid-cols-12 gap-6 items-start transition-all duration-300 group-hover/timeline:opacity-40 group-hover/timeline:blur-[0.5px] hover:!opacity-100 hover:!blur-none hover:border-black/30 dark:hover:border-white/30 hover:shadow-lg"
-          >
-            {/* Period & Org (4 cols) */}
-            <div className="lg:col-span-4 flex flex-col justify-start">
-              <span className="font-mono text-xs font-bold text-forest dark:text-lime uppercase tracking-wider mb-1">
-                {item.period}
-              </span>
-              <h3 className="font-display font-bold text-lg text-charcoal dark:text-white">
-                {item.organization}
-              </h3>
-              <div className="flex items-center gap-1.5 text-xs font-mono text-charcoal/50 dark:text-white/40 mt-1">
-                <MapPin className="w-3 h-3 text-forest dark:text-lime" />
-                <span>{item.location}</span>
-              </div>
-              <div className="mt-3">
-                <span className="inline-block px-2.5 py-0.5 rounded-full bg-[#f0eee6] dark:bg-[#1f212a] text-[10px] font-mono text-charcoal/80 dark:text-white/80 border border-black/5 dark:border-white/5">
-                  {item.typeBadge}
-                </span>
-              </div>
-            </div>
+      {/* Animated Vertical Timeline Container */}
+      <div ref={containerRef} className="relative pl-6 sm:pl-10 md:pl-16">
+        {/* Background Inactive Line */}
+        <div className="absolute left-2 sm:left-4 md:left-6 top-4 bottom-4 w-[2px] bg-[#171816]/10 dark:bg-[#F4F3EE]/10" />
 
-            {/* Role, Description, & Key Responsibilities (8 cols) */}
-            <div className="lg:col-span-8 flex flex-col justify-between">
-              <div>
-                <h4 className="font-display font-bold text-xl text-charcoal dark:text-white mb-2">
-                  {item.role}
-                </h4>
-                <p className="text-sm text-charcoal/80 dark:text-white/80 leading-relaxed mb-4">
-                  {item.description}
-                </p>
+        {/* Animated Active Line */}
+        <motion.div
+          style={{ scaleY, transformOrigin: "top" }}
+          className="absolute left-2 sm:left-4 md:left-6 top-4 bottom-4 w-[2px] bg-[#C8F169]"
+        />
 
-                {/* Bullet points */}
-                <ul className="space-y-1.5 font-mono text-xs text-charcoal/70 dark:text-white/70">
-                  {item.responsibilities.map((resp, rIdx) => (
-                    <li key={rIdx} className="flex items-start gap-2">
-                      <span className="text-forest dark:text-lime font-bold">›</span>
-                      <span>{resp}</span>
-                    </li>
-                  ))}
-                </ul>
+        {/* Timeline Entries with Spotlight Dimming */}
+        <div className="group/timeline space-y-10 sm:space-y-12">
+          {experiences.map((item, idx) => (
+            <motion.article
+              key={item.id}
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, margin: "-10%" }}
+              transition={{ duration: DURATION.slow, ease: EASINGS.editorial, delay: idx * 0.1 }}
+              className="relative p-7 sm:p-10 rounded-3xl bg-white dark:bg-[#1C1F1A] border border-[#171816]/10 dark:border-[#F4F3EE]/10 shadow-xl transition-all duration-300 group-hover/timeline:opacity-40 hover:!opacity-100 hover:border-[#171816]/30 dark:hover:border-[#C8F169]/40"
+            >
+              {/* Timeline Indicator Dot */}
+              <div className="absolute -left-6 sm:-left-10 md:-left-16 top-9 -translate-x-1/2 w-4 h-4 rounded-full bg-[#F4F3EE] dark:bg-[#111310] border-2 border-[#171816] dark:border-[#C8F169] flex items-center justify-center">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#C8F169]" />
               </div>
-            </div>
-          </motion.div>
-        ))}
+
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                {/* Period, Org & Location (5 cols) */}
+                <div className="lg:col-span-5 flex flex-col justify-start">
+                  <span className="font-mono text-xs font-bold text-[#171816] dark:text-[#C8F169] uppercase tracking-wider mb-1">
+                    {item.period}
+                  </span>
+                  <h3 className="font-display font-black text-xl sm:text-2xl text-[#171816] dark:text-[#F4F3EE] tracking-tight">
+                    {item.organization}
+                  </h3>
+                  <div className="flex items-center gap-1.5 text-xs font-mono text-[#777970] dark:text-[#A1A49A] mt-1.5">
+                    <MapPin className="w-3.5 h-3.5 text-[#171816] dark:text-[#C8F169]" />
+                    <span>{item.location}</span>
+                  </div>
+                  <div className="mt-3">
+                    <span className="inline-block px-3 py-1 rounded-full bg-[#E9E8E1] dark:bg-[#111310] text-[11px] font-mono text-[#171816] dark:text-[#F4F3EE] font-semibold border border-[#171816]/5 dark:border-[#F4F3EE]/5">
+                      {item.typeBadge}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Role, Description, & Responsibilities (7 cols) */}
+                <div className="lg:col-span-7 flex flex-col justify-between">
+                  <div>
+                    <h4 className="font-display font-bold text-lg sm:text-xl text-[#171816] dark:text-[#F4F3EE] mb-2">
+                      {item.role}
+                    </h4>
+                    <p className="text-sm text-[#171816]/80 dark:text-[#F4F3EE]/80 leading-relaxed mb-4">
+                      {item.description}
+                    </p>
+
+                    {/* Responsibilities list */}
+                    <ul className="space-y-2 font-mono text-xs text-[#777970] dark:text-[#A1A49A]">
+                      {item.responsibilities.map((resp, rIdx) => (
+                        <li key={rIdx} className="flex items-start gap-2.5">
+                          <span className="text-[#171816] dark:text-[#C8F169] font-bold">›</span>
+                          <span className="text-[#171816]/90 dark:text-[#F4F3EE]/90">{resp}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </motion.article>
+          ))}
+        </div>
       </div>
     </section>
   );
 }
-

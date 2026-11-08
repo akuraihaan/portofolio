@@ -3,6 +3,9 @@
 import { type Bundle } from "@/lib/data";
 import { text, safeHref } from "@/lib/domain";
 import { ThemeProvider } from "./ThemeContext";
+import { MotionProvider } from "../motion/MotionProvider";
+import { CursorFollower } from "../motion/CursorFollower";
+import { Preloader } from "../motion/Preloader";
 import { EditorialNavbar } from "./EditorialNavbar";
 import { EditorialHero } from "./EditorialHero";
 import { EditorialAbout } from "./EditorialAbout";
@@ -188,71 +191,77 @@ export function EditorialMain({ bundle }: EditorialMainProps) {
 
   return (
     <ThemeProvider>
-      <div className="relative min-h-screen bg-[#faf8f5] dark:bg-[#0c0d10] text-charcoal dark:text-dark-text font-sans selection:bg-forest dark:selection:bg-lime selection:text-white dark:selection:text-charcoal transition-colors duration-300">
-        {/* Navigation */}
-        <EditorialNavbar />
+      <MotionProvider>
+        {/* Preloader & Magnetic Custom Cursor */}
+        <Preloader />
+        <CursorFollower />
 
-        {/* Main Content Sections */}
-        <main id="main">
-          {/* B. Hero Section */}
-          <EditorialHero
-            name={ownerName}
-            avatarUrl={avatarUrl}
-            resumeUrl={resumeUrl}
-          />
+        <div className="relative min-h-screen bg-[#F4F3EE] dark:bg-[#111310] text-[#171816] dark:text-[#F4F3EE] font-sans selection:bg-[#C8F169] selection:text-[#171816] transition-colors duration-300">
+          {/* Navigation */}
+          <EditorialNavbar />
 
-          {/* C. About Section (01 / ABOUT) */}
-          <EditorialAbout
-            avatarUrl={avatarUrl}
-            ownerName={ownerName}
-            stats={{
-              projectsCount: dbProjects.length > 0 ? dbProjects.length : 6,
-              certificatesCount: dbCerts.length > 0 ? dbCerts.length : 6,
-              gpa: "3.54",
-              graduationYear: "2026",
-            }}
-          />
+          {/* Main Content Sections */}
+          <main id="main">
+            {/* B. Hero Section */}
+            <EditorialHero
+              name={ownerName}
+              avatarUrl={avatarUrl}
+              resumeUrl={resumeUrl}
+            />
 
-          {/* D. Skills Section (02 / SKILLS) */}
-          <EditorialSkills
-            initialCategories={dbSkillCategories}
-          />
+            {/* C. About Section (01 / ABOUT) */}
+            <EditorialAbout
+              avatarUrl={avatarUrl}
+              ownerName={ownerName}
+              stats={{
+                projectsCount: dbProjects.length > 0 ? dbProjects.length : 6,
+                certificatesCount: dbCerts.length > 0 ? dbCerts.length : 6,
+                gpa: "3.54",
+                graduationYear: "2026",
+              }}
+            />
 
-          {/* E. Featured Projects (03 / SELECTED WORKS) */}
-          <EditorialProjects
-            initialProjects={dbProjects.length > 0 ? dbProjects : undefined}
-          />
+            {/* D. Skills Section (02 / SKILLS) */}
+            <EditorialSkills
+              initialCategories={dbSkillCategories}
+            />
 
-          {/* F. Experience Section (04 / EXPERIENCE) */}
-          <EditorialExperience
-            initialExperiences={dbExperiences.length > 0 ? dbExperiences : undefined}
-          />
+            {/* E. Featured Projects (03 / SELECTED WORKS) */}
+            <EditorialProjects
+              initialProjects={dbProjects.length > 0 ? dbProjects : undefined}
+            />
 
-          {/* G. Education Section (05 / EDUCATION) */}
-          <EditorialEducation
-            initialEducation={dbEducation}
-          />
+            {/* F. Experience Section (04 / EXPERIENCE) */}
+            <EditorialExperience
+              initialExperiences={dbExperiences.length > 0 ? dbExperiences : undefined}
+            />
 
-          {/* H. Certificates & Achievements (06 / AWARDS & CREDENTIALS) */}
-          <EditorialCertificates
-            initialCertificates={dbCerts.length > 0 ? dbCerts : undefined}
-          />
+            {/* G. Education Section (05 / EDUCATION) */}
+            <EditorialEducation
+              initialEducation={dbEducation}
+            />
 
-          {/* I. Contact Section (07 / CONTACT) */}
-          <EditorialContact
-            ownerEmail={ownerEmail}
-            ownerLocation={ownerLocation}
+            {/* H. Certificates & Achievements (06 / AWARDS & CREDENTIALS) */}
+            <EditorialCertificates
+              initialCertificates={dbCerts.length > 0 ? dbCerts : undefined}
+            />
+
+            {/* I. Contact Section (07 / CONTACT) */}
+            <EditorialContact
+              ownerEmail={ownerEmail}
+              ownerLocation={ownerLocation}
+              ownerName={ownerName}
+              socialLinks={dbSocial.length > 0 ? dbSocial : undefined}
+            />
+          </main>
+
+          {/* J. Footer */}
+          <EditorialFooter
             ownerName={ownerName}
             socialLinks={dbSocial.length > 0 ? dbSocial : undefined}
           />
-        </main>
-
-        {/* J. Footer */}
-        <EditorialFooter
-          ownerName={ownerName}
-          socialLinks={dbSocial.length > 0 ? dbSocial : undefined}
-        />
-      </div>
+        </div>
+      </MotionProvider>
     </ThemeProvider>
   );
 }
