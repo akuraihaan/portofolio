@@ -18,58 +18,61 @@ export function BrandPreloader({ onComplete }: BrandPreloaderProps) {
   useEffect(() => {
     setIsMounted(true);
 
-    // If user has already seen bumper in this session, skip immediately
-    const hasSeen = sessionStorage.getItem("bworiey_brand_bumper_seen");
-    if (hasSeen) {
-      setIsFinished(true);
-      onComplete?.();
-      return;
+    // If already seen in this session, skip immediately
+    try {
+      const hasSeen = sessionStorage.getItem("bworiey_brand_bumper_seen");
+      if (hasSeen) {
+        setIsFinished(true);
+        onComplete?.();
+        return;
+      }
+    } catch {
+      // sessionStorage might fail in strict private mode
     }
 
-    // Lock body scrolling while bumper is active
+    // Lock body scrolling temporarily
     const originalOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
 
-    // If user prefers reduced motion, show a quick elegant fade (1.0s)
     if (prefersReduced) {
       const reducedTimer = setTimeout(() => {
-        sessionStorage.setItem("bworiey_brand_bumper_seen", "true");
+        try {
+          sessionStorage.setItem("bworiey_brand_bumper_seen", "true");
+        } catch {}
         document.body.style.overflow = originalOverflow;
         setIsFinished(true);
         onComplete?.();
-      }, 1000);
+      }, 600);
       return () => {
         clearTimeout(reducedTimer);
         document.body.style.overflow = originalOverflow;
       };
     }
 
-    // Stage 1: Initial dot appearance (0ms)
-    // Stage 2: Logo assembly starts at 300ms
+    // Stage 1 -> Stage 2: Logo assembly starts at 180ms
     const timerAssembly = setTimeout(() => {
       setStage("assembly");
-    }, 300);
+    }, 180);
 
-    // Stage 3: Brand bumper with line & subtext at 950ms
+    // Stage 2 -> Stage 3: Accent line & subtitle at 550ms
     const timerBumper = setTimeout(() => {
       setStage("bumper");
-    }, 950);
+    }, 550);
 
-    // Stage 4: Exit transition at 2000ms
-    const timerExit = setTimeout(async () => {
-      if (document.fonts) {
-        await document.fonts.ready;
-      }
+    // Stage 3 -> Stage 4: Trigger exit curtain at 1150ms (never hang on external assets)
+    const timerExit = setTimeout(() => {
       setStage("exit");
 
-      // Complete exit after curtain transition finishes
+      // Mark complete once curtain has animated away
       setTimeout(() => {
-        sessionStorage.setItem("bworiey_brand_bumper_seen", "true");
+        try {
+          sessionStorage.setItem("bworiey_brand_bumper_seen", "true");
+        } catch {}
         document.body.style.overflow = originalOverflow;
         setIsFinished(true);
         onComplete?.();
-      }, 650);
-    }, 2000);
+      }, 450);
+    }, 1150);
 
     return () => {
       clearTimeout(timerAssembly);
@@ -81,14 +84,13 @@ export function BrandPreloader({ onComplete }: BrandPreloaderProps) {
 
   if (!isMounted || isFinished) return null;
 
-  // Staggered variants for letter assembly
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.065,
-        delayChildren: 0.05,
+        staggerChildren: 0.05,
+        delayChildren: 0.02,
       },
     },
   };
@@ -96,9 +98,9 @@ export function BrandPreloader({ onComplete }: BrandPreloaderProps) {
   const letterVariants = {
     hidden: {
       opacity: 0,
-      y: 20,
-      scale: 0.9,
-      filter: "blur(6px)",
+      y: 18,
+      scale: 0.92,
+      filter: "blur(4px)",
     },
     visible: {
       opacity: 1,
@@ -106,8 +108,9 @@ export function BrandPreloader({ onComplete }: BrandPreloaderProps) {
       scale: 1,
       filter: "blur(0px)",
       transition: {
-        duration: 0.42,
-        ease: [0.16, 1, 0.3, 1] as const,
+        type: "spring" as const,
+        damping: 18,
+        stiffness: 260,
       },
     },
   };
@@ -118,16 +121,21 @@ export function BrandPreloader({ onComplete }: BrandPreloaderProps) {
         <motion.div
           key="brand-bumper-overlay"
           initial={{ clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)", opacity: 1 }}
-          animate={{
-            clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)",
-            opacity: 1,
-          }}
-          exit={{
-            clipPath: "polygon(0 0, 100% 0, 100% 0, 0 0)",
-            opacity: 0,
-            transition: { duration: 0.65, ease: [0.76, 0, 0.24, 1] as const },
-          }}
-          className="fixed inset-0 z-[99999] bg-[#0E1013] text-[#F4F3EE] flex flex-col items-center justify-center p-6 select-none overflow-hidden"
+          animate={
+            stage === "exit"
+              ? {
+                  clipPath: "polygon(0 0, 100% 0, 100% 0, 0 0)",
+                  opacity: 0,
+                  transition: { duration: 0.45, ease: [0.76, 0, 0.24, 1] as const },
+                }
+              : {
+                  clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)",
+                  opacity: 1,
+                }
+          }
+          className={`fixed inset-0 z-[99999] bg-[#0E1013] text-[#F4F3EE] flex flex-col items-center justify-center p-6 select-none overflow-hidden ${
+            stage === "exit" ? "pointer-events-none" : ""
+          }`}
           style={{ willChange: "clip-path, opacity" }}
         >
           {/* Subtle Ambient Background Grid */}
@@ -150,7 +158,7 @@ export function BrandPreloader({ onComplete }: BrandPreloaderProps) {
                   initial={{ scale: 0, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   exit={{ scale: 1.8, opacity: 0 }}
-                  transition={{ duration: 0.3, ease: "easeOut" }}
+                  transition={{ duration: 0.25, ease: "easeOut" }}
                   className="w-3.5 h-3.5 bg-[#C8F169] rounded-none shadow-[0_0_16px_#C8F169]"
                 />
               )}
@@ -172,7 +180,7 @@ export function BrandPreloader({ onComplete }: BrandPreloaderProps) {
                     style={{
                       textShadow:
                         stage === "bumper"
-                          ? "0 4px 24px rgba(200, 241, 105, 0.18)"
+                          ? "0 4px 24px rgba(200, 241, 105, 0.22)"
                           : "none",
                     }}
                   >
@@ -182,31 +190,27 @@ export function BrandPreloader({ onComplete }: BrandPreloaderProps) {
               </motion.div>
             )}
 
-            {/* Stage 3: Accent Line & Subtext */}
-            <AnimatePresence>
-              {(stage === "bumper" || stage === "exit") && (
-                <motion.div
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] as const }}
-                  className="flex flex-col items-center mt-3 sm:mt-4 w-full"
-                >
-                  {/* Expanding Thin Accent Line */}
-                  <motion.div
-                    initial={{ width: 0 }}
-                    animate={{ width: "100%" }}
-                    transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] as const }}
-                    className="h-[2px] bg-[#C8F169] w-48 sm:w-64 max-w-full mb-3 opacity-90 shadow-[0_0_8px_rgba(200,241,105,0.4)]"
-                  />
+            {/* Stage 3: Expanding Accent Divider Line */}
+            {stage === "bumper" && (
+              <motion.div
+                initial={{ scaleX: 0, opacity: 0 }}
+                animate={{ scaleX: 1, opacity: 1 }}
+                transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] as const }}
+                className="h-[2px] bg-[#C8F169] w-48 sm:w-64 max-w-full my-3.5 sm:my-4 origin-center shadow-[0_0_10px_rgba(200,241,105,0.6)]"
+              />
+            )}
 
-                  {/* Clean Digital Subtitle */}
-                  <span className="font-mono text-[9px] sm:text-[11px] font-bold text-[#A1A49A] uppercase tracking-[0.3em] pl-[0.3em]">
-                    PORTFOLIO / DEVELOPER
-                  </span>
-                </motion.div>
-              )}
-            </AnimatePresence>
+            {/* Stage 3: Monospace Subtitle */}
+            {stage === "bumper" && (
+              <motion.span
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: 0.1, ease: "easeOut" }}
+                className="font-mono text-[9px] sm:text-[11px] font-bold text-[#A1A49A] uppercase tracking-[0.3em] pl-[0.3em]"
+              >
+                PORTFOLIO / DEVELOPER
+              </motion.span>
+            )}
           </div>
         </motion.div>
       )}

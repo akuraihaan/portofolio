@@ -3,13 +3,13 @@ import React from "react";
 export default function Loading() {
   return (
     <div
-      className="fixed inset-0 z-[99999] bg-[#0E1013] text-[#F4F3EE] flex flex-col items-center justify-center p-6 select-none overflow-hidden"
+      className="fixed inset-0 z-[99999] bg-[#0E1013] text-[#F4F3EE] flex flex-col items-center justify-center p-6 select-none overflow-hidden pointer-events-none"
       role="status"
       aria-label="Memuat BWORIEY Portfolio"
     >
       {/* Subtle Background Grid */}
       <div
-        className="absolute inset-0 pointer-events-none opacity-20"
+        className="absolute inset-0 opacity-20 pointer-events-none"
         style={{
           backgroundImage:
             "linear-gradient(to right, rgba(200, 241, 105, 0.08) 1px, transparent 1px), linear-gradient(to bottom, rgba(200, 241, 105, 0.08) 1px, transparent 1px)",
@@ -26,8 +26,8 @@ export default function Loading() {
               key={i}
               className="inline-block animate-pulse"
               style={{
-                animationDelay: `${i * 90}ms`,
-                animationDuration: "1.4s",
+                animationDelay: `${i * 80}ms`,
+                animationDuration: "1.2s",
               }}
             >
               {char}
@@ -37,8 +37,8 @@ export default function Loading() {
 
         {/* Expanding Accent Line */}
         <div
-          className="h-[2px] bg-[#C8F169] w-48 sm:w-64 max-w-full my-3.5 sm:my-4 opacity-90 animate-pulse"
-          style={{ animationDuration: "1.8s" }}
+          className="h-[2px] bg-[#C8F169] w-48 sm:w-64 max-w-full my-3.5 sm:my-4 opacity-90 animate-pulse shadow-[0_0_12px_#C8F169]"
+          style={{ animationDuration: "1.6s" }}
         />
 
         {/* Subtitle */}
