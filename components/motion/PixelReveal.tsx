@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 
 interface PixelRevealProps {
@@ -10,6 +10,10 @@ interface PixelRevealProps {
   direction?: "up" | "down" | "left" | "right";
 }
 
+/**
+ * PixelReveal guarantees that server-rendered HTML is 100% visible immediately,
+ * eliminating empty-page flashes. On client mount, it applies a subtle fluid lift.
+ */
 export function PixelReveal({
   children,
   className = "",
@@ -17,27 +21,24 @@ export function PixelReveal({
   direction = "up",
 }: PixelRevealProps) {
   const prefersReduced = useReducedMotion();
+  const [mounted, setMounted] = useState(false);
 
-  if (prefersReduced) {
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // During SSR and initial paint, render plain visible DOM with zero opacity:0 style
+  if (prefersReduced || !mounted) {
     return <div className={className}>{children}</div>;
   }
 
-  const offset = 24;
-  const initialPos = {
-    up: { y: offset, x: 0 },
-    down: { y: -offset, x: 0 },
-    left: { x: offset, y: 0 },
-    right: { x: -offset, y: 0 },
-  }[direction];
-
   return (
     <motion.div
-      initial={{ opacity: 0, ...initialPos }}
-      whileInView={{ opacity: 1, x: 0, y: 0 }}
-      viewport={{ once: true, margin: "-40px" }}
+      initial={{ opacity: 0.85, y: direction === "up" ? 10 : 0 }}
+      animate={{ opacity: 1, y: 0 }}
       transition={{
-        duration: 0.5,
-        delay,
+        duration: 0.3,
+        delay: Math.min(delay, 0.15),
         ease: [0.16, 1, 0.3, 1],
       }}
       className={className}
@@ -46,4 +47,3 @@ export function PixelReveal({
     </motion.div>
   );
 }
-
