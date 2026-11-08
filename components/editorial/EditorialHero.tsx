@@ -1,7 +1,8 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { ArrowDownRight, ArrowUpRight, MessageSquare, Terminal, FileDown, CheckCircle2 } from "lucide-react";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ArrowDownRight, MessageSquare, Terminal, FileDown, CheckCircle2, Sparkles, Code2, MapPin } from "lucide-react";
 
 interface EditorialHeroProps {
   name?: string;
@@ -9,11 +10,27 @@ interface EditorialHeroProps {
   resumeUrl?: string;
 }
 
+const typewriterRoles = [
+  "Web Developer",
+  "Software Developer",
+  "Computer Education Graduate",
+  "Cloud & Tech Enthusiast",
+];
+
 export function EditorialHero({
   name = "Taufik Raihandani",
   avatarUrl = null,
   resumeUrl = "#contact",
 }: EditorialHeroProps) {
+  const [roleIndex, setRoleIndex] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setRoleIndex((prev) => (prev + 1) % typewriterRoles.length);
+    }, 2800);
+    return () => clearInterval(timer);
+  }, []);
+
   const scrollTo = (id: string) => {
     const el = document.getElementById(id);
     if (el) el.scrollIntoView({ behavior: "smooth" });
@@ -29,7 +46,7 @@ export function EditorialHero({
         GRID / REF 001-A
       </div>
       <div className="absolute top-12 right-12 text-[10px] font-mono text-charcoal/20 dark:text-white/20 select-none hidden lg:block">
-        LAT -3.3167 / LON 114.5900
+        LAT -3.3167 / LON 114.5900 · BANJARMASIN, ID
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
@@ -53,7 +70,7 @@ export function EditorialHero({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="font-display text-4xl sm:text-6xl md:text-7xl font-bold tracking-tight text-charcoal dark:text-white leading-[1.08] mb-6"
+            className="font-display text-4xl sm:text-6xl md:text-7xl font-bold tracking-tight text-charcoal dark:text-white leading-[1.08] mb-4"
           >
             Building useful things through{" "}
             <span className="relative inline-block text-forest dark:text-white underline decoration-lime decoration-4 underline-offset-4">
@@ -62,12 +79,36 @@ export function EditorialHero({
             and curiosity.
           </motion.h1>
 
+          {/* Dynamic Framer Motion Typewriter Role Badge */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.4, delay: 0.15 }}
+            className="h-8 flex items-center mb-4"
+          >
+            <span className="font-mono text-xs text-charcoal/40 dark:text-white/40 mr-2 uppercase">
+              Specialization:
+            </span>
+            <AnimatePresence mode="wait">
+              <motion.span
+                key={typewriterRoles[roleIndex]}
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.25 }}
+                className="font-mono text-sm sm:text-base font-bold text-forest dark:text-lime px-2 py-0.5 rounded bg-forest/5 dark:bg-lime/10 border border-forest/15 dark:border-lime/25"
+              >
+                {typewriterRoles[roleIndex]}
+              </motion.span>
+            </AnimatePresence>
+          </motion.div>
+
           {/* Subheadline */}
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="text-lg sm:text-xl font-normal text-charcoal/80 dark:text-white/90 leading-snug mb-4 max-w-2xl"
+            className="text-lg sm:text-xl font-normal text-charcoal/80 dark:text-white/90 leading-snug mb-3 max-w-2xl"
           >
             Computer Education graduate with an interest in web development, software engineering, and technology-driven learning experiences.
           </motion.p>
@@ -117,19 +158,19 @@ export function EditorialHero({
           </motion.div>
         </div>
 
-        {/* Right Column: Abstract Digital Composition & Metadata Frame (5 cols) */}
+        {/* Right Column: Profile Frame & Structured Digital Identity (5 cols) */}
         <div className="lg:col-span-5 flex justify-center">
           <motion.div
             initial={{ opacity: 0, scale: 0.96 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="w-full max-w-md rounded-2xl bg-white dark:bg-[#14151b] border border-[#e4e1d7] dark:border-[#222530] p-6 shadow-editorial dark:shadow-none relative overflow-hidden"
+            className="w-full max-w-md rounded-3xl bg-white dark:bg-[#14151b] border border-[#e4e1d7] dark:border-[#222530] p-6 sm:p-7 shadow-editorial dark:shadow-none relative overflow-hidden"
           >
             {/* Window header */}
             <div className="flex items-center justify-between pb-4 border-b border-black/5 dark:border-white/10 mb-5">
               <div className="flex items-center gap-2 font-mono text-xs text-charcoal/70 dark:text-white/70">
                 <Terminal className="w-3.5 h-3.5 text-forest dark:text-lime" />
-                <span>bworiey.terminal // sysinfo</span>
+                <span>bworiey // verified identity</span>
               </div>
               <div className="flex items-center gap-1.5">
                 <span className="w-2.5 h-2.5 rounded-full bg-black/10 dark:bg-white/20"></span>
@@ -138,10 +179,38 @@ export function EditorialHero({
               </div>
             </div>
 
+            {/* Profile Avatar / Monogram Header Card */}
+            <div className="flex items-center gap-4 p-4 rounded-2xl bg-[#faf8f5] dark:bg-[#0c0d10] border border-black/5 dark:border-white/5 mb-4">
+              {avatarUrl ? (
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img
+                  src={avatarUrl}
+                  alt={name}
+                  className="w-16 h-16 rounded-2xl object-cover border border-black/10 dark:border-white/10 shadow-sm"
+                />
+              ) : (
+                <div className="w-16 h-16 rounded-2xl bg-forest/10 dark:bg-lime/20 border-2 border-forest/20 dark:border-lime/30 flex items-center justify-center text-xl font-display font-bold text-forest dark:text-lime shadow-sm">
+                  TR
+                </div>
+              )}
+              <div>
+                <h3 className="font-display font-bold text-base text-charcoal dark:text-white">
+                  {name}
+                </h3>
+                <span className="font-mono text-xs text-charcoal/60 dark:text-white/60 block">
+                  @bworiey · S.Pd. Komputer
+                </span>
+                <div className="flex items-center gap-1.5 mt-1 font-mono text-[10px] text-forest dark:text-lime font-bold">
+                  <span className="w-1.5 h-1.5 rounded-full bg-forest dark:bg-lime animate-pulse"></span>
+                  <span>Siap Kolaborasi</span>
+                </div>
+              </div>
+            </div>
+
             {/* Structured Digital Credentials & Specs */}
-            <div className="space-y-3.5 font-mono text-xs">
+            <div className="space-y-3 font-mono text-xs">
               <div className="p-3 rounded-xl bg-[#faf8f5] dark:bg-[#0c0d10] border border-black/5 dark:border-white/5">
-                <span className="text-[10px] text-charcoal/50 dark:text-white/40 uppercase tracking-wider block mb-1">
+                <span className="text-[10px] text-charcoal/50 dark:text-white/40 uppercase tracking-wider block mb-0.5">
                   01 // Academic Credential
                 </span>
                 <div className="text-charcoal dark:text-white font-semibold">
@@ -156,7 +225,7 @@ export function EditorialHero({
               </div>
 
               <div className="p-3 rounded-xl bg-[#faf8f5] dark:bg-[#0c0d10] border border-black/5 dark:border-white/5">
-                <span className="text-[10px] text-charcoal/50 dark:text-white/40 uppercase tracking-wider block mb-1">
+                <span className="text-[10px] text-charcoal/50 dark:text-white/40 uppercase tracking-wider block mb-0.5">
                   02 // National Tech Program
                 </span>
                 <div className="text-charcoal dark:text-white font-semibold">
@@ -168,7 +237,7 @@ export function EditorialHero({
               </div>
 
               <div className="p-3 rounded-xl bg-[#faf8f5] dark:bg-[#0c0d10] border border-black/5 dark:border-white/5">
-                <span className="text-[10px] text-charcoal/50 dark:text-white/40 uppercase tracking-wider block mb-1">
+                <span className="text-[10px] text-charcoal/50 dark:text-white/40 uppercase tracking-wider block mb-0.5">
                   03 // Core Focus & Research
                 </span>
                 <div className="text-charcoal dark:text-white font-semibold">
@@ -194,4 +263,3 @@ export function EditorialHero({
     </section>
   );
 }
-

@@ -1,18 +1,29 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { GraduationCap, Award, BookOpen, Layers, CheckCircle, MapPin, Compass } from "lucide-react";
+import { GraduationCap, Award, BookOpen, Layers, CheckCircle2, MapPin, Compass, Sparkles, Code2 } from "lucide-react";
 
-export function EditorialAbout() {
-  const quickFacts = [
-    { label: "Education", value: "Computer Education (S.Pd.)" },
-    { label: "University", value: "Universitas Lambung Mangkurat" },
-    { label: "Graduation", value: "2026 · Status: Lulus" },
-    { label: "Academic GPA", value: "3.54 / 4.00" },
-    { label: "Primary Focus", value: "Web & Software Development" },
-    { label: "Location", value: "Banjarmasin, Kalimantan Selatan" },
-  ];
+interface EditorialAboutProps {
+  avatarUrl?: string | null;
+  ownerName?: string;
+  stats?: {
+    projectsCount: number;
+    certificatesCount: number;
+    gpa: string;
+    graduationYear: string;
+  };
+}
 
+export function EditorialAbout({
+  avatarUrl = null,
+  ownerName = "Taufik Raihandani",
+  stats = {
+    projectsCount: 6,
+    certificatesCount: 6,
+    gpa: "3.54",
+    graduationYear: "2026",
+  },
+}: EditorialAboutProps) {
   return (
     <section
       id="about"
@@ -26,7 +37,7 @@ export function EditorialAbout() {
           </span>
           <span className="h-px w-8 bg-black/15 dark:bg-white/20"></span>
           <span className="font-mono text-xs text-charcoal/50 dark:text-white/40">
-            PROFILE & PHILOSOPHY
+            DISCOVER PROFILE
           </span>
         </div>
         <span className="font-mono text-[11px] text-charcoal/40 dark:text-white/40">
@@ -34,110 +45,190 @@ export function EditorialAbout() {
         </span>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
-        {/* Left Column: Headline and In-depth Natural Narrative (7 cols) */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-start">
+        {/* Left Column: Authentic Portrait Card matching resturhmn.me layout (5 cols) */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="lg:col-span-5 flex flex-col items-center justify-center"
+        >
+          <div className="w-full max-w-[380px] relative">
+            {/* Aspect-[4/5] Profile Card with Corner Accents */}
+            <div className="relative z-10 p-3 bg-white dark:bg-[#14151b] border border-[#e4e1d7] dark:border-[#222530] rounded-3xl shadow-editorial dark:shadow-none overflow-hidden aspect-[4/5] w-full group transition-all duration-500 hover:border-black/25 dark:hover:border-white/25">
+              {/* Corner crosshairs (+) matching reference styling */}
+              <div className="absolute top-4 left-4 z-20 font-mono text-xs text-charcoal/30 dark:text-white/30 pointer-events-none select-none">+</div>
+              <div className="absolute top-4 right-4 z-20 font-mono text-xs text-charcoal/30 dark:text-white/30 pointer-events-none select-none">+</div>
+              <div className="absolute bottom-4 left-4 z-20 font-mono text-xs text-charcoal/30 dark:text-white/30 pointer-events-none select-none">+</div>
+              <div className="absolute bottom-4 right-4 z-20 font-mono text-xs text-charcoal/30 dark:text-white/30 pointer-events-none select-none">+</div>
+
+              {/* Media Container */}
+              <div className="relative w-full h-full rounded-2xl overflow-hidden bg-[#faf8f5] dark:bg-[#0c0d10] border border-black/5 dark:border-white/5 flex flex-col items-center justify-center p-6 text-center">
+                {avatarUrl ? (
+                  /* eslint-disable-next-line @next/next/no-img-element */
+                  <img
+                    src={avatarUrl}
+                    alt={ownerName}
+                    className="w-full h-full object-cover rounded-2xl transition-all duration-700 group-hover:scale-105"
+                  />
+                ) : (
+                  <div className="w-full h-full flex flex-col items-center justify-center transition-transform duration-500 group-hover:scale-105">
+                    <div className="w-24 h-24 rounded-full bg-forest/10 dark:bg-lime/20 border-2 border-forest/20 dark:border-lime/30 flex items-center justify-center text-3xl font-display font-bold text-forest dark:text-lime mb-4 shadow-sm">
+                      TR
+                    </div>
+                    <h3 className="font-display font-bold text-xl text-charcoal dark:text-white">
+                      {ownerName}
+                    </h3>
+                    <p className="font-mono text-xs text-forest dark:text-lime mt-1 font-semibold">
+                      Web & Software Developer
+                    </p>
+                    <p className="font-mono text-[11px] text-charcoal/50 dark:text-white/40 mt-1">
+                      Universitas Lambung Mangkurat
+                    </p>
+                  </div>
+                )}
+
+                {/* Floating Bottom Inset Pill */}
+                <div className="absolute bottom-4 left-4 right-4 p-2.5 rounded-xl bg-white/90 dark:bg-[#14151b]/90 border border-black/10 dark:border-white/10 backdrop-blur-md flex items-center justify-between text-xs font-mono">
+                  <span className="flex items-center gap-1.5 text-charcoal/80 dark:text-white/80">
+                    <span className="w-2 h-2 rounded-full bg-forest dark:bg-lime"></span>
+                    S.Pd. Komputer
+                  </span>
+                  <span className="font-bold text-forest dark:text-lime">Lulus 2026</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Quick Metrics Bar below card */}
+            <div className="grid grid-cols-3 gap-2 text-center pt-3 mt-1">
+              <div className="p-3 rounded-2xl bg-white dark:bg-[#14151b] border border-[#e4e1d7] dark:border-[#222530]">
+                <span className="font-display font-bold text-base text-charcoal dark:text-white block">
+                  {stats.projectsCount}+
+                </span>
+                <span className="font-mono text-[10px] text-charcoal/50 dark:text-white/40 uppercase">
+                  Proyek
+                </span>
+              </div>
+              <div className="p-3 rounded-2xl bg-white dark:bg-[#14151b] border border-[#e4e1d7] dark:border-[#222530]">
+                <span className="font-display font-bold text-base text-charcoal dark:text-white block">
+                  {stats.certificatesCount}+
+                </span>
+                <span className="font-mono text-[10px] text-charcoal/50 dark:text-white/40 uppercase">
+                  Sertifikat
+                </span>
+              </div>
+              <div className="p-3 rounded-2xl bg-white dark:bg-[#14151b] border border-[#e4e1d7] dark:border-[#222530]">
+                <span className="font-display font-bold text-base text-forest dark:text-lime block">
+                  {stats.gpa}
+                </span>
+                <span className="font-mono text-[10px] text-charcoal/50 dark:text-white/40 uppercase">
+                  IPK Lulus
+                </span>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Right Column: Three Structured Narrative Cards (7 cols) */}
         <div className="lg:col-span-7 flex flex-col gap-6">
-          <motion.h2
+          <motion.div
             initial={{ opacity: 0, y: 15 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="font-display text-3xl sm:text-5xl font-bold tracking-tight text-charcoal dark:text-white leading-[1.15]"
           >
-            More than just writing code.
-          </motion.h2>
+            <h2 className="font-display text-3xl sm:text-5xl font-bold tracking-tight text-charcoal dark:text-white leading-[1.12] mb-6">
+              More than just writing code.
+            </h2>
+          </motion.div>
 
+          {/* Card 01: Who Am I */}
           <motion.div
-            initial={{ opacity: 0, y: 15 }}
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
-            className="space-y-4 text-base sm:text-lg text-charcoal/80 dark:text-white/80 leading-relaxed font-normal"
+            className="p-6 sm:p-7 rounded-2xl bg-white dark:bg-[#14151b] border border-[#e4e1d7] dark:border-[#222530] shadow-editorial dark:shadow-none hover:border-black/20 dark:hover:border-white/20 transition-all"
           >
-            <p>
+            <div className="flex items-center justify-between mb-3">
+              <span className="font-mono text-xs font-bold text-forest dark:text-lime uppercase tracking-wider">
+                01 // Who Am I
+              </span>
+              <span className="font-mono text-[11px] text-charcoal/40 dark:text-white/40">
+                Pendidikan Komputer
+              </span>
+            </div>
+            <h3 className="font-display font-bold text-xl text-charcoal dark:text-white mb-2">
+              Lulusan S.Pd. dengan Fokus Rekayasa Web & EdTech
+            </h3>
+            <p className="text-sm sm:text-base text-charcoal/80 dark:text-white/80 leading-relaxed font-normal">
               Taufik Raihandani merupakan lulusan S.Pd. Pendidikan Komputer dari Universitas Lambung Mangkurat. Memiliki pengalaman dalam pengembangan aplikasi web, pembelajaran Informatika, pengembangan teknologi pendidikan, serta kolaborasi dalam proyek teknologi.
             </p>
-            <p className="text-sm sm:text-base text-charcoal/60 dark:text-white/60">
-              Memiliki ketertarikan pada web development, software development, cloud computing, dan pengembangan pengalaman belajar berbasis teknologi. Saya memandang rekayasa perangkat lunak bukan semata susunan fungsi atau baris kode sintaks, melainkan sebuah media untuk menyederhanakan masalah nyata dan memberikan kegunaan nyata bagi penggunanya.
+            <p className="text-xs sm:text-sm text-charcoal/60 dark:text-white/60 leading-relaxed mt-2">
+              Memiliki ketertarikan pada web development, software development, cloud computing, dan pengembangan pengalaman belajar berbasis teknologi.
             </p>
           </motion.div>
 
-          {/* Three Core Principles */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 mt-2 border-t border-black/5 dark:border-white/10">
-            <div className="p-4 rounded-xl bg-[#f5f3ec] dark:bg-[#14151b] border border-black/5 dark:border-white/5">
-              <span className="font-mono text-[10px] text-forest dark:text-lime uppercase block mb-1">
-                Pilar 01
-              </span>
-              <h3 className="font-display font-bold text-sm text-charcoal dark:text-white mb-1">
-                User-Centered
-              </h3>
-              <p className="text-xs text-charcoal/60 dark:text-white/60 leading-snug">
-                Antarmuka intuitif yang mengutamakan kemudahan navigasi dan aksesibilitas.
-              </p>
-            </div>
-
-            <div className="p-4 rounded-xl bg-[#f5f3ec] dark:bg-[#14151b] border border-black/5 dark:border-white/5">
-              <span className="font-mono text-[10px] text-forest dark:text-lime uppercase block mb-1">
-                Pilar 02
-              </span>
-              <h3 className="font-display font-bold text-sm text-charcoal dark:text-white mb-1">
-                Reliable Code
-              </h3>
-              <p className="text-xs text-charcoal/60 dark:text-white/60 leading-snug">
-                Arsitektur terstruktur, standar keamanan, dan performa yang teruji.
-              </p>
-            </div>
-
-            <div className="p-4 rounded-xl bg-[#f5f3ec] dark:bg-[#14151b] border border-black/5 dark:border-white/5">
-              <span className="font-mono text-[10px] text-forest dark:text-lime uppercase block mb-1">
-                Pilar 03
-              </span>
-              <h3 className="font-display font-bold text-sm text-charcoal dark:text-white mb-1">
-                Educational Tech
-              </h3>
-              <p className="text-xs text-charcoal/60 dark:text-white/60 leading-snug">
-                Mengintegrasikan learning analytics untuk mengukur efektivitas media digital.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Right Column: Key Facts Grid & Editorial Sidebar (5 cols) */}
-        <div className="lg:col-span-5 flex flex-col gap-6">
+          {/* Card 02: My Approach */}
           <motion.div
-            initial={{ opacity: 0, y: 15 }}
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="p-6 rounded-2xl bg-white dark:bg-[#14151b] border border-[#e4e1d7] dark:border-[#222530] shadow-editorial dark:shadow-none"
+            transition={{ delay: 0.15 }}
+            className="p-6 sm:p-7 rounded-2xl bg-white dark:bg-[#14151b] border border-[#e4e1d7] dark:border-[#222530] shadow-editorial dark:shadow-none hover:border-black/20 dark:hover:border-white/20 transition-all"
           >
-            <h3 className="font-mono text-xs font-bold uppercase tracking-wider text-charcoal/50 dark:text-white/40 mb-4 pb-3 border-b border-black/5 dark:border-white/10 flex items-center justify-between">
-              <span>Personal Specifications</span>
-              <Compass className="w-3.5 h-3.5 text-forest dark:text-lime" />
+            <div className="flex items-center justify-between mb-3">
+              <span className="font-mono text-xs font-bold text-forest dark:text-lime uppercase tracking-wider">
+                02 // My Approach
+              </span>
+              <span className="font-mono text-[11px] text-charcoal/40 dark:text-white/40">
+                Metodologi Kerja
+              </span>
+            </div>
+            <h3 className="font-display font-bold text-xl text-charcoal dark:text-white mb-2">
+              User-Centered, Performa Teruji, dan Skalabilitas
             </h3>
-
-            <dl className="divide-y divide-black/5 dark:divide-white/5">
-              {quickFacts.map((fact) => (
-                <div key={fact.label} className="py-2.5 flex items-start justify-between text-xs font-mono">
-                  <dt className="text-charcoal/50 dark:text-white/40">{fact.label}</dt>
-                  <dd className="font-semibold text-charcoal dark:text-white text-right max-w-[200px]">
-                    {fact.value}
-                  </dd>
-                </div>
-              ))}
-            </dl>
+            <p className="text-sm text-charcoal/80 dark:text-white/80 leading-relaxed">
+              Memadukan pemahaman pedagogi (cara orang belajar dan berinteraksi dengan informasi) dengan ketelitian arsitektur software. Antarmuka web dibangun responsif dengan Tailwind CSS, sementara logika backend dan cloud dirancang aman, terstruktur, dan efisien.
+            </p>
           </motion.div>
 
-          {/* Context Note: Lahan Basah & Environment Relevance */}
-          <div className="p-5 rounded-2xl bg-[#eeece4] dark:bg-[#0c0d10] border border-black/5 dark:border-white/10 text-xs font-mono text-charcoal/70 dark:text-white/70">
-            <span className="text-forest dark:text-lime font-bold block mb-1">
-              // Wetland Computing Context
-            </span>
-            <p className="leading-relaxed">
-              Berkiprah di wilayah lahan basah Kalimantan Selatan menginspirasi saya dalam membangun media digital edukasi yang tanggap kebutuhan literasi daerah dan inklusif bagi seluruh lapisan pengguna.
-            </p>
-          </div>
+          {/* Card 03: Personal Details */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
+            className="p-6 sm:p-7 rounded-2xl bg-white dark:bg-[#14151b] border border-[#e4e1d7] dark:border-[#222530] shadow-editorial dark:shadow-none hover:border-black/20 dark:hover:border-white/20 transition-all font-mono text-xs"
+          >
+            <div className="flex items-center justify-between mb-4 pb-2 border-b border-black/5 dark:border-white/10">
+              <span className="font-bold text-forest dark:text-lime uppercase tracking-wider">
+                03 // Personal Specifications
+              </span>
+              <span className="text-charcoal/40 dark:text-white/40">Verified Data</span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <span className="text-charcoal/40 dark:text-white/40 block text-[10px] uppercase">Domisili</span>
+                <span className="font-bold text-charcoal dark:text-white">Banjarmasin, Kalimantan Selatan</span>
+              </div>
+              <div>
+                <span className="text-charcoal/40 dark:text-white/40 block text-[10px] uppercase">Gelar Akademik</span>
+                <span className="font-bold text-charcoal dark:text-white">S.Pd. Pendidikan Komputer</span>
+              </div>
+              <div>
+                <span className="text-charcoal/40 dark:text-white/40 block text-[10px] uppercase">Status Kelulusan</span>
+                <span className="font-bold text-forest dark:text-lime">Lulus (Graduated 2026) · GPA 3.54</span>
+              </div>
+              <div>
+                <span className="text-charcoal/40 dark:text-white/40 block text-[10px] uppercase">Kesiapan Kerja</span>
+                <span className="font-bold text-forest dark:text-lime">Tersedia untuk Peluang & Proyek</span>
+              </div>
+            </div>
+          </motion.div>
         </div>
       </div>
     </section>
   );
 }
-

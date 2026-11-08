@@ -107,7 +107,16 @@ export function EditorialMain({ bundle }: EditorialMainProps) {
           />
 
           {/* C. About Section (01 / ABOUT) */}
-          <EditorialAbout />
+          <EditorialAbout
+            avatarUrl={avatarUrl}
+            ownerName={ownerName}
+            stats={{
+              projectsCount: dbProjects.length > 0 ? dbProjects.length : 6,
+              certificatesCount: dbCerts.length > 0 ? dbCerts.length : 6,
+              gpa: "3.54",
+              graduationYear: "2026",
+            }}
+          />
 
           {/* D. Skills Section (02 / SKILLS) */}
           <EditorialSkills />

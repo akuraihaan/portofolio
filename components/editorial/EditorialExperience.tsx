@@ -100,8 +100,8 @@ export function EditorialExperience() {
         </div>
       </div>
 
-      {/* Editorial Timeline List */}
-      <div className="space-y-6">
+      {/* Editorial Timeline List with Spotlight Dimming on Hover */}
+      <div className="group/timeline flex flex-col space-y-6">
         {verifiedExperiences.map((item, idx) => (
           <motion.div
             key={item.id}
@@ -109,7 +109,7 @@ export function EditorialExperience() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: idx * 0.08 }}
-            className="p-6 sm:p-8 rounded-2xl bg-white dark:bg-[#14151b] border border-[#e4e1d7] dark:border-[#222530] shadow-editorial dark:shadow-none grid grid-cols-1 lg:grid-cols-12 gap-6 items-start"
+            className="group/item relative p-6 sm:p-8 rounded-2xl bg-white dark:bg-[#14151b] border border-[#e4e1d7] dark:border-[#222530] shadow-editorial dark:shadow-none grid grid-cols-1 lg:grid-cols-12 gap-6 items-start transition-all duration-300 group-hover/timeline:opacity-40 group-hover/timeline:blur-[0.5px] hover:!opacity-100 hover:!blur-none hover:border-black/30 dark:hover:border-white/30 hover:shadow-lg"
           >
             {/* Period & Org (4 cols) */}
             <div className="lg:col-span-4 flex flex-col justify-start">

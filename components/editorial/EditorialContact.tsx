@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
+import confetti from "canvas-confetti";
 import { Mail, Send, Copy, Check, MapPin, MessageSquare, ArrowUpRight, ShieldCheck } from "lucide-react";
 import { GithubIcon, LinkedinIcon, InstagramIcon } from "../space/SocialIcons";
 
@@ -79,6 +80,15 @@ export function EditorialContact({
         }
         throw new Error(data.error || "Layanan pesan belum dapat merespons.");
       }
+
+      try {
+        confetti({
+          particleCount: 80,
+          spread: 70,
+          origin: { y: 0.6 },
+          colors: ["#d4ff00", "#0c382f", "#141518", "#10b981"],
+        });
+      } catch {}
 
       setSubmitted(true);
       setFormData({ name: "", email: "", subject: "Kolaborasi", message: "" });
