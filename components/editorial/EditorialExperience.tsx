@@ -1,6 +1,8 @@
 "use client";
 
 import React from "react";
+import { motion, useReducedMotion } from "framer-motion";
+import { EASINGS, DURATION } from "../motion/MotionSystem";
 
 export interface ExperienceRecord {
   id: string;
@@ -80,39 +82,60 @@ export function EditorialExperience({
 }: {
   experiences?: ExperienceRecord[];
 }) {
+  const prefersReduced = useReducedMotion();
+
+  const inView = (delay = 0) =>
+    prefersReduced
+      ? {}
+      : {
+          initial: { opacity: 0, y: 20 },
+          whileInView: { opacity: 1, y: 0 },
+          viewport: { once: true, margin: "-6%" },
+          transition: { duration: DURATION.medium, delay, ease: EASINGS.editorial },
+        };
+
   return (
     <section
       id="experience"
-      className="w-full max-w-5xl mx-auto py-24 md:py-32 px-6 md:px-8 border-t border-black/[0.08] dark:border-white/[0.1]"
+      className="w-full max-w-6xl mx-auto py-24 md:py-32 px-6 md:px-8 border-t border-black/[0.08] dark:border-white/[0.1]"
     >
       {/* Section Header */}
-      <div className="flex items-center gap-3 mb-12">
-        <span className="text-xs font-semibold tracking-[0.2em] text-[#86868B] uppercase">
+      <motion.div {...inView(0)} className="flex items-center gap-3 mb-14">
+        <span className="font-mono text-[10px] font-semibold tracking-[0.2em] text-[#86868B] uppercase">
           04 / Experience
         </span>
         <div className="h-px flex-1 bg-black/[0.06] dark:bg-white/[0.08]" />
-      </div>
+      </motion.div>
 
       {/* Main Headline */}
-      <div className="mb-14">
+      <motion.div {...inView(0.06)} className="mb-14">
         <h2 className="font-display font-bold text-3xl sm:text-4xl md:text-5xl tracking-tight text-[#1D1D1F] dark:text-[#F5F5F7] max-w-2xl leading-tight mb-4">
           Professional &amp; academic milestones.
         </h2>
         <p className="text-base text-[#86868B] max-w-xl leading-relaxed">
-          Rekam jejak rekayasa perangkat lunak, peran kepemimpinan capstone cloud, dan asistensi akademik komputasi.
+          Rekam jejak rekayasa perangkat lunak, peran kepemimpinan capstone cloud, dan asistensi
+          akademik komputasi.
         </p>
-      </div>
+      </motion.div>
 
       {/* Editorial Timeline */}
-      <div className="space-y-10">
-        {experiences.map((exp) => (
-          <div
+      <div className="space-y-8">
+        {experiences.map((exp, idx) => (
+          <motion.div
             key={exp.id}
-            className="bg-[#F5F5F7] dark:bg-[#161617] rounded-3xl p-6 sm:p-8 border border-black/[0.04] dark:border-white/[0.06]"
+            initial={prefersReduced ? {} : { opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-4%" }}
+            transition={{
+              duration: DURATION.medium,
+              delay: idx * 0.08,
+              ease: EASINGS.editorial,
+            }}
+            className="bg-[#F5F5F7] dark:bg-[#161617] rounded-2xl p-6 sm:p-8 border border-black/[0.04] dark:border-white/[0.06]"
           >
             <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 pb-4 mb-4 border-b border-black/[0.06] dark:border-white/[0.08]">
               <div>
-                <h3 className="font-display font-bold text-xl sm:text-2xl text-[#1D1D1F] dark:text-[#F5F5F7]">
+                <h3 className="font-display font-bold text-lg sm:text-xl text-[#1D1D1F] dark:text-[#F5F5F7]">
                   {exp.role}
                 </h3>
                 <span className="text-sm font-medium text-[#86868B] block mt-0.5">
@@ -120,27 +143,31 @@ export function EditorialExperience({
                   {exp.location ? ` · ${exp.location}` : ""}
                 </span>
               </div>
-              <span className="text-xs font-mono text-[#86868B] self-start sm:self-auto">
-                {exp.period}
-              </span>
+              <div className="flex flex-col sm:items-end gap-1 shrink-0">
+                <span className="font-mono text-[10px] text-[#86868B] whitespace-nowrap">
+                  {exp.period}
+                </span>
+                {exp.typeBadge && (
+                  <span className="text-[10px] font-medium px-2.5 py-0.5 rounded-full bg-black/[0.06] dark:bg-white/[0.08] text-[#86868B] whitespace-nowrap">
+                    {exp.typeBadge}
+                  </span>
+                )}
+              </div>
             </div>
 
-            <p className="text-sm text-[#1D1D1F]/80 dark:text-[#F5F5F7]/80 leading-relaxed mb-5">
+            <p className="text-sm text-[#1D1D1F]/80 dark:text-[#F5F5F7]/80 leading-relaxed mb-4 font-normal">
               {exp.description}
             </p>
 
             <ul className="space-y-2">
-              {exp.responsibilities.map((r, i) => (
-                <li
-                  key={i}
-                  className="flex items-start gap-2.5 text-xs text-[#86868B] leading-relaxed"
-                >
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#1D1D1F] dark:bg-white mt-1.5 shrink-0 opacity-60" />
-                  <span>{r}</span>
+              {exp.responsibilities.map((item, i) => (
+                <li key={i} className="flex items-start gap-2.5 text-xs text-[#86868B]">
+                  <span className="font-mono text-[#86868B] mt-0.5 shrink-0">—</span>
+                  <span className="leading-relaxed">{item}</span>
                 </li>
               ))}
             </ul>
-          </div>
+          </motion.div>
         ))}
       </div>
     </section>

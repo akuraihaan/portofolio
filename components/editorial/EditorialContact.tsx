@@ -2,7 +2,9 @@
 
 import React, { useState } from "react";
 import { Mail, MapPin, Send, CheckCircle2, Copy, Check } from "lucide-react";
+import { motion, useReducedMotion } from "framer-motion";
 import { GithubIcon, LinkedinIcon, InstagramIcon } from "../space/SocialIcons";
+import { EASINGS, DURATION } from "../motion/MotionSystem";
 
 interface EditorialContactProps {
   ownerEmail?: string;
@@ -20,6 +22,8 @@ export function EditorialContact({
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({ name: "", email: "", message: "" });
+  const prefersReduced = useReducedMotion();
+  void ownerName;
 
   const handleCopyEmail = () => {
     navigator.clipboard.writeText(ownerEmail);
@@ -52,22 +56,32 @@ export function EditorialContact({
     }
   };
 
+  const inView = (delay = 0) =>
+    prefersReduced
+      ? {}
+      : {
+          initial: { opacity: 0, y: 16 },
+          whileInView: { opacity: 1, y: 0 },
+          viewport: { once: true, margin: "-6%" },
+          transition: { duration: DURATION.medium, delay, ease: EASINGS.editorial },
+        };
+
   return (
     <section
       id="contact"
-      className="w-full max-w-5xl mx-auto py-24 md:py-32 px-6 md:px-8 border-t border-black/[0.08] dark:border-white/[0.1]"
+      className="w-full max-w-6xl mx-auto py-24 md:py-32 px-6 md:px-8 border-t border-black/[0.08] dark:border-white/[0.1]"
     >
       {/* Section Header */}
-      <div className="flex items-center gap-3 mb-12">
-        <span className="text-xs font-semibold tracking-[0.2em] text-[#86868B] uppercase">
+      <motion.div {...inView(0)} className="flex items-center gap-3 mb-12">
+        <span className="font-mono text-[10px] font-semibold tracking-[0.2em] text-[#86868B] uppercase">
           07 / Contact
         </span>
         <div className="h-px flex-1 bg-black/[0.06] dark:bg-white/[0.08]" />
-      </div>
+      </motion.div>
 
       <div className="grid grid-cols-1 md:grid-cols-12 gap-12 lg:gap-16 items-start">
         {/* Left Column: Direct Inquiries & Narrative (5 cols) */}
-        <div className="md:col-span-5 space-y-6">
+        <motion.div {...inView(0.06)} className="md:col-span-5 space-y-6">
           <h2 className="font-display font-bold text-3xl sm:text-4xl md:text-5xl tracking-tight text-[#1D1D1F] dark:text-[#F5F5F7] leading-tight">
             Let&rsquo;s build together.
           </h2>
@@ -137,10 +151,13 @@ export function EditorialContact({
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Right Column: Clean Apple-Style Contact Form (7 cols) */}
-        <div className="md:col-span-7 bg-[#F5F5F7] dark:bg-[#161617] rounded-3xl p-6 sm:p-8 border border-black/[0.04] dark:border-white/[0.06]">
+        <motion.div
+          {...inView(0.12)}
+          className="md:col-span-7 bg-[#F5F5F7] dark:bg-[#161617] rounded-2xl p-6 sm:p-8 border border-black/[0.04] dark:border-white/[0.06]"
+        >
           {submitted ? (
             <div className="p-8 text-center flex flex-col items-center justify-center space-y-3">
               <CheckCircle2 className="w-10 h-10 text-emerald-500" />
@@ -211,7 +228,7 @@ export function EditorialContact({
               </button>
             </form>
           )}
-        </div>
+        </motion.div>
       </div>
     </section>
   );

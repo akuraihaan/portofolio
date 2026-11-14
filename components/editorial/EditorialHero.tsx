@@ -1,8 +1,8 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, ArrowDown } from "lucide-react";
-import { EASINGS } from "../motion/MotionSystem";
+import { EASINGS, DURATION } from "../motion/MotionSystem";
 
 interface EditorialHeroProps {
   name?: string;
@@ -11,85 +11,127 @@ interface EditorialHeroProps {
 }
 
 export function EditorialHero({
-  name = "Taufik Raihandani",
   resumeUrl = "https://txsqhxhnamgteofarqfz.supabase.co/storage/v1/object/public/portfolio-public/documents/ef4d0997-13e2-4034-97ee-328963e2351a/1788526781228-CV.pdf",
 }: EditorialHeroProps) {
+  const prefersReduced = useReducedMotion();
+
   const scrollTo = (id: string) => {
     const el = document.getElementById(id);
     if (el) el.scrollIntoView({ behavior: "smooth" });
   };
 
+  const fadeUp = (delay = 0) =>
+    prefersReduced
+      ? {}
+      : {
+          initial: { opacity: 0, y: 20 },
+          animate: { opacity: 1, y: 0 },
+          transition: { duration: DURATION.medium, delay, ease: EASINGS.editorial },
+        };
+
   return (
     <section
       id="hero"
-      className="relative w-full max-w-5xl mx-auto pt-36 pb-24 md:pt-48 md:pb-36 px-6 md:px-8 flex flex-col items-center text-center justify-center min-h-[85vh]"
+      className="relative w-full max-w-6xl mx-auto pt-36 pb-16 md:pt-52 md:pb-24 px-6 md:px-8 min-h-[90vh] flex flex-col justify-center"
     >
-      {/* Category Eyebrow */}
-      <motion.span
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, ease: EASINGS.apple }}
-        className="text-xs sm:text-sm font-medium tracking-[0.2em] text-[#86868B] uppercase mb-4"
-      >
-        Taufik Raihandani · Personal Portfolio
-      </motion.span>
-
-      {/* Large Confident Apple-Style Headline */}
-      <motion.h1
-        initial={{ opacity: 0, y: 18 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.1, ease: EASINGS.apple }}
-        className="font-display font-bold text-5xl sm:text-6xl md:text-7xl lg:text-8xl tracking-tight text-[#1D1D1F] dark:text-[#F5F5F7] max-w-4xl leading-[1.06] mb-6"
-      >
-        BWORIEY.
-        <br />
-        <span className="text-[#86868B] font-medium text-4xl sm:text-5xl md:text-6xl lg:text-7xl block mt-2">
-          Designed with purpose. Built with code.
+      {/* Top editorial meta label */}
+      <motion.div {...fadeUp(0)} className="mb-10 flex items-center gap-3">
+        <span className="font-mono text-[10px] text-[#86868B] tracking-[0.2em] uppercase">
+          Portfolio — 2026
         </span>
-      </motion.h1>
-
-      {/* Editorial Narrative Subtitle */}
-      <motion.p
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.2, ease: EASINGS.apple }}
-        className="text-base sm:text-lg md:text-xl text-[#1D1D1F]/80 dark:text-[#F5F5F7]/80 max-w-2xl leading-relaxed font-normal mb-10"
-      >
-        Lulusan Sarjana Pendidikan Komputer dari Universitas Lambung Mangkurat (2026) dan Alumnus Bangkit Academy 2024. Menghubungkan kedalaman pedagogi komputasi dengan rekayasa web modern, sistem cloud serverless, dan pembelajaran interaktif.
-      </motion.p>
-
-      {/* Primary Apple-Style CTA Buttons */}
-      <motion.div
-        initial={{ opacity: 0, y: 14 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.3, ease: EASINGS.apple }}
-        className="flex flex-wrap items-center justify-center gap-4"
-      >
-        <button
-          onClick={() => scrollTo("projects")}
-          className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-medium bg-[#1D1D1F] text-white dark:bg-[#F5F5F7] dark:text-[#1D1D1F] hover:opacity-90 transition-opacity cursor-pointer shadow-sm"
-        >
-          <span>Explore Projects</span>
-          <ArrowRight className="w-4 h-4" />
-        </button>
-
-        <button
-          onClick={() => scrollTo("contact")}
-          className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-medium border border-black/[0.12] dark:border-white/[0.2] text-[#1D1D1F] dark:text-[#F5F5F7] hover:bg-black/[0.04] dark:hover:bg-white/[0.06] transition-colors cursor-pointer"
-        >
-          <span>Get in Touch</span>
-        </button>
+        <div className="h-px w-10 bg-[#86868B]/30" />
+        <span className="font-mono text-[10px] text-[#86868B] tracking-[0.15em] uppercase">
+          Taufik Raihandani
+        </span>
       </motion.div>
 
-      {/* Subtle Scroll Indicator */}
+      {/* Large editorial headline */}
+      <div className="relative">
+        <motion.h1
+          {...fadeUp(0.08)}
+          className="font-display font-bold text-[clamp(3rem,9vw,8rem)] tracking-tight text-[#1D1D1F] dark:text-[#F5F5F7] leading-[0.95] mb-2"
+        >
+          BWORIEY
+        </motion.h1>
+
+        {/* Accent line */}
+        <motion.div
+          initial={prefersReduced ? {} : { scaleX: 0 }}
+          animate={{ scaleX: 1 }}
+          transition={{ duration: 0.7, delay: 0.25, ease: EASINGS.editorial }}
+          className="h-[2px] bg-[#1D1D1F] dark:bg-[#F5F5F7] w-full mb-8"
+          style={{ transformOrigin: "left" }}
+        />
+
+        {/* Two-column: tagline left, details right */}
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-16 items-end">
+          <motion.div {...fadeUp(0.2)} className="md:col-span-7">
+            <p className="text-[clamp(1.4rem,3.5vw,2.6rem)] font-display font-medium tracking-tight text-[#1D1D1F] dark:text-[#F5F5F7] leading-[1.15]">
+              Designed with purpose.
+              <br />
+              <span className="text-[#86868B]">Built with code.</span>
+            </p>
+          </motion.div>
+
+          <motion.div {...fadeUp(0.3)} className="md:col-span-5 space-y-6">
+            <p className="text-sm sm:text-base text-[#1D1D1F]/70 dark:text-[#F5F5F7]/70 leading-relaxed font-normal">
+              Lulusan S.Pd. Pendidikan Komputer dari Universitas Lambung Mangkurat dan Alumnus Bangkit Academy 2024.
+              Menghubungkan kedalaman pedagogi komputasi dengan rekayasa web modern dan sistem cloud serverless.
+            </p>
+
+            <div className="flex flex-wrap items-center gap-3">
+              <button
+                onClick={() => scrollTo("projects")}
+                className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium bg-[#1D1D1F] text-white dark:bg-[#F5F5F7] dark:text-[#1D1D1F] hover:opacity-90 transition-opacity cursor-pointer rounded-full"
+              >
+                <span>Explore Projects</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+
+              <a
+                href={resumeUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium border border-black/[0.15] dark:border-white/[0.2] text-[#1D1D1F] dark:text-[#F5F5F7] hover:bg-black/[0.04] dark:hover:bg-white/[0.06] transition-colors rounded-full"
+              >
+                Resume ↗
+              </a>
+            </div>
+          </motion.div>
+        </div>
+      </div>
+
+      {/* Bottom stats strip */}
       <motion.div
-        initial={{ opacity: 0 }}
+        {...fadeUp(0.45)}
+        className="mt-16 md:mt-20 pt-6 border-t border-black/[0.08] dark:border-white/[0.1] grid grid-cols-2 sm:grid-cols-4 gap-6"
+      >
+        {[
+          { value: "3.54", label: "GPA — Magna Cum Laude" },
+          { value: "2026", label: "S.Pd. Graduation" },
+          { value: "7+", label: "Projects Engineered" },
+          { value: "GCP", label: "Bangkit Cloud Alumnus" },
+        ].map((stat) => (
+          <div key={stat.label} className="flex flex-col gap-1">
+            <span className="font-display font-bold text-xl sm:text-2xl tracking-tight text-[#1D1D1F] dark:text-[#F5F5F7]">
+              {stat.value}
+            </span>
+            <span className="text-[11px] font-mono text-[#86868B] tracking-wide uppercase leading-snug">
+              {stat.label}
+            </span>
+          </div>
+        ))}
+      </motion.div>
+
+      {/* Scroll indicator */}
+      <motion.div
+        initial={prefersReduced ? {} : { opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.8, delay: 0.6, ease: EASINGS.gentle }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5 text-[#86868B] cursor-pointer"
+        transition={{ duration: 1, delay: 0.8, ease: EASINGS.gentle }}
+        className="absolute bottom-6 right-6 md:right-8 flex flex-col items-center gap-1.5 text-[#86868B] cursor-pointer"
         onClick={() => scrollTo("about")}
       >
-        <span className="text-[11px] font-medium tracking-wider uppercase">Scroll</span>
+        <span className="font-mono text-[9px] tracking-widest uppercase">Scroll</span>
         <ArrowDown className="w-3.5 h-3.5 animate-bounce" />
       </motion.div>
     </section>

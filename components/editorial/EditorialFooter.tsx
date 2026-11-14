@@ -1,7 +1,9 @@
 "use client";
 
 import React from "react";
+import { motion, useReducedMotion } from "framer-motion";
 import { ArrowUp } from "lucide-react";
+import { EASINGS, DURATION } from "../motion/MotionSystem";
 
 export function EditorialFooter({
   ownerName = "Taufik Raihandani",
@@ -9,14 +11,22 @@ export function EditorialFooter({
   ownerName?: string;
   socialLinks?: Array<{ platform: string; label: string; url: string }>;
 }) {
+  const prefersReduced = useReducedMotion();
+
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (
     <footer className="w-full border-t border-black/[0.08] dark:border-white/[0.1] bg-[#F5F5F7] dark:bg-[#000000] py-14 px-6 md:px-8 text-xs text-[#86868B] font-sans">
-      <div className="max-w-5xl mx-auto flex flex-col gap-8">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-black/[0.06] dark:border-white/[0.08]">
+      <div className="max-w-6xl mx-auto flex flex-col gap-8">
+        <motion.div
+          initial={prefersReduced ? {} : { opacity: 0, y: 12 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: DURATION.base, ease: EASINGS.editorial }}
+          className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-black/[0.06] dark:border-white/[0.08]"
+        >
           <div>
             <span className="font-display font-bold text-lg text-[#1D1D1F] dark:text-[#F5F5F7] block">
               BWORIEY
@@ -33,9 +43,15 @@ export function EditorialFooter({
             <span>Back to top</span>
             <ArrowUp className="w-3.5 h-3.5" />
           </button>
-        </div>
+        </motion.div>
 
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 font-mono text-[11px]">
+        <motion.div
+          initial={prefersReduced ? {} : { opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: DURATION.base, delay: 0.1, ease: EASINGS.editorial }}
+          className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 font-mono text-[11px]"
+        >
           <div>
             <span>LAT -3.3167 / LON 114.5900 · Banjarmasin, Kalimantan Selatan</span>
           </div>
@@ -72,7 +88,7 @@ export function EditorialFooter({
           <div>
             <span>&copy; {new Date().getFullYear()} BWORIEY. Built with Next.js 16 &amp; Motion.</span>
           </div>
-        </div>
+        </motion.div>
       </div>
     </footer>
   );

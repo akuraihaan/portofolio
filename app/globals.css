@@ -175,7 +175,7 @@ html {
 }
 body {
   margin: 0;
-  background: var(--bg-primary);
+  background: #FAFAF8;
   color: var(--text-primary);
   font: 400 17px/1.6 var(--body);
   letter-spacing: -0.015em;

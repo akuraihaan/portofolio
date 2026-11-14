@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Award, ShieldCheck, Eye, X, ArrowUpRight } from "lucide-react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { EASINGS } from "../motion/MotionSystem";
 
 export interface EditorialCertificateItem {
@@ -92,39 +92,60 @@ export function EditorialCertificates({
   certificates?: EditorialCertificateItem[];
 }) {
   const [selectedCert, setSelectedCert] = useState<EditorialCertificateItem | null>(null);
+  const prefersReduced = useReducedMotion();
 
   return (
     <section
       id="certificates"
-      className="w-full max-w-5xl mx-auto py-24 md:py-32 px-6 md:px-8 border-t border-black/[0.08] dark:border-white/[0.1]"
+      className="w-full max-w-6xl mx-auto py-24 md:py-32 px-6 md:px-8 border-t border-black/[0.08] dark:border-white/[0.1]"
     >
       {/* Section Header */}
-      <div className="flex items-center gap-3 mb-12">
-        <span className="text-xs font-semibold tracking-[0.2em] text-[#86868B] uppercase">
+      <motion.div
+        initial={prefersReduced ? {} : { opacity: 0, y: 16 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-6%" }}
+        transition={{ duration: 0.5, ease: EASINGS.editorial }}
+        className="flex items-center gap-3 mb-12"
+      >
+        <span className="font-mono text-[10px] font-semibold tracking-[0.2em] text-[#86868B] uppercase">
           06 / Credentials &amp; Honors
         </span>
         <div className="h-px flex-1 bg-black/[0.06] dark:bg-white/[0.08]" />
-      </div>
+      </motion.div>
 
       {/* Main Headline */}
-      <div className="mb-14">
+      <motion.div
+        initial={prefersReduced ? {} : { opacity: 0, y: 16 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-6%" }}
+        transition={{ duration: 0.5, delay: 0.06, ease: EASINGS.editorial }}
+        className="mb-14"
+      >
         <h2 className="font-display font-bold text-3xl sm:text-4xl md:text-5xl tracking-tight text-[#1D1D1F] dark:text-[#F5F5F7] max-w-2xl leading-tight mb-4">
           Verified credentials.
         </h2>
         <p className="text-base text-[#86868B] max-w-xl leading-relaxed">
           Arsip sertifikasi resmi, publikasi seminar nasional, dan penghargaan kompetisi desain media.
         </p>
-      </div>
+      </motion.div>
 
-      {/* Apple-Style Grid Showcase */}
+      {/* Grid Showcase */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {certificates.map((cert) => (
-          <div
+        {certificates.map((cert, idx) => (
+          <motion.div
             key={cert.id}
+            initial={prefersReduced ? {} : { opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-4%" }}
+            transition={{
+              duration: 0.5,
+              delay: idx * 0.07,
+              ease: EASINGS.editorial,
+            }}
             onClick={() => {
               if (cert.certificate_url) setSelectedCert(cert);
             }}
-            className={`rounded-3xl bg-[#F5F5F7] dark:bg-[#161617] border border-black/[0.04] dark:border-white/[0.06] p-6 flex flex-col justify-between transition-all ${
+            className={`rounded-2xl bg-[#F5F5F7] dark:bg-[#161617] border border-black/[0.04] dark:border-white/[0.06] p-6 flex flex-col justify-between transition-all ${
               cert.certificate_url
                 ? "cursor-pointer hover:shadow-md hover:-translate-y-0.5"
                 : ""
@@ -186,7 +207,7 @@ export function EditorialCertificates({
                 </a>
               </div>
             )}
-          </div>
+          </motion.div>
         ))}
       </div>
 
