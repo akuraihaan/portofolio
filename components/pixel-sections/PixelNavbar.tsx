@@ -13,7 +13,8 @@ const navLinks = [
   { href: "#projects", label: "PROJECTS", code: "03" },
   { href: "#experience", label: "TIMELINE", code: "04" },
   { href: "#certificates", label: "VAULT", code: "05" },
-  { href: "#contact", label: "CONTACT", code: "06" },
+  { href: "#articles", label: "ARTICLES", code: "06" },
+  { href: "#contact", label: "CONTACT", code: "07" },
 ];
 
 export function PixelNavbar() {

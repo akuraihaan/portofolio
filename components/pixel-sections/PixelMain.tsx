@@ -19,6 +19,7 @@ import { PixelProjects, type ProjectItem, defaultProjects } from "./PixelProject
 import { PixelExperience, type ExperienceRecord, defaultExperiences } from "./PixelExperience";
 import { PixelEducation, type EducationRecord } from "./PixelEducation";
 import { PixelCertificates, type CertificateItem, defaultCertificates } from "./PixelCertificates";
+import { PixelArticles, type ArticleItem, defaultArticles } from "./PixelArticles";
 import { PixelContact } from "./PixelContact";
 import { PixelFooter } from "./PixelFooter";
 import { Code2, Server, Cloud, BookOpen } from "lucide-react";
@@ -464,6 +465,97 @@ export function PixelMain({ bundle }: PixelMainProps) {
     },
   ];
 
+  // Dynamic Database Mapping for Projects
+  const rawProjects = bundle?.collections?.projects?.data || [];
+  const dbProjects: ProjectItem[] = rawProjects.map((row, idx) => {
+    const rawTech = row.technologies;
+    const technologies: string[] = Array.isArray(rawTech)
+      ? rawTech.map(String)
+      : typeof rawTech === "string"
+      ? rawTech.split(/[\n,]+/).map((s) => s.trim()).filter(Boolean)
+      : [];
+
+    const caseStudy = row.case_study as Record<string, string> | undefined;
+    const title = text(row.title) || "Proyek Rekayasa";
+
+    let coverUrl = safeHref(row.cover_url) || safeHref(row.thumbnail_url);
+    let repoUrl = safeHref(row.repository_url);
+
+    if (title.toLowerCase().includes("tailwind") || title.toLowerCase().includes("flowwind")) {
+      coverUrl = "https://txsqhxhnamgteofarqfz.supabase.co/storage/v1/object/public/portfolio-public/projects/cover-flowwind.png";
+      repoUrl = repoUrl || "https://github.com/bworiey/web-pembelajaran-interaktif-tailwind";
+    } else if (title.toLowerCase().includes("combridge") || title.toLowerCase().includes("bisindo")) {
+      coverUrl = "https://txsqhxhnamgteofarqfz.supabase.co/storage/v1/object/public/portfolio-public/experiences/logos/ef4d0997-13e2-4034-97ee-328963e2351a/b7d3bc6d-213a-41eb-81d8-c63ba5b9640a-images.png";
+      repoUrl = repoUrl || "https://github.com/bworiey/combridge-bisindo-cloud";
+    } else if (title.toLowerCase().includes("dayak")) {
+      repoUrl = repoUrl || "https://github.com/bworiey/game-kuis-dayak-ngaju";
+    } else if (title.toLowerCase().includes("lahan basah") || title.toLowerCase().includes("ikan")) {
+      repoUrl = repoUrl || "https://github.com/bworiey/edugame-ikan-lahan-basah";
+    } else if (title.toLowerCase().includes("konversi")) {
+      repoUrl = repoUrl || "https://github.com/bworiey/aplikasi-konversi-satuan";
+    } else if (title.toLowerCase().includes("pencatatan") || title.toLowerCase().includes("android")) {
+      repoUrl = repoUrl || "https://github.com/bworiey/android-smart-notes";
+    } else if (title.toLowerCase().includes("scraping") || title.toLowerCase().includes("kaggle")) {
+      repoUrl = repoUrl || "https://github.com/bworiey/data-science-scraping-kaggle";
+    }
+
+    return {
+      id: text(row.id) || `proj-${idx}`,
+      number: String(idx + 1).padStart(2, "0"),
+      title,
+      subtitle: text(row.subtitle) || (idx === 0 ? "Penerapan Learning Analytics pada Web Pembelajaran Interaktif Framework CSS Tailwind Dasar" : undefined),
+      category: text(row.category) || (idx === 1 ? "Cloud Computing" : "Web Development"),
+      year: row.created_at ? String(row.created_at).slice(0, 4) : "2024",
+      role: text(row.role) || "Software Engineer",
+      summary: text(row.summary) || text(row.description) || "Pengembangan sistem berbasis web dengan arsitektur modern.",
+      description: text(row.description) || text(row.summary) || "Proyek rekayasa perangkat lunak terstruktur.",
+      technologies: technologies.length > 0 ? technologies : ["Next.js", "TypeScript", "Tailwind CSS"],
+      cover_url: coverUrl || null,
+      thumbnail_url: coverUrl || null,
+      project_url: safeHref(row.project_url) || null,
+      repository_url: repoUrl || null,
+      case_study: {
+        background: caseStudy?.background || undefined,
+        features: caseStudy?.features || undefined,
+        contribution: caseStudy?.contribution || undefined,
+        outcome: caseStudy?.outcome || undefined,
+        process: caseStudy?.process || undefined,
+      },
+    };
+  });
+
+  const finalProjects = dbProjects.length >= 4 ? dbProjects : enrichedProjectsList;
+
+  // Dynamic Database Mapping for Articles
+  const rawArticles = bundle?.collections?.articles?.data || [];
+  const dbArticles: ArticleItem[] = rawArticles.map((row, idx) => {
+    const rawTags = row.tags;
+    const tags: string[] = Array.isArray(rawTags)
+      ? rawTags.map(String)
+      : typeof rawTags === "string"
+      ? rawTags.split(/[\n,]+/).map((s) => s.trim()).filter(Boolean)
+      : [];
+
+    const contentStr = text(row.content) || "";
+    const wordCount = contentStr.split(/\s+/).filter(Boolean).length;
+    const readingTime = wordCount > 0 ? `${Math.max(1, Math.ceil(wordCount / 200))} MIN READ` : "5 MIN READ";
+
+    return {
+      id: text(row.id) || `art-${idx}`,
+      slug: text(row.slug) || `article-${idx}`,
+      title: text(row.title) || "Artikel Komputasi",
+      category: text(row.category) || "Engineering",
+      excerpt: text(row.excerpt) || text(row.summary) || (contentStr ? contentStr.slice(0, 160) + "..." : "Artikel seputar rekayasa perangkat lunak dan komputasi awan."),
+      content: contentStr,
+      thumbnail_url: safeHref(row.thumbnail_url) || null,
+      tags: tags.length > 0 ? tags : ["Tech", "Engineering"],
+      created_at: row.created_at ? String(row.created_at).slice(0, 10) : "2026",
+      reading_time: readingTime,
+    };
+  });
+
+  const finalArticles = dbArticles.length > 0 ? dbArticles : defaultArticles;
+
   return (
     <ThemeProvider>
       <MotionProvider>
@@ -506,7 +598,7 @@ export function PixelMain({ bundle }: PixelMainProps) {
             <PixelSkills categories={comprehensiveSkillCategories} />
 
             {/* Selected Projects Showcase */}
-            <PixelProjects projects={enrichedProjectsList} />
+            <PixelProjects projects={finalProjects} />
 
             {/* Software Engineering Blueprint Schematic */}
             <SystemArchitectureDiagram />
@@ -519,6 +611,9 @@ export function PixelMain({ bundle }: PixelMainProps) {
 
             {/* Verified Credential Archive */}
             <PixelCertificates certificates={combinedCerts} />
+
+            {/* Dynamic Articles & Knowledge Base */}
+            <PixelArticles articles={finalArticles} />
 
             {/* Contact & Communications Section */}
             <PixelContact
