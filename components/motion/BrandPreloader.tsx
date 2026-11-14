@@ -199,7 +199,7 @@ export function BrandPreloader({ onComplete }: BrandPreloaderProps) {
                 transition={{ duration: 0.35, delay: 0.1, ease: EASINGS.apple }}
                 className="font-mono text-[9px] sm:text-[10px] font-medium text-[#86868B] uppercase tracking-[0.28em] pl-[0.28em]"
               >
-                PORTFOLIO / DEVELOPER
+                PORTFOLIO / PENGEMBANG WEB
               </motion.span>
             )}
           </div>
