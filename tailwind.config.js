@@ -15,6 +15,17 @@ export default {
         pixel: ['"Press Start 2P"', 'monospace'],
       },
       colors: {
+        // Neo-Brutalism & Experimental Editorial Palette
+        brutal: {
+          yellow: '#FFE500', // Acid Yellow
+          orange: '#FF5C00', // Electric Orange
+          blue: '#0047FF',   // Cobalt Blue
+          lime: '#C8F169',   // Acid Lime
+          black: '#0A0A0A',  // Deep Brutal Black
+          white: '#F4F4F0',  // Off-White canvas
+          dark: '#141414',   // Dark brutal surface
+          gray: '#E5E5E0',
+        },
         // BWORIEY Contemporary Swiss Creative-Tech Palette
         bw: {
           bg: '#F4F3EE',
@@ -70,6 +81,15 @@ export default {
         },
       },
       boxShadow: {
+        'brutal': '4px 4px 0px 0px #0A0A0A',
+        'brutal-sm': '2px 2px 0px 0px #0A0A0A',
+        'brutal-lg': '8px 8px 0px 0px #0A0A0A',
+        'brutal-xl': '12px 12px 0px 0px #0A0A0A',
+        'brutal-yellow': '4px 4px 0px 0px #FFE500',
+        'brutal-orange': '4px 4px 0px 0px #FF5C00',
+        'brutal-blue': '4px 4px 0px 0px #0047FF',
+        'brutal-white': '4px 4px 0px 0px #F4F4F0',
+        'brutal-white-lg': '8px 8px 0px 0px #F4F4F0',
         'lime-glow': '0 0 25px -4px rgba(212, 255, 0, 0.45), 0 0 10px -2px rgba(212, 255, 0, 0.3)',
         'editorial': '0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.03)',
         'editorial-hover': '0 10px 30px -10px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04)',
