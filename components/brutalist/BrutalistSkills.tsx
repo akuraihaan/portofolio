@@ -132,8 +132,50 @@ const SKILL_CATEGORIES: SkillCategory[] = [
   },
 ];
 
-export function BrutalistSkills() {
+export interface DynamicSkillRow {
+  name: string;
+  category?: string;
+  level?: string | number;
+  description?: string;
+}
+
+interface BrutalistSkillsProps {
+  dynamicSkills?: DynamicSkillRow[];
+}
+
+export function BrutalistSkills({ dynamicSkills }: BrutalistSkillsProps) {
   const { setCursor, resetCursor } = useMotionContext();
+
+  const categories = React.useMemo(() => {
+    if (!dynamicSkills || dynamicSkills.length === 0) {
+      return SKILL_CATEGORIES;
+    }
+
+    return SKILL_CATEGORIES.map((cat) => {
+      const matchingDynamic = dynamicSkills.filter((s) => {
+        const c = (s.category || "").toLowerCase();
+        return c.includes(cat.key) || cat.title.toLowerCase().includes(c);
+      });
+
+      if (matchingDynamic.length === 0) return cat;
+
+      const dynamicItems: SkillItem[] = matchingDynamic.map((s) => ({
+        name: s.name,
+        tag: s.description || (s.level ? `Level ${s.level}%` : undefined),
+      }));
+
+      // Combine and deduplicate
+      const existingNames = new Set(dynamicItems.map((d) => d.name.toLowerCase()));
+      const preservedDefaults = cat.skills.filter(
+        (s) => !existingNames.has(s.name.toLowerCase())
+      );
+
+      return {
+        ...cat,
+        skills: [...dynamicItems, ...preservedDefaults],
+      };
+    });
+  }, [dynamicSkills]);
 
   return (
     <section
@@ -164,7 +206,7 @@ export function BrutalistSkills() {
 
         {/* 5 Distinct Neo-Brutalist Category Containers */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-14">
-          {SKILL_CATEGORIES.map((category, idx) => {
+          {categories.map((category, idx) => {
             // Asymmetrical grid column layout
             const colSpan =
               idx === 0 || idx === 1

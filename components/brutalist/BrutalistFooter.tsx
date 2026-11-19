@@ -5,9 +5,17 @@ import { ArrowUp, Terminal, Heart, Sparkles, MapPin, Globe } from "lucide-react"
 
 interface BrutalistFooterProps {
   ownerName?: string;
+  brandName?: string;
+  locationText?: string;
+  availabilityStatus?: string;
 }
 
-export function BrutalistFooter({ ownerName = "TAUFIK RAIHANDANI" }: BrutalistFooterProps) {
+export function BrutalistFooter({
+  ownerName = "TAUFIK RAIHANDANI",
+  brandName = "BWORIEY",
+  locationText = "Banjarmasin, Kalimantan Selatan, Indonesia",
+  availabilityStatus = "Terbuka untuk posisi Full-time Software Engineer, Freelance Web Projects, & Kolaborasi Riset Edukasi.",
+}: BrutalistFooterProps) {
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -23,7 +31,7 @@ export function BrutalistFooter({ ownerName = "TAUFIK RAIHANDANI" }: BrutalistFo
               <span>GEOLOKASI OPERASIONAL</span>
             </div>
             <p className="font-mono text-sm text-neutral-300">
-              Banjarmasin, Kalimantan Selatan, Indonesia<br />
+              {locationText}<br />
               <span className="text-neutral-500 text-xs">LAT -3.3167 / LON 114.5900 (WITA / UTC+8)</span>
             </p>
           </div>
@@ -34,7 +42,7 @@ export function BrutalistFooter({ ownerName = "TAUFIK RAIHANDANI" }: BrutalistFo
               <span>STATUS KETERSEDIAAN</span>
             </div>
             <p className="font-mono text-sm text-neutral-300">
-              Terbuka untuk posisi Full-time Software Engineer, Freelance Web Projects, & Kolaborasi Riset Edukasi.
+              {availabilityStatus}
             </p>
           </div>
 
@@ -52,17 +60,17 @@ export function BrutalistFooter({ ownerName = "TAUFIK RAIHANDANI" }: BrutalistFo
         {/* Massive Oversized Experimental Display Typography */}
         <div className="py-12 md:py-16 text-center overflow-hidden">
           <div className="font-display font-black text-6xl sm:text-8xl md:text-9xl lg:text-[11rem] tracking-tighter leading-none text-neutral-900 select-none hover:text-[#FFE500] transition-colors duration-300">
-            BWORIEY
+            {brandName}
           </div>
           <div className="font-mono text-xs sm:text-sm md:text-base font-black tracking-widest text-neutral-400 mt-2 uppercase">
-            TAUFIK RAIHANDANI — EXPERIMENTAL BRUTALIST ARCHIVE
+            {ownerName} — EXPERIMENTAL BRUTALIST ARCHIVE
           </div>
         </div>
 
         {/* Bottom Copyright & Tech Stack Spec */}
         <div className="pt-8 border-t-2 border-neutral-800 flex flex-col sm:flex-row items-center justify-between gap-4 font-mono text-xs text-neutral-500">
           <div>
-            © {new Date().getFullYear()} BWORIEY // Hak Cipta Dilindungi Undang-Undang.
+            © {new Date().getFullYear()} {brandName} // Hak Cipta Dilindungi Undang-Undang.
           </div>
           <div className="flex items-center gap-4">
             <span className="text-neutral-400">NEXT.JS 16 • TYPESCRIPT • TAILWIND • SUPABASE</span>

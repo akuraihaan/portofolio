@@ -10,13 +10,36 @@ import { useMotionContext } from "../motion/MotionProvider";
 interface BrutalistHeroProps {
   ownerName?: string;
   resumeUrl?: string;
+  headline?: string;
+  subheadline?: string;
+  badgeText?: string;
+  availabilityStatus?: string;
+  locationText?: string;
+  primaryButtonLabel?: string;
+  primaryButtonUrl?: string;
+  secondaryButtonLabel?: string;
+  secondaryButtonUrl?: string;
 }
 
 export function BrutalistHero({
   ownerName = "TAUFIK RAIHANDANI",
   resumeUrl = "https://txsqhxhnamgteofarqfz.supabase.co/storage/v1/object/public/portfolio-public/documents/ef4d0997-13e2-4034-97ee-328963e2351a/1788526781228-CV.pdf",
+  headline = '"I BUILD THINGS FOR THE DIGITAL WORLD."',
+  subheadline,
+  badgeText = "S.Pd. KOMPUTER ULM '26",
+  availabilityStatus = "AVAILABLE FOR PROJECTS",
+  locationText = "BANJARMASIN, ID (UTC+8)",
+  primaryButtonLabel = "EXPLORE MY WORK",
+  primaryButtonUrl = "#projects",
+  secondaryButtonLabel = "UNDUH CV (PDF)",
+  secondaryButtonUrl,
 }: BrutalistHeroProps) {
   const { setCursor, resetCursor } = useMotionContext();
+
+  const names = (ownerName || "TAUFIK RAIHANDANI").trim().split(/\s+/);
+  const firstName = names[0] || "TAUFIK";
+  const lastName = names.slice(1).join(" ") || "RAIHANDANI";
+  const finalResumeUrl = secondaryButtonUrl || resumeUrl;
 
   // Mouse Parallax Values for Floating Elements
   const mouseX = useMotionValue(0);
@@ -64,16 +87,16 @@ export function BrutalistHero({
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75" />
               <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-600" />
             </span>
-            <span>AVAILABLE FOR PROJECTS</span>
+            <span>{availabilityStatus}</span>
           </div>
 
           {/* Location & Academic Stamp */}
           <div className="hidden sm:flex items-center gap-2 font-mono text-xs font-bold text-neutral-700 dark:text-neutral-300">
             <span className="bg-white dark:bg-[#1A1A1A] px-2.5 py-1 border-2 border-black dark:border-white shadow-[2px_2px_0px_#000] dark:shadow-[2px_2px_0px_#FFF]">
-              BANJARMASIN, ID (UTC+8)
+              {locationText}
             </span>
             <span className="bg-[#0047FF] text-white px-2.5 py-1 border-2 border-black shadow-[2px_2px_0px_#000]">
-              S.Pd. KOMPUTER ULM '26
+              {badgeText}
             </span>
           </div>
         </div>
@@ -109,10 +132,10 @@ export function BrutalistHero({
           {/* Oversized Name Header with Character-by-Character Staggered Typography Reveal */}
           <h1 className="font-display font-black text-5xl sm:text-7xl md:text-8xl lg:text-[7.5rem] tracking-tighter uppercase leading-[0.88] select-none break-words">
             <span className="block text-black dark:text-white drop-shadow-[4px_4px_0px_#FFE500]">
-              <AnimatedText text="TAUFIK" type="chars" stagger={0.05} delay={0.1} />
+              <AnimatedText text={firstName} type="chars" stagger={0.05} delay={0.1} />
             </span>
             <span className="block text-transparent bg-clip-text bg-gradient-to-r from-black via-neutral-800 to-black dark:from-white dark:via-neutral-200 dark:to-white [-webkit-text-stroke:2px_#000] dark:[-webkit-text-stroke:2px_#FFF] hover:text-black dark:hover:text-white transition-colors duration-300">
-              <AnimatedText text="RAIHANDANI" type="chars" stagger={0.04} delay={0.35} />
+              <AnimatedText text={lastName} type="chars" stagger={0.04} delay={0.35} />
             </span>
           </h1>
         </div>
@@ -127,26 +150,30 @@ export function BrutalistHero({
               transition={{ duration: 0.5, delay: 0.2 }}
               className="inline-block bg-black text-[#FFE500] dark:bg-white dark:text-black font-display font-black text-2xl sm:text-3xl md:text-4xl px-4 py-2 border-3 border-black shadow-[5px_5px_0px_#FF5C00] uppercase tracking-tight"
             >
-              "I BUILD THINGS FOR THE DIGITAL WORLD."
+              {headline}
             </motion.div>
             <p className="font-sans text-base sm:text-lg md:text-xl font-medium text-neutral-800 dark:text-neutral-200 max-w-2xl leading-relaxed">
-              Pengembang web dan arsitek teknologi edukasi dengan latar belakang{" "}
-              <strong className="font-black text-black dark:text-white underline decoration-[#FFE500] decoration-4">
-                Pendidikan Komputer
-              </strong>{" "}
-              Universitas Lambung Mangkurat. Berfokus pada sistem berbasis web performa tinggi, komputasi awan, dan media interaktif.
+              {subheadline || (
+                <>
+                  Pengembang web dan arsitek teknologi edukasi dengan latar belakang{" "}
+                  <strong className="font-black text-black dark:text-white underline decoration-[#FFE500] decoration-4">
+                    Pendidikan Komputer
+                  </strong>{" "}
+                  Universitas Lambung Mangkurat. Berfokus pada sistem berbasis web performa tinggi, komputasi awan, dan media interaktif.
+                </>
+              )}
             </p>
 
             {/* CTAs with Magnetic Effect */}
             <div className="pt-2 flex flex-wrap items-center gap-4">
               <MagneticButton strength={0.25}>
                 <a
-                  href="#projects"
+                  href={primaryButtonUrl}
                   onMouseEnter={() => setCursor({ active: true, text: "EXPLORE" })}
                   onMouseLeave={resetCursor}
                   className="flex items-center gap-2 bg-[#FFE500] text-black font-display font-black text-base md:text-lg px-6 py-4 border-3 border-black shadow-[5px_5px_0px_#000] hover:translate-x-1 hover:translate-y-1 hover:shadow-[2px_2px_0px_#000] active:translate-x-1.5 active:translate-y-1.5 active:shadow-none transition-all no-underline group"
                 >
-                  <span>EXPLORE MY WORK</span>
+                  <span>{primaryButtonLabel}</span>
                   <ArrowDownRight
                     size={22}
                     className="stroke-[3] group-hover:rotate-[-45deg] transition-transform duration-200"
@@ -156,7 +183,7 @@ export function BrutalistHero({
 
               <MagneticButton strength={0.25}>
                 <a
-                  href={resumeUrl}
+                  href={finalResumeUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   onMouseEnter={() => setCursor({ active: true, text: "UNDUH CV" })}
@@ -164,7 +191,7 @@ export function BrutalistHero({
                   className="flex items-center gap-2 bg-white dark:bg-[#1A1A1A] text-black dark:text-white font-display font-bold text-sm md:text-base px-6 py-4 border-3 border-black dark:border-white shadow-[4px_4px_0px_#000] dark:shadow-[4px_4px_0px_#FFF] hover:translate-x-1 hover:translate-y-1 hover:shadow-none active:translate-x-1.5 active:translate-y-1.5 transition-all no-underline"
                 >
                   <Download size={18} className="stroke-[2.5]" />
-                  <span>UNDUH CV (PDF)</span>
+                  <span>{secondaryButtonLabel}</span>
                 </a>
               </MagneticButton>
             </div>

@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { Briefcase, GraduationCap, Award, Calendar, MapPin, CheckCircle2 } from "lucide-react";
 import { CardTilt3D, Reveal, TextScramble } from "../motion";
 
-interface ExperienceItem {
+export interface ExperienceItem {
   id: string;
   role: string;
   company: string;
@@ -17,7 +17,7 @@ interface ExperienceItem {
   badgeColor: string;
 }
 
-interface EducationItem {
+export interface EducationItem {
   institution: string;
   degree: string;
   period: string;
@@ -27,7 +27,7 @@ interface EducationItem {
   highlights: string[];
 }
 
-const EXPERIENCES: ExperienceItem[] = [
+export const defaultExperiences: ExperienceItem[] = [
   {
     id: "exp-1",
     role: "Cloud Computing Cohort Lead",
@@ -92,7 +92,7 @@ const EXPERIENCES: ExperienceItem[] = [
   },
 ];
 
-const EDUCATION: EducationItem = {
+export const defaultEducation: EducationItem = {
   institution: "Universitas Lambung Mangkurat",
   degree: "S1 Pendidikan Komputer (Sarjana Pendidikan / S.Pd.)",
   period: "2020 — 2026",
@@ -106,7 +106,17 @@ const EDUCATION: EducationItem = {
   ],
 };
 
-export function BrutalistExperienceEducation() {
+interface BrutalistExperienceEducationProps {
+  experiences?: ExperienceItem[];
+  education?: EducationItem;
+}
+
+export function BrutalistExperienceEducation({
+  experiences,
+  education,
+}: BrutalistExperienceEducationProps = {}) {
+  const activeExperiences = experiences && experiences.length > 0 ? experiences : defaultExperiences;
+  const activeEducation = education || defaultEducation;
   return (
     <section
       id="experience"
@@ -143,11 +153,11 @@ export function BrutalistExperienceEducation() {
                 <Briefcase size={16} />
                 <span>PENGALAMAN REKAYASA & KEPEMIMPINAN</span>
               </span>
-              <span>4 RECORD RESMI</span>
+              <span>{activeExperiences.length} RECORD RESMI</span>
             </div>
 
             <div className="space-y-4">
-              {EXPERIENCES.map((exp, idx) => (
+              {activeExperiences.map((exp, idx) => (
                 <Reveal key={exp.id} direction="up" delay={idx * 0.08}>
                   <div className="p-5 md:p-6 bg-white dark:bg-[#141414] border-4 border-black dark:border-white shadow-[5px_5px_0px_#000] dark:shadow-[5px_5px_0px_#FFF] hover:shadow-[8px_8px_0px_#FFE500] hover:-translate-x-1 hover:-translate-y-1 transition-all duration-200">
                     {/* Top Bar with Badge */}
@@ -209,15 +219,15 @@ export function BrutalistExperienceEducation() {
                     STRATA 1 (S1)
                   </span>
                   <span className="font-mono text-xs font-bold text-neutral-500">
-                    {EDUCATION.period}
+                    {activeEducation.period}
                   </span>
                 </div>
 
                 <h3 className="font-display font-black text-2xl md:text-3xl uppercase tracking-tight mb-1">
-                  {EDUCATION.institution}
+                  {activeEducation.institution}
                 </h3>
                 <p className="font-mono text-sm font-bold text-[#0047FF] dark:text-[#FFE500] mb-4">
-                  {EDUCATION.degree}
+                  {activeEducation.degree}
                 </p>
 
                 {/* GPA Stamp Box */}
@@ -226,7 +236,7 @@ export function BrutalistExperienceEducation() {
                     INDEKS PRESTASI KUMULATIF (IPK):
                   </span>
                   <div className="font-display font-black text-3xl tracking-tight">
-                    {EDUCATION.gpa}
+                    {activeEducation.gpa}
                   </div>
                 </div>
 
@@ -236,7 +246,7 @@ export function BrutalistExperienceEducation() {
                     JUDUL SKRIPSI PENELITIAN:
                   </span>
                   <p className="font-sans text-sm font-medium italic leading-relaxed text-neutral-900 dark:text-neutral-100">
-                    "{EDUCATION.thesis}"
+                    "{activeEducation.thesis}"
                   </p>
                 </div>
 
@@ -246,7 +256,7 @@ export function BrutalistExperienceEducation() {
                     KOMPETENSI AKADEMIK UTAMA:
                   </span>
                   <ul className="space-y-2 font-mono text-xs">
-                    {EDUCATION.highlights.map((h, i) => (
+                    {activeEducation.highlights.map((h, i) => (
                       <li key={i} className="flex items-start gap-2 text-neutral-800 dark:text-neutral-200">
                         <CheckCircle2 size={15} className="text-emerald-500 shrink-0 mt-0.5" />
                         <span>{h}</span>

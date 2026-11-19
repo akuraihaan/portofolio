@@ -21,6 +21,9 @@ interface BrutalistContactProps {
   githubUrl?: string;
   linkedinUrl?: string;
   instagramUrl?: string;
+  title?: string;
+  description?: string;
+  socialLinks?: Array<{ platform: string; label?: string; url: string }>;
 }
 
 export function BrutalistContact({
@@ -28,6 +31,9 @@ export function BrutalistContact({
   githubUrl = "https://github.com/akuraihaan",
   linkedinUrl = "https://linkedin.com/in/taufik-raihandani",
   instagramUrl = "https://instagram.com/bworiey",
+  title = "GOT SOMETHING INTERESTING?",
+  description = "Terbuka untuk posisi Software Engineer, Full-Stack Web Developer, konsultasi teknologi edukasi, atau proyek lepas inovatif.",
+  socialLinks,
 }: BrutalistContactProps) {
   const { setCursor, resetCursor } = useMotionContext();
   const [copied, setCopied] = useState(false);
@@ -109,12 +115,12 @@ export function BrutalistContact({
               </span>
             </div>
             <h2 className="font-display font-black text-4xl sm:text-5xl md:text-6xl uppercase tracking-tighter">
-              GOT SOMETHING INTERESTING?
+              {title}
             </h2>
           </div>
 
           <p className="font-sans text-base md:text-lg max-w-md text-neutral-700 dark:text-neutral-300">
-            Terbuka untuk posisi Software Engineer, Full-Stack Web Developer, konsultasi teknologi edukasi, atau proyek lepas inovatif.
+            {description}
           </p>
         </div>
 

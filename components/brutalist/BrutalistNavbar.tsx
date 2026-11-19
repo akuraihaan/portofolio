@@ -7,13 +7,13 @@ import { useTheme } from "../editorial/ThemeContext";
 import { MagneticButton } from "../motion/MagneticButton";
 import { useMotionContext } from "../motion/MotionProvider";
 
-interface NavLinkItem {
+export interface NavLinkItem {
   name: string;
   href: string;
-  num: string;
+  num?: string;
 }
 
-const NAV_LINKS: NavLinkItem[] = [
+const DEFAULT_NAV_LINKS: NavLinkItem[] = [
   { num: "01", name: "PROYEK", href: "#projects" },
   { num: "02", name: "TENTANG", href: "#about" },
   { num: "03", name: "KEAHLIAN", href: "#skills" },
@@ -22,7 +22,18 @@ const NAV_LINKS: NavLinkItem[] = [
   { num: "06", name: "KONTAK", href: "#contact" },
 ];
 
-export function BrutalistNavbar() {
+interface BrutalistNavbarProps {
+  navigationItems?: NavLinkItem[];
+  ownerName?: string;
+  availabilityStatus?: string;
+}
+
+export function BrutalistNavbar({
+  navigationItems,
+  ownerName = "TAUFIK RAIHANDANI",
+  availabilityStatus = "AVAILABLE FOR PROJECTS",
+}: BrutalistNavbarProps) {
+  const navLinks = navigationItems && navigationItems.length > 0 ? navigationItems : DEFAULT_NAV_LINKS;
   const { theme, toggleTheme } = useTheme();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("hero");
@@ -90,7 +101,7 @@ export function BrutalistNavbar() {
 
           {/* Desktop Nav Links */}
           <div className="hidden lg:flex items-center gap-1">
-            {NAV_LINKS.map((link) => {
+            {navLinks.map((link: NavLinkItem) => {
               const isActive = activeSection === link.href.replace("#", "");
               return (
                 <a
@@ -104,7 +115,7 @@ export function BrutalistNavbar() {
                       : "border-transparent hover:border-black dark:hover:border-white hover:bg-white dark:hover:bg-[#1C1F1A]"
                   }`}
                 >
-                  <span className="opacity-60 text-[10px]">{link.num}.</span>
+                  <span className="opacity-60 text-[10px]">{link.num ? `${link.num}.` : "✦"}</span>
                   <span>{link.name}</span>
                 </a>
               );
@@ -159,7 +170,7 @@ export function BrutalistNavbar() {
             className="lg:hidden bg-[#F4F4F0] dark:bg-[#0A0A0A] border-b-4 border-black dark:border-white px-6 py-6 overflow-hidden"
           >
             <div className="flex flex-col gap-3">
-              {NAV_LINKS.map((link) => (
+              {navLinks.map((link: NavLinkItem) => (
                 <a
                   key={link.name}
                   href={link.href}
@@ -167,7 +178,7 @@ export function BrutalistNavbar() {
                   className="flex items-center justify-between p-3 border-2 border-black dark:border-white bg-white dark:bg-[#1A1A1A] font-display font-black text-lg tracking-tight shadow-[3px_3px_0px_#000] dark:shadow-[3px_3px_0px_#FFF] active:translate-x-0.5 active:translate-y-0.5 no-underline text-inherit"
                 >
                   <span className="flex items-center gap-2">
-                    <span className="font-mono text-xs text-[#FF5C00]">{link.num}</span>
+                    <span className="font-mono text-xs text-[#FF5C00]">{link.num || "✦"}</span>
                     <span>{link.name}</span>
                   </span>
                   <ArrowUpRight size={18} />

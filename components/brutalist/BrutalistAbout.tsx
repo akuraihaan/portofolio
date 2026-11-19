@@ -7,12 +7,39 @@ import { useMotionContext } from "../motion/MotionProvider";
 
 interface BrutalistAboutProps {
   avatarUrl?: string | null;
+  bioParagraphs?: string[];
+  ownerName?: string;
+  almamater?: string;
+  degree?: string;
+  gpa?: string;
+  tags?: string[];
 }
 
 export function BrutalistAbout({
   avatarUrl = "https://txsqhxhnamgteofarqfz.supabase.co/storage/v1/object/public/portfolio-public/avatars/avatar-bworiey.png",
+  bioParagraphs,
+  ownerName = "Taufik Raihandani",
+  almamater = "UNIV. LAMBUNG MANGKURAT",
+  degree = "S.Pd. KOMPUTER 2026",
+  gpa = "IPK 3.54 / 4.00",
+  tags = [
+    "Web Engineering",
+    "Cloud Computing (GCP)",
+    "Educational Technology",
+    "Learning Analytics",
+    "Interactive UI/UX",
+    "TypeScript Ecosystem",
+  ],
 }: BrutalistAboutProps) {
   const { setCursor, resetCursor } = useMotionContext();
+
+  const defaultBio = [
+    `Saya ${ownerName}, lulusan Sarjana Pendidikan Komputer dari Universitas Lambung Mangkurat yang berfokus pada rekayasa web modern, arsitektur komputasi awan, dan teknologi edukasi interaktif.`,
+    "Saya memadukan prinsip rekayasa perangkat lunak modern dengan pendekatan pedagogi komputasi untuk merancang solusi digital yang berkinerja tinggi, terukur, dan bermakna bagi pengguna.",
+    "Berpengalaman memimpin tim sebagai Cloud Computing Cohort Lead di Bangkit Academy serta aktif mempublikasikan riset media pembelajaran interaktif di forum nasional.",
+  ];
+
+  const paragraphs = bioParagraphs && bioParagraphs.length > 0 ? bioParagraphs : defaultBio;
 
   return (
     <section
@@ -66,7 +93,7 @@ export function BrutalistAbout({
 
                   {/* Floating Stamp over Image */}
                   <div className="absolute bottom-3 left-3 bg-[#FF5C00] text-white font-mono text-[11px] font-black px-2.5 py-1 border-2 border-black shadow-[2px_2px_0px_#000] rotate-[-3deg]">
-                    S.Pd. KOMPUTER 2026
+                    {degree}
                   </div>
                 </div>
 
@@ -74,11 +101,11 @@ export function BrutalistAbout({
                 <div className="mt-3 pt-3 border-t-2 border-black dark:border-neutral-700 grid grid-cols-2 gap-2 font-mono text-[11px]">
                   <div>
                     <span className="text-neutral-500 block">ALMAMATER:</span>
-                    <span className="font-bold">UNIV. LAMBUNG MANGKURAT</span>
+                    <span className="font-bold">{almamater}</span>
                   </div>
                   <div>
                     <span className="text-neutral-500 block">STATUS KELULUSAN:</span>
-                    <span className="font-bold text-[#0047FF] dark:text-[#FFE500]">IPK 3.54 / 4.00</span>
+                    <span className="font-bold text-[#0047FF] dark:text-[#FFE500]">{gpa}</span>
                   </div>
                 </div>
               </div>
@@ -102,15 +129,16 @@ export function BrutalistAbout({
                 <span className="font-mono text-xs font-bold text-[#FF5C00] uppercase block mb-2">
                   // RINGKASAN PROFIL EKSEKUTIF
                 </span>
-                <p className="font-sans text-lg md:text-xl font-medium leading-relaxed text-neutral-900 dark:text-neutral-100">
-                  Saya Taufik Raihandani, lulusan Sarjana Pendidikan Komputer dari Universitas Lambung Mangkurat yang berfokus pada rekayasa web modern, arsitektur komputasi awan, dan teknologi edukasi interaktif.
-                </p>
-                <p className="font-sans text-lg md:text-xl font-medium leading-relaxed text-neutral-900 dark:text-neutral-100 mt-4">
-                  Saya memadukan prinsip rekayasa perangkat lunak modern dengan pendekatan pedagogi komputasi untuk merancang solusi digital yang berkinerja tinggi, terukur, dan bermakna bagi pengguna.
-                </p>
-                <p className="font-sans text-lg md:text-xl font-medium leading-relaxed text-neutral-900 dark:text-neutral-100 mt-4">
-                  Berpengalaman memimpin tim sebagai Cloud Computing Cohort Lead di Bangkit Academy serta aktif mempublikasikan riset media pembelajaran interaktif di forum nasional.
-                </p>
+                {paragraphs.map((p, pIdx) => (
+                  <p
+                    key={pIdx}
+                    className={`font-sans text-lg md:text-xl font-medium leading-relaxed text-neutral-900 dark:text-neutral-100 ${
+                      pIdx > 0 ? "mt-4" : ""
+                    }`}
+                  >
+                    {p}
+                  </p>
+                ))}
               </div>
             </Reveal>
 
@@ -139,14 +167,7 @@ export function BrutalistAbout({
 
             {/* Personal Tags & Core Focus */}
             <div className="flex flex-wrap gap-2 pt-2">
-              {[
-                "Web Engineering",
-                "Cloud Computing (GCP)",
-                "Educational Technology",
-                "Learning Analytics",
-                "Interactive UI/UX",
-                "TypeScript Ecosystem",
-              ].map((tag, i) => (
+              {tags.map((tag, i) => (
                 <span
                   key={i}
                   className="px-3 py-1 bg-neutral-200 dark:bg-neutral-800 text-black dark:text-white font-mono text-xs font-bold border-2 border-black dark:border-neutral-600 shadow-[2px_2px_0px_#000] dark:shadow-[2px_2px_0px_#FFE500]"
