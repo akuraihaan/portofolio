@@ -7,6 +7,9 @@ import { ThemeProvider } from "../editorial/ThemeContext";
 import { MotionProvider } from "../motion/MotionProvider";
 import { BrandPreloader } from "../motion/BrandPreloader";
 import { CursorFollower } from "../motion/CursorFollower";
+import { SmoothScrollProvider } from "../motion/SmoothScrollProvider";
+import { NoiseOverlay } from "../motion/NoiseOverlay";
+import { BrutalistScrollProgress } from "./BrutalistScrollProgress";
 import { BrutalistNavbar } from "./BrutalistNavbar";
 import { BrutalistHero } from "./BrutalistHero";
 import { BrutalistAbout } from "./BrutalistAbout";
@@ -164,42 +167,50 @@ export function BrutalistMain({ bundle }: BrutalistMainProps) {
   return (
     <ThemeProvider>
       <MotionProvider>
-        {/* Animated Brand Preloader Bumper */}
-        <BrandPreloader />
+        <SmoothScrollProvider>
+          {/* Subtle Grain Texture Overlay */}
+          <NoiseOverlay />
 
-        {/* Custom Cursor for Desktop */}
-        <CursorFollower />
+          {/* Sticky Reading & Scroll Progress Indicator */}
+          <BrutalistScrollProgress />
 
-        <div className="min-h-screen bg-[#F4F4F0] dark:bg-[#0A0A0A] text-black dark:text-[#F4F4F0] font-sans selection:bg-[#FFE500] selection:text-black">
-          {/* Main Neo-Brutalist Sticky Navbar */}
-          <BrutalistNavbar />
+          {/* Animated Brand Preloader Bumper */}
+          <BrandPreloader />
 
-          <main id="main" tabIndex={-1}>
-            {/* 01. Hero Section */}
-            <BrutalistHero ownerName={ownerName} resumeUrl={resumeUrl} />
+          {/* Custom Cursor with Trailing Physics & Dynamic Context */}
+          <CursorFollower />
 
-            {/* 02. About Section (Max 3 Sentences, Asymmetric Grid) */}
-            <BrutalistAbout avatarUrl={avatarUrl} />
+          <div className="min-h-screen bg-[#F4F4F0] dark:bg-[#0A0A0A] text-black dark:text-[#F4F4F0] font-sans selection:bg-[#FFE500] selection:text-black">
+            {/* Main Neo-Brutalist Sticky Navbar */}
+            <BrutalistNavbar />
 
-            {/* 03. Project Archive Section (Varied Preview Sizes, Real-time Search, Case Study Modal) */}
-            <BrutalistProjects projects={finalProjects} />
+            <main id="main" tabIndex={-1}>
+              {/* 01. Hero Section */}
+              <BrutalistHero ownerName={ownerName} resumeUrl={resumeUrl} />
 
-            {/* 04. Experimental Skills Section (No Progress Bars, Visual Grouping) */}
-            <BrutalistSkills />
+              {/* 02. About Section (Max 3 Sentences, Asymmetric Grid) */}
+              <BrutalistAbout avatarUrl={avatarUrl} />
 
-            {/* 05. Experience & Education Section (Concise Timeline, Bangkit & ULM) */}
-            <BrutalistExperienceEducation />
+              {/* 03. Project Archive Section (Varied Preview Sizes, Real-time Search, Case Study Modal) */}
+              <BrutalistProjects projects={finalProjects} />
 
-            {/* 06. Certificate Archive Section (Visual Gallery, Inspection Modal) */}
-            <BrutalistCertificates certificates={finalCertificates} />
+              {/* 04. Experimental Skills Section (No Progress Bars, Visual Grouping) */}
+              <BrutalistSkills />
 
-            {/* 07. Contact Section (GOT SOMETHING INTERESTING?, Live Form to Supabase API) */}
-            <BrutalistContact email={ownerEmail} />
-          </main>
+              {/* 05. Experience & Education Section (Concise Timeline, Bangkit & ULM) */}
+              <BrutalistExperienceEducation />
 
-          {/* 08. Footer Section (Oversized Display Typography, Geolocation, Availability) */}
-          <BrutalistFooter ownerName={ownerName} />
-        </div>
+              {/* 06. Certificate Archive Section (Visual Gallery, Inspection Modal) */}
+              <BrutalistCertificates certificates={finalCertificates} />
+
+              {/* 07. Contact Section (GOT SOMETHING INTERESTING?, Live Form to Supabase API) */}
+              <BrutalistContact email={ownerEmail} />
+            </main>
+
+            {/* 08. Footer Section (Oversized Display Typography, Geolocation, Availability) */}
+            <BrutalistFooter ownerName={ownerName} />
+          </div>
+        </SmoothScrollProvider>
       </MotionProvider>
     </ThemeProvider>
   );

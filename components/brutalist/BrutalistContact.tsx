@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import confetti from "canvas-confetti";
 import {
   Mail,
   Send,
@@ -12,6 +13,8 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { GithubIcon, LinkedinIcon, InstagramIcon } from "../space/SocialIcons";
+import { BrutalistMagnetic } from "../motion/BrutalistMagnetic";
+import { useMotionContext } from "../motion/MotionProvider";
 
 interface BrutalistContactProps {
   email?: string;
@@ -26,6 +29,7 @@ export function BrutalistContact({
   linkedinUrl = "https://linkedin.com/in/taufik-raihandani",
   instagramUrl = "https://instagram.com/bworiey",
 }: BrutalistContactProps) {
+  const { setCursor, resetCursor } = useMotionContext();
   const [copied, setCopied] = useState(false);
   const [formState, setFormState] = useState({
     name: "",
@@ -71,6 +75,16 @@ export function BrutalistContact({
 
       setStatus("success");
       setFormState({ name: "", email: "", message: "" });
+
+      // Celebration Confetti in Neo-Brutalist Colors
+      try {
+        confetti({
+          particleCount: 85,
+          spread: 75,
+          origin: { y: 0.65 },
+          colors: ["#FFE500", "#FF5C00", "#0047FF", "#C8F169", "#000000"],
+        });
+      } catch {}
     } catch (err: unknown) {
       setStatus("error");
       setErrorMessage(err instanceof Error ? err.message : "Terjadi kendala jaringan saat pengiriman pesan.");
@@ -267,21 +281,25 @@ export function BrutalistContact({
                   />
                 </div>
 
-                {/* Submit Button */}
-                <button
-                  type="submit"
-                  disabled={status === "loading"}
-                  className="w-full py-4 bg-[#FF5C00] text-white hover:bg-[#e05200] font-display font-black text-base uppercase tracking-wider border-3 border-black shadow-[5px_5px_0px_#000] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
-                >
-                  {status === "loading" ? (
-                    <span>SEDANG MEMPROSES PENGIRIMAN...</span>
-                  ) : (
-                    <>
-                      <Send size={18} className="stroke-[2.5]" />
-                      <span>KIRIMKAN PESAN SEKARANG</span>
-                    </>
-                  )}
-                </button>
+                {/* Submit Button with Magnetic Feel */}
+                <BrutalistMagnetic strength={0.2} className="w-full">
+                  <button
+                    type="submit"
+                    disabled={status === "loading"}
+                    onMouseEnter={() => setCursor({ active: true, text: "KIRIM" })}
+                    onMouseLeave={resetCursor}
+                    className="w-full py-4 bg-[#FF5C00] text-white hover:bg-[#e05200] font-display font-black text-base uppercase tracking-wider border-3 border-black shadow-[5px_5px_0px_#000] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                  >
+                    {status === "loading" ? (
+                      <span>SEDANG MEMPROSES PENGIRIMAN...</span>
+                    ) : (
+                      <>
+                        <Send size={18} className="stroke-[2.5]" />
+                        <span>KIRIMKAN PESAN SEKARANG</span>
+                      </>
+                    )}
+                  </button>
+                </BrutalistMagnetic>
               </form>
             </div>
           </div>

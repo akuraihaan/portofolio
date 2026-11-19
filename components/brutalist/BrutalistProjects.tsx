@@ -16,6 +16,10 @@ import {
   Code2,
 } from "lucide-react";
 import { GithubIcon } from "../space/SocialIcons";
+import { CardTilt3D } from "../motion/CardTilt3D";
+import { BrutalistMagnetic } from "../motion/BrutalistMagnetic";
+import { TextScramble } from "../motion/TextScramble";
+import { useMotionContext } from "../motion/MotionProvider";
 
 export interface BrutalistProjectItem {
   id: string;
@@ -260,8 +264,9 @@ interface BrutalistProjectsProps {
 }
 
 export function BrutalistProjects({ projects = defaultBrutalistProjects }: BrutalistProjectsProps) {
+  const { setCursor, resetCursor } = useMotionContext();
   const [selectedCategory, setSelectedCategory] = useState<string>("Semua");
-  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [searchQuery, setSearchQuery] = useState<string>("" );
   const [activeModalProject, setActiveModalProject] = useState<BrutalistProjectItem | null>(null);
 
   // Derive categories
@@ -369,10 +374,16 @@ export function BrutalistProjects({ projects = defaultBrutalistProjects }: Bruta
                 layout
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.3, delay: idx * 0.05 }}
-                className={`${colSpan} flex flex-col bg-white dark:bg-[#141414] border-4 border-black dark:border-white shadow-[6px_6px_0px_#000] dark:shadow-[6px_6px_0px_#FFF] hover:shadow-[10px_10px_0px_#FFE500] hover:-translate-x-1 hover:-translate-y-1 transition-all duration-200 group relative`}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.35, delay: idx * 0.05 }}
+                className={`${colSpan}`}
               >
+                <CardTilt3D tiltMax={6} scaleHover={1.015}>
+                  <div
+                    onMouseEnter={() => setCursor({ active: true, text: "STUDI KASUS" })}
+                    onMouseLeave={resetCursor}
+                    className="h-full flex flex-col bg-white dark:bg-[#141414] border-4 border-black dark:border-white shadow-[6px_6px_0px_#000] dark:shadow-[6px_6px_0px_#FFF] hover:shadow-[10px_10px_0px_#FFE500] hover:-translate-x-1 hover:-translate-y-1 transition-all duration-200 group relative"
+                  >
                 {/* Project Header Bar */}
                 <div className="p-4 border-b-3 border-black dark:border-neutral-700 flex items-center justify-between bg-neutral-100 dark:bg-[#1C1F1A]">
                   <div className="flex items-center gap-2">
@@ -426,7 +437,7 @@ export function BrutalistProjects({ projects = defaultBrutalistProjects }: Bruta
                       {project.technologies.slice(0, 5).map((tech, i) => (
                         <span
                           key={i}
-                          className="font-mono text-[11px] font-bold px-2 py-0.5 bg-neutral-100 dark:bg-[#1E1E1E] text-black dark:text-neutral-300 border border-black dark:border-neutral-700"
+                          className="font-mono text-[11px] font-bold px-2 py-0.5 bg-neutral-100 dark:bg-[#1E1E1E] text-black dark:text-neutral-300 border border-black dark:border-neutral-700 hover:bg-[#FFE500] hover:text-black transition-colors"
                         >
                           {tech}
                         </span>
@@ -440,42 +451,50 @@ export function BrutalistProjects({ projects = defaultBrutalistProjects }: Bruta
 
                     {/* Action Links & Case Study Trigger */}
                     <div className="pt-4 border-t-2 border-dashed border-neutral-300 dark:border-neutral-700 flex flex-wrap items-center justify-between gap-2">
-                      <button
-                        onClick={() => setActiveModalProject(project)}
-                        className="font-display font-black text-xs px-3.5 py-2 bg-[#FFE500] text-black border-2 border-black shadow-[2px_2px_0px_#000] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all flex items-center gap-1.5 cursor-pointer"
-                      >
-                        <Layers size={14} className="stroke-[2.5]" />
-                        <span>STUDI KASUS</span>
-                      </button>
+                      <BrutalistMagnetic strength={0.2}>
+                        <button
+                          onClick={() => setActiveModalProject(project)}
+                          className="font-display font-black text-xs px-3.5 py-2 bg-[#FFE500] text-black border-2 border-black shadow-[2px_2px_0px_#000] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all flex items-center gap-1.5 cursor-pointer"
+                        >
+                          <Layers size={14} className="stroke-[2.5]" />
+                          <span>STUDI KASUS</span>
+                        </button>
+                      </BrutalistMagnetic>
 
                       <div className="flex items-center gap-2">
                         {project.repository_url && (
-                          <a
-                            href={project.repository_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="p-2 bg-white dark:bg-[#1E1E1E] text-black dark:text-white border-2 border-black dark:border-white shadow-[2px_2px_0px_#000] dark:shadow-[2px_2px_0px_#FFF] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all"
-                            title="Tinjau Repositori GitHub"
-                          >
-                            <GithubIcon className="w-4 h-4" />
-                          </a>
+                          <BrutalistMagnetic strength={0.3}>
+                            <a
+                              href={project.repository_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="p-2 bg-white dark:bg-[#1E1E1E] text-black dark:text-white border-2 border-black dark:border-white shadow-[2px_2px_0px_#000] dark:shadow-[2px_2px_0px_#FFF] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all block"
+                              title="Tinjau Repositori GitHub"
+                            >
+                              <GithubIcon className="w-4 h-4" />
+                            </a>
+                          </BrutalistMagnetic>
                         )}
 
                         {project.project_url && (
-                          <a
-                            href={project.project_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="p-2 bg-[#FF5C00] text-white border-2 border-black shadow-[2px_2px_0px_#000] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all flex items-center gap-1"
-                            title="Buka Live Demo"
-                          >
-                            <ExternalLink size={15} className="stroke-[2.5]" />
-                          </a>
+                          <BrutalistMagnetic strength={0.3}>
+                            <a
+                              href={project.project_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="p-2 bg-[#FF5C00] text-white border-2 border-black shadow-[2px_2px_0px_#000] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all flex items-center gap-1"
+                              title="Buka Live Demo"
+                            >
+                              <ExternalLink size={15} className="stroke-[2.5]" />
+                            </a>
+                          </BrutalistMagnetic>
                         )}
                       </div>
                     </div>
                   </div>
                 </div>
+                  </div>
+                </CardTilt3D>
               </motion.article>
             );
           })}

@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { motion } from "framer-motion";
 import {
   Code2,
   Server,
@@ -13,6 +14,8 @@ import {
   Sparkles,
   GitBranch,
 } from "lucide-react";
+import { CardTilt3D } from "../motion/CardTilt3D";
+import { useMotionContext } from "../motion/MotionProvider";
 
 interface SkillItem {
   name: string;
@@ -130,10 +133,12 @@ const SKILL_CATEGORIES: SkillCategory[] = [
 ];
 
 export function BrutalistSkills() {
+  const { setCursor, resetCursor } = useMotionContext();
+
   return (
     <section
       id="skills"
-      className="py-20 md:py-28 px-4 md:px-8 bg-[#F4F4F0] dark:bg-[#0A0A0A] text-black dark:text-[#F4F4F0] border-b-4 border-black dark:border-white transition-colors duration-200"
+      className="py-20 md:py-28 px-4 md:px-8 bg-[#F4F4F0] dark:bg-[#0A0A0A] text-black dark:text-[#F4F4F0] border-b-4 border-black dark:border-white transition-colors duration-200 overflow-hidden"
     >
       <div className="max-w-7xl mx-auto">
         {/* Section Header */}
@@ -158,7 +163,7 @@ export function BrutalistSkills() {
         </div>
 
         {/* 5 Distinct Neo-Brutalist Category Containers */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-14">
           {SKILL_CATEGORIES.map((category, idx) => {
             // Asymmetrical grid column layout
             const colSpan =
@@ -171,57 +176,91 @@ export function BrutalistSkills() {
                 : "lg:col-span-4";
 
             return (
-              <div
-                key={category.key}
-                className={`${colSpan} flex flex-col border-4 border-black dark:border-white bg-white dark:bg-[#141414] shadow-[6px_6px_0px_#000] dark:shadow-[6px_6px_0px_#FFF] hover:shadow-[10px_10px_0px_#FF5C00] hover:-translate-x-1 hover:-translate-y-1 transition-all duration-200`}
-              >
-                {/* Category Header Strip */}
-                <div
-                  className={`p-4 border-b-4 border-black dark:border-white flex items-center justify-between ${category.color} ${category.textColor}`}
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="font-mono text-sm font-black border-2 border-current px-1.5 py-0.5">
-                      #{category.number}
-                    </span>
-                    <h3 className="font-display font-black text-lg md:text-xl uppercase tracking-tight">
-                      {category.title}
-                    </h3>
-                  </div>
-                  <div>{category.icon}</div>
-                </div>
-
-                {/* Subtitle / Spec Note */}
-                <div className="px-4 py-2 bg-neutral-100 dark:bg-[#1E1E1E] border-b-2 border-black dark:border-neutral-700 font-mono text-[11px] text-neutral-600 dark:text-neutral-400">
-                  {category.subtitle}
-                </div>
-
-                {/* Skills Badges Grid */}
-                <div className="p-5 flex-1 flex flex-wrap content-start gap-2.5">
-                  {category.skills.map((skill, sIdx) => (
+              <div key={category.key} className={`${colSpan}`}>
+                <CardTilt3D tiltMax={5} scaleHover={1.015}>
+                  <div className="h-full flex flex-col border-4 border-black dark:border-white bg-white dark:bg-[#141414] shadow-[6px_6px_0px_#000] dark:shadow-[6px_6px_0px_#FFF] hover:shadow-[10px_10px_0px_#FF5C00] hover:-translate-x-1 hover:-translate-y-1 transition-all duration-200">
+                    {/* Category Header Strip */}
                     <div
-                      key={sIdx}
-                      className="group/badge inline-flex items-center gap-2 p-2 bg-neutral-50 dark:bg-[#1A1A1A] border-2 border-black dark:border-neutral-700 hover:border-[#0047FF] dark:hover:border-[#FFE500] hover:bg-[#FFE500]/20 transition-colors shadow-[2px_2px_0px_#000] dark:shadow-[2px_2px_0px_#333]"
+                      className={`p-4 border-b-4 border-black dark:border-white flex items-center justify-between ${category.color} ${category.textColor}`}
                     >
-                      <span className="font-display font-bold text-xs md:text-sm text-black dark:text-white">
-                        {skill.name}
-                      </span>
-                      {skill.tag && (
-                        <span className="font-mono text-[10px] font-bold px-1.5 py-0.5 bg-neutral-200 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300">
-                          {skill.tag}
+                      <div className="flex items-center gap-3">
+                        <span className="font-mono text-sm font-black border-2 border-current px-1.5 py-0.5">
+                          #{category.number}
                         </span>
-                      )}
+                        <h3 className="font-display font-black text-lg md:text-xl uppercase tracking-tight">
+                          {category.title}
+                        </h3>
+                      </div>
+                      <div>{category.icon}</div>
                     </div>
-                  ))}
-                </div>
 
-                {/* Card Base Decorator */}
-                <div className="px-4 py-2 border-t-2 border-black dark:border-neutral-700 bg-neutral-50 dark:bg-[#161616] flex items-center justify-between font-mono text-[10px] text-neutral-500">
-                  <span>TOTAL: {category.skills.length} TEKNOLOGI</span>
-                  <span className="text-[#0047FF] dark:text-[#FFE500] font-bold">STATUS: PRODUKSI</span>
-                </div>
+                    {/* Subtitle / Spec Note */}
+                    <div className="px-4 py-2 bg-neutral-100 dark:bg-[#1E1E1E] border-b-2 border-black dark:border-neutral-700 font-mono text-[11px] text-neutral-600 dark:text-neutral-400">
+                      {category.subtitle}
+                    </div>
+
+                    {/* Skills Badges Grid */}
+                    <div className="p-5 flex-1 flex flex-wrap content-start gap-2.5">
+                      {category.skills.map((skill, sIdx) => (
+                        <motion.div
+                          key={sIdx}
+                          whileHover={{ scale: 1.05, y: -2 }}
+                          onMouseEnter={() => setCursor({ active: true, text: skill.name })}
+                          onMouseLeave={resetCursor}
+                          className="group/badge inline-flex items-center gap-2 p-2 bg-neutral-50 dark:bg-[#1A1A1A] border-2 border-black dark:border-neutral-700 hover:border-[#0047FF] dark:hover:border-[#FFE500] hover:bg-[#FFE500]/20 transition-colors shadow-[2px_2px_0px_#000] dark:shadow-[2px_2px_0px_#333] cursor-default select-none"
+                        >
+                          <span className="font-display font-bold text-xs md:text-sm text-black dark:text-white">
+                            {skill.name}
+                          </span>
+                          {skill.tag && (
+                            <span className="font-mono text-[10px] font-bold px-1.5 py-0.5 bg-neutral-200 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300">
+                              {skill.tag}
+                            </span>
+                          )}
+                        </motion.div>
+                      ))}
+                    </div>
+
+                    {/* Card Base Decorator */}
+                    <div className="px-4 py-2 border-t-2 border-black dark:border-neutral-700 bg-neutral-50 dark:bg-[#161616] flex items-center justify-between font-mono text-[10px] text-neutral-500">
+                      <span>TOTAL: {category.skills.length} TEKNOLOGI</span>
+                      <span className="text-[#0047FF] dark:text-[#FFE500] font-bold">STATUS: PRODUKSI</span>
+                    </div>
+                  </div>
+                </CardTilt3D>
               </div>
             );
           })}
+        </div>
+
+        {/* Interactive Infinite Tech Marquee Wall */}
+        <div className="border-3 border-black bg-[#FFE500] text-black py-2.5 overflow-hidden shadow-[4px_4px_0px_#000]">
+          <div className="flex whitespace-nowrap animate-[marquee_26s_linear_infinite] font-mono text-xs font-black uppercase tracking-wider">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <span key={i} className="flex items-center gap-6 mx-3">
+                <span>NEXT.JS 16</span>
+                <span>•</span>
+                <span>REACT 19</span>
+                <span>•</span>
+                <span>TYPESCRIPT</span>
+                <span>•</span>
+                <span>TAILWIND CSS</span>
+                <span>•</span>
+                <span>SUPABASE</span>
+                <span>•</span>
+                <span>GOOGLE CLOUD RUN</span>
+                <span>•</span>
+                <span>POSTGRESQL</span>
+                <span>•</span>
+                <span>DOCKER</span>
+                <span>•</span>
+                <span>FRAMER MOTION</span>
+                <span>•</span>
+                <span>LENIS SMOOTH SCROLL</span>
+                <span>•</span>
+              </span>
+            ))}
+          </div>
         </div>
       </div>
     </section>

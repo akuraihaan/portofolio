@@ -3,6 +3,9 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Award, ExternalLink, Calendar, Building, X, ZoomIn, CheckCircle2, ShieldCheck } from "lucide-react";
+import { CardTilt3D } from "../motion/CardTilt3D";
+import { BrutalistMagnetic } from "../motion/BrutalistMagnetic";
+import { useMotionContext } from "../motion/MotionProvider";
 
 export interface BrutalistCertificateItem {
   id: string;
@@ -107,6 +110,7 @@ interface BrutalistCertificatesProps {
 export function BrutalistCertificates({
   certificates = defaultBrutalistCertificates,
 }: BrutalistCertificatesProps) {
+  const { setCursor, resetCursor } = useMotionContext();
   const [activeCert, setActiveCert] = useState<BrutalistCertificateItem | null>(null);
 
   return (
@@ -139,81 +143,86 @@ export function BrutalistCertificates({
         {/* Visual Gallery Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {certificates.map((cert, idx) => (
-            <div
-              key={cert.id}
-              className="flex flex-col bg-white dark:bg-[#141414] border-4 border-black dark:border-white shadow-[6px_6px_0px_#000] dark:shadow-[6px_6px_0px_#FFF] hover:shadow-[10px_10px_0px_#FFE500] hover:-translate-x-1 hover:-translate-y-1 transition-all duration-200 group"
-            >
-              {/* Top Meta Strip */}
-              <div className="p-3 bg-neutral-100 dark:bg-[#1C1F1A] border-b-3 border-black dark:border-neutral-700 flex items-center justify-between font-mono text-xs">
-                <span className="font-bold text-[#FF5C00]">{cert.category}</span>
-                <span className="bg-white dark:bg-black px-2 py-0.5 border border-black dark:border-neutral-700 font-bold">
-                  {cert.issue_date}
-                </span>
-              </div>
-
-              {/* Certificate Image Thumbnail (Clickable) */}
-              <div
-                onClick={() => setActiveCert(cert)}
-                className="relative aspect-[16/10] w-full border-b-3 border-black dark:border-neutral-700 bg-neutral-900 cursor-pointer overflow-hidden"
-              >
-                {cert.certificate_url ? (
-                  <img
-                    src={cert.certificate_url}
-                    alt={cert.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                ) : (
-                  <div className="w-full h-full flex flex-col items-center justify-center bg-neutral-800 text-neutral-400 p-4">
-                    <Award size={36} className="text-[#FFE500] mb-2" />
-                    <span className="font-mono text-xs uppercase font-bold text-center">
-                      DOKUMEN SERTIFIKAT RESMI
+            <div key={cert.id} className="h-full">
+              <CardTilt3D tiltMax={6} scaleHover={1.02}>
+                <div
+                  onMouseEnter={() => setCursor({ active: true, text: "INSPEKSI" })}
+                  onMouseLeave={resetCursor}
+                  className="h-full flex flex-col bg-white dark:bg-[#141414] border-4 border-black dark:border-white shadow-[6px_6px_0px_#000] dark:shadow-[6px_6px_0px_#FFF] hover:shadow-[10px_10px_0px_#FFE500] hover:-translate-x-1 hover:-translate-y-1 transition-all duration-200 group"
+                >
+                  {/* Top Meta Strip */}
+                  <div className="p-3 bg-neutral-100 dark:bg-[#1C1F1A] border-b-3 border-black dark:border-neutral-700 flex items-center justify-between font-mono text-xs">
+                    <span className="font-bold text-[#FF5C00]">{cert.category}</span>
+                    <span className="bg-white dark:bg-black px-2 py-0.5 border border-black dark:border-neutral-700 font-bold">
+                      {cert.issue_date}
                     </span>
                   </div>
-                )}
 
-                {/* Hover Overlay with Zoom Icon */}
-                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                  <div className="p-2.5 bg-[#FFE500] text-black border-2 border-black font-display font-black text-xs flex items-center gap-1.5 shadow-[2px_2px_0px_#000]">
-                    <ZoomIn size={16} />
-                    <span>INSPEKSI DOKUMEN</span>
+                  {/* Certificate Image Thumbnail (Clickable) */}
+                  <div
+                    onClick={() => setActiveCert(cert)}
+                    className="relative aspect-[16/10] w-full border-b-3 border-black dark:border-neutral-700 bg-neutral-900 cursor-pointer overflow-hidden"
+                  >
+                    {cert.certificate_url ? (
+                      <img
+                        src={cert.certificate_url}
+                        alt={cert.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex flex-col items-center justify-center bg-neutral-800 text-neutral-400 p-4">
+                        <Award size={36} className="text-[#FFE500] mb-2" />
+                        <span className="font-mono text-xs uppercase font-bold text-center">
+                          DOKUMEN SERTIFIKAT RESMI
+                        </span>
+                      </div>
+                    )}
+
+                    {/* Hover Overlay with Zoom Icon */}
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                      <div className="p-2.5 bg-[#FFE500] text-black border-2 border-black font-display font-black text-xs flex items-center gap-1.5 shadow-[2px_2px_0px_#000]">
+                        <ZoomIn size={16} />
+                        <span>INSPEKSI DOKUMEN</span>
+                      </div>
+                    </div>
+
+                    {cert.isAward && (
+                      <div className="absolute top-2 left-2 bg-[#FF5C00] text-white font-mono text-[10px] font-black px-2 py-0.5 border border-black shadow-[2px_2px_0px_#000]">
+                        ★ PENGHARGAAN
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Card Body */}
+                  <div className="p-5 flex-1 flex flex-col justify-between">
+                    <div>
+                      <h3 className="font-display font-black text-lg md:text-xl uppercase tracking-tight text-black dark:text-white line-clamp-2 mb-2 group-hover:text-[#0047FF] dark:group-hover:text-[#FFE500] transition-colors">
+                        {cert.title}
+                      </h3>
+
+                      <div className="flex items-center gap-1.5 font-mono text-xs text-neutral-600 dark:text-neutral-400 mb-3">
+                        <Building size={13} className="shrink-0 text-neutral-400" />
+                        <span className="truncate">{cert.issuer}</span>
+                      </div>
+
+                      {cert.description && (
+                        <p className="font-sans text-xs text-neutral-700 dark:text-neutral-300 line-clamp-2 leading-relaxed mb-4">
+                          {cert.description}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Inspect Button Trigger */}
+                    <button
+                      onClick={() => setActiveCert(cert)}
+                      className="w-full py-2 bg-neutral-100 dark:bg-[#1E1E1E] hover:bg-[#FFE500] hover:text-black dark:hover:bg-[#FFE500] dark:hover:text-black text-black dark:text-white font-mono text-xs font-bold border-2 border-black dark:border-neutral-700 shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                    >
+                      <ShieldCheck size={14} />
+                      <span>LIHAT DETAIL & VERIFIKASI</span>
+                    </button>
                   </div>
                 </div>
-
-                {cert.isAward && (
-                  <div className="absolute top-2 left-2 bg-[#FF5C00] text-white font-mono text-[10px] font-black px-2 py-0.5 border border-black shadow-[2px_2px_0px_#000]">
-                    ★ PENGHARGAAN
-                  </div>
-                )}
-              </div>
-
-              {/* Card Body */}
-              <div className="p-5 flex-1 flex flex-col justify-between">
-                <div>
-                  <h3 className="font-display font-black text-lg md:text-xl uppercase tracking-tight text-black dark:text-white line-clamp-2 mb-2 group-hover:text-[#0047FF] dark:group-hover:text-[#FFE500] transition-colors">
-                    {cert.title}
-                  </h3>
-
-                  <div className="flex items-center gap-1.5 font-mono text-xs text-neutral-600 dark:text-neutral-400 mb-3">
-                    <Building size={13} className="shrink-0 text-neutral-400" />
-                    <span className="truncate">{cert.issuer}</span>
-                  </div>
-
-                  {cert.description && (
-                    <p className="font-sans text-xs text-neutral-700 dark:text-neutral-300 line-clamp-2 leading-relaxed mb-4">
-                      {cert.description}
-                    </p>
-                  )}
-                </div>
-
-                {/* Inspect Button Trigger */}
-                <button
-                  onClick={() => setActiveCert(cert)}
-                  className="w-full py-2 bg-neutral-100 dark:bg-[#1E1E1E] hover:bg-[#FFE500] hover:text-black dark:hover:bg-[#FFE500] dark:hover:text-black text-black dark:text-white font-mono text-xs font-bold border-2 border-black dark:border-neutral-700 shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
-                >
-                  <ShieldCheck size={14} />
-                  <span>LIHAT DETAIL & VERIFIKASI</span>
-                </button>
-              </div>
+              </CardTilt3D>
             </div>
           ))}
         </div>
