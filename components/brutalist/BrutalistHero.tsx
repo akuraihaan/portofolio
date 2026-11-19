@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { motion, useMotionValue, useTransform, useSpring } from "framer-motion";
 import { ArrowDownRight, Download, Terminal, Sparkles, Code2, Cloud, GraduationCap, Zap } from "lucide-react";
-import { BrutalistMagnetic } from "../motion/BrutalistMagnetic";
+import { AnimatedText, FloatingObject, MagneticButton } from "../motion";
 import { Brutalist3DMesh } from "./Brutalist3DMesh";
 import { useMotionContext } from "../motion/MotionProvider";
 
@@ -80,48 +80,40 @@ export function BrutalistHero({
 
         {/* Main Brutalist Typography Composition */}
         <div className="relative mb-8">
-          {/* Floating Sticker 1 - Top Left with Parallax */}
+          {/* Floating Sticker 1 - Top Left with Parallax & Float */}
           <motion.div
             style={{ x: parallaxX1, y: parallaxY1 }}
-            initial={{ scale: 0, rotate: -15 }}
-            animate={{ scale: 1, rotate: -6 }}
-            transition={{ type: "spring", stiffness: 300, delay: 0.2 }}
-            className="hidden md:inline-flex absolute -top-6 left-2 z-20 items-center gap-1.5 bg-[#FF5C00] text-white font-mono text-xs font-black px-3 py-1 border-2 border-black shadow-[3px_3px_0px_#000] select-none pointer-events-none"
+            className="hidden md:inline-flex absolute -top-6 left-2 z-20 select-none pointer-events-none"
           >
-            <Code2 size={14} className="stroke-[3]" />
-            <span>CREATIVE DEVELOPER</span>
+            <FloatingObject amplitude={6} duration={4} rotateAmplitude={3}>
+              <div className="flex items-center gap-1.5 bg-[#FF5C00] text-white font-mono text-xs font-black px-3 py-1 border-2 border-black shadow-[3px_3px_0px_#000]">
+                <Code2 size={14} className="stroke-[3]" />
+                <span>CREATIVE DEVELOPER</span>
+              </div>
+            </FloatingObject>
           </motion.div>
 
-          {/* Floating Sticker 2 - Top Right with Parallax */}
+          {/* Floating Sticker 2 - Top Right with Parallax & Float */}
           <motion.div
             style={{ x: parallaxX2, y: parallaxY2 }}
-            initial={{ scale: 0, rotate: 15 }}
-            animate={{ scale: 1, rotate: 6 }}
-            transition={{ type: "spring", stiffness: 300, delay: 0.3 }}
-            className="hidden md:inline-flex absolute -top-4 right-12 z-20 items-center gap-1.5 bg-[#C8F169] text-black font-mono text-xs font-black px-3 py-1 border-2 border-black shadow-[3px_3px_0px_#000] select-none pointer-events-none"
+            className="hidden md:inline-flex absolute -top-4 right-12 z-20 select-none pointer-events-none"
           >
-            <Cloud size={14} className="stroke-[3]" />
-            <span>BANGKIT CLOUD COHORT LEAD</span>
+            <FloatingObject amplitude={7} duration={4.5} delay={0.5} rotateAmplitude={-4}>
+              <div className="flex items-center gap-1.5 bg-[#C8F169] text-black font-mono text-xs font-black px-3 py-1 border-2 border-black shadow-[3px_3px_0px_#000]">
+                <Cloud size={14} className="stroke-[3]" />
+                <span>BANGKIT CLOUD COHORT LEAD</span>
+              </div>
+            </FloatingObject>
           </motion.div>
 
-          {/* Oversized Name Header with Staggered Entrance */}
+          {/* Oversized Name Header with Character-by-Character Staggered Typography Reveal */}
           <h1 className="font-display font-black text-5xl sm:text-7xl md:text-8xl lg:text-[7.5rem] tracking-tighter uppercase leading-[0.88] select-none break-words">
-            <motion.span
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-              className="block text-black dark:text-white drop-shadow-[4px_4px_0px_#FFE500]"
-            >
-              TAUFIK
-            </motion.span>
-            <motion.span
-              initial={{ opacity: 0, y: 35 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-              className="block text-transparent bg-clip-text bg-gradient-to-r from-black via-neutral-800 to-black dark:from-white dark:via-neutral-200 dark:to-white [-webkit-text-stroke:2px_#000] dark:[-webkit-text-stroke:2px_#FFF] hover:text-black dark:hover:text-white transition-colors duration-300"
-            >
-              RAIHANDANI
-            </motion.span>
+            <span className="block text-black dark:text-white drop-shadow-[4px_4px_0px_#FFE500]">
+              <AnimatedText text="TAUFIK" type="chars" stagger={0.05} delay={0.1} />
+            </span>
+            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-black via-neutral-800 to-black dark:from-white dark:via-neutral-200 dark:to-white [-webkit-text-stroke:2px_#000] dark:[-webkit-text-stroke:2px_#FFF] hover:text-black dark:hover:text-white transition-colors duration-300">
+              <AnimatedText text="RAIHANDANI" type="chars" stagger={0.04} delay={0.35} />
+            </span>
           </h1>
         </div>
 
@@ -147,7 +139,7 @@ export function BrutalistHero({
 
             {/* CTAs with Magnetic Effect */}
             <div className="pt-2 flex flex-wrap items-center gap-4">
-              <BrutalistMagnetic strength={0.25}>
+              <MagneticButton strength={0.25}>
                 <a
                   href="#projects"
                   onMouseEnter={() => setCursor({ active: true, text: "EXPLORE" })}
@@ -160,9 +152,9 @@ export function BrutalistHero({
                     className="stroke-[3] group-hover:rotate-[-45deg] transition-transform duration-200"
                   />
                 </a>
-              </BrutalistMagnetic>
+              </MagneticButton>
 
-              <BrutalistMagnetic strength={0.25}>
+              <MagneticButton strength={0.25}>
                 <a
                   href={resumeUrl}
                   target="_blank"
@@ -174,7 +166,7 @@ export function BrutalistHero({
                   <Download size={18} className="stroke-[2.5]" />
                   <span>UNDUH CV (PDF)</span>
                 </a>
-              </BrutalistMagnetic>
+              </MagneticButton>
             </div>
           </div>
 

@@ -1,7 +1,9 @@
 "use client";
 
 import React from "react";
+import { motion } from "framer-motion";
 import { Briefcase, GraduationCap, Award, Calendar, MapPin, CheckCircle2 } from "lucide-react";
+import { CardTilt3D, Reveal, TextScramble } from "../motion";
 
 interface ExperienceItem {
   id: string;
@@ -116,7 +118,7 @@ export function BrutalistExperienceEducation() {
           <div>
             <div className="flex items-center gap-3 mb-3">
               <span className="font-mono text-xs font-black bg-black text-[#FFE500] dark:bg-white dark:text-black px-2.5 py-1 border-2 border-black dark:border-white shadow-[2px_2px_0px_#FF5C00]">
-                05 // TIMELINE
+                <TextScramble text="05 // TIMELINE" />
               </span>
               <span className="font-mono text-xs font-bold text-[#FF5C00] uppercase">
                 REKAM JEJAK PROFESIONAL & AKADEMIK
@@ -146,46 +148,45 @@ export function BrutalistExperienceEducation() {
 
             <div className="space-y-4">
               {EXPERIENCES.map((exp, idx) => (
-                <div
-                  key={exp.id}
-                  className="p-5 md:p-6 bg-white dark:bg-[#141414] border-4 border-black dark:border-white shadow-[5px_5px_0px_#000] dark:shadow-[5px_5px_0px_#FFF] hover:shadow-[8px_8px_0px_#FFE500] hover:-translate-x-1 hover:-translate-y-1 transition-all duration-200"
-                >
-                  {/* Top Bar with Badge */}
-                  <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
-                    <span
-                      className={`font-mono text-[10px] font-black px-2.5 py-0.5 border-2 border-black shadow-[2px_2px_0px_#000] ${exp.badgeColor}`}
-                    >
-                      {exp.type}
-                    </span>
-                    <span className="font-mono text-xs font-bold text-neutral-600 dark:text-neutral-400">
-                      {exp.period}
-                    </span>
-                  </div>
-
-                  <h3 className="font-display font-black text-xl md:text-2xl uppercase tracking-tight text-black dark:text-white mt-1">
-                    {exp.role}
-                  </h3>
-
-                  <div className="font-mono text-xs font-bold text-[#0047FF] dark:text-[#FFE500] mb-3">
-                    {exp.company} • {exp.location}
-                  </div>
-
-                  <p className="font-sans text-sm text-neutral-800 dark:text-neutral-200 leading-relaxed mb-4">
-                    {exp.description}
-                  </p>
-
-                  <ul className="space-y-1.5 border-t-2 border-dashed border-neutral-300 dark:border-neutral-700 pt-3">
-                    {exp.highlights.map((h, hIdx) => (
-                      <li
-                        key={hIdx}
-                        className="font-mono text-xs text-neutral-700 dark:text-neutral-300 flex items-start gap-2"
+                <Reveal key={exp.id} direction="up" delay={idx * 0.08}>
+                  <div className="p-5 md:p-6 bg-white dark:bg-[#141414] border-4 border-black dark:border-white shadow-[5px_5px_0px_#000] dark:shadow-[5px_5px_0px_#FFF] hover:shadow-[8px_8px_0px_#FFE500] hover:-translate-x-1 hover:-translate-y-1 transition-all duration-200">
+                    {/* Top Bar with Badge */}
+                    <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+                      <span
+                        className={`font-mono text-[10px] font-black px-2.5 py-0.5 border-2 border-black shadow-[2px_2px_0px_#000] ${exp.badgeColor}`}
                       >
-                        <span className="text-[#FF5C00] font-bold">›</span>
-                        <span>{h}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+                        {exp.type}
+                      </span>
+                      <span className="font-mono text-xs font-bold text-neutral-600 dark:text-neutral-400">
+                        {exp.period}
+                      </span>
+                    </div>
+
+                    <h3 className="font-display font-black text-xl md:text-2xl uppercase tracking-tight text-black dark:text-white mt-1">
+                      {exp.role}
+                    </h3>
+
+                    <div className="font-mono text-xs font-bold text-[#0047FF] dark:text-[#FFE500] mb-3">
+                      {exp.company} • {exp.location}
+                    </div>
+
+                    <p className="font-sans text-sm text-neutral-800 dark:text-neutral-200 leading-relaxed mb-4">
+                      {exp.description}
+                    </p>
+
+                    <ul className="space-y-1.5 border-t-2 border-dashed border-neutral-300 dark:border-neutral-700 pt-3">
+                      {exp.highlights.map((h, hIdx) => (
+                        <li
+                          key={hIdx}
+                          className="font-mono text-xs text-neutral-700 dark:text-neutral-300 flex items-start gap-2"
+                        >
+                          <span className="text-[#FF5C00] font-bold">›</span>
+                          <span>{h}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </Reveal>
               ))}
             </div>
           </div>
@@ -200,59 +201,61 @@ export function BrutalistExperienceEducation() {
               <span>TERAKREDITASI</span>
             </div>
 
-            {/* Neo-brutalist Master Degree Card */}
-            <div className="p-6 md:p-8 bg-white dark:bg-[#141414] border-4 border-black dark:border-white shadow-[8px_8px_0px_#FF5C00]">
-              <div className="flex items-center justify-between pb-3 mb-4 border-b-2 border-black dark:border-neutral-700">
-                <span className="font-mono text-xs font-black bg-[#FF5C00] text-white px-2.5 py-1 border border-black shadow-[2px_2px_0px_#000]">
-                  STRATA 1 (S1)
-                </span>
-                <span className="font-mono text-xs font-bold text-neutral-500">
-                  {EDUCATION.period}
-                </span>
-              </div>
+            {/* Neo-brutalist Master Degree Card with 3D Tilt */}
+            <CardTilt3D tiltMax={7} scaleHover={1.02}>
+              <div className="p-6 md:p-8 bg-white dark:bg-[#141414] border-4 border-black dark:border-white shadow-[8px_8px_0px_#FF5C00]">
+                <div className="flex items-center justify-between pb-3 mb-4 border-b-2 border-black dark:border-neutral-700">
+                  <span className="font-mono text-xs font-black bg-[#FF5C00] text-white px-2.5 py-1 border border-black shadow-[2px_2px_0px_#000]">
+                    STRATA 1 (S1)
+                  </span>
+                  <span className="font-mono text-xs font-bold text-neutral-500">
+                    {EDUCATION.period}
+                  </span>
+                </div>
 
-              <h3 className="font-display font-black text-2xl md:text-3xl uppercase tracking-tight mb-1">
-                {EDUCATION.institution}
-              </h3>
-              <p className="font-mono text-sm font-bold text-[#0047FF] dark:text-[#FFE500] mb-4">
-                {EDUCATION.degree}
-              </p>
+                <h3 className="font-display font-black text-2xl md:text-3xl uppercase tracking-tight mb-1">
+                  {EDUCATION.institution}
+                </h3>
+                <p className="font-mono text-sm font-bold text-[#0047FF] dark:text-[#FFE500] mb-4">
+                  {EDUCATION.degree}
+                </p>
 
-              {/* GPA Stamp Box */}
-              <div className="p-4 bg-[#FFE500] text-black border-3 border-black shadow-[4px_4px_0px_#000] mb-6">
-                <span className="font-mono text-[10px] font-black uppercase text-neutral-800 block">
-                  INDEKS PRESTASI KUMULATIF (IPK):
-                </span>
-                <div className="font-display font-black text-3xl tracking-tight">
-                  {EDUCATION.gpa}
+                {/* GPA Stamp Box */}
+                <div className="p-4 bg-[#FFE500] text-black border-3 border-black shadow-[4px_4px_0px_#000] mb-6">
+                  <span className="font-mono text-[10px] font-black uppercase text-neutral-800 block">
+                    INDEKS PRESTASI KUMULATIF (IPK):
+                  </span>
+                  <div className="font-display font-black text-3xl tracking-tight">
+                    {EDUCATION.gpa}
+                  </div>
+                </div>
+
+                {/* Thesis Specification Box */}
+                <div className="p-4 bg-neutral-100 dark:bg-[#1A1A1A] border-2 border-black dark:border-neutral-700 mb-6">
+                  <span className="font-mono text-xs font-black uppercase text-[#FF5C00] block mb-1">
+                    JUDUL SKRIPSI PENELITIAN:
+                  </span>
+                  <p className="font-sans text-sm font-medium italic leading-relaxed text-neutral-900 dark:text-neutral-100">
+                    "{EDUCATION.thesis}"
+                  </p>
+                </div>
+
+                {/* Competency Highlights */}
+                <div className="space-y-2">
+                  <span className="font-mono text-xs font-black uppercase text-neutral-600 dark:text-neutral-400 block">
+                    KOMPETENSI AKADEMIK UTAMA:
+                  </span>
+                  <ul className="space-y-2 font-mono text-xs">
+                    {EDUCATION.highlights.map((h, i) => (
+                      <li key={i} className="flex items-start gap-2 text-neutral-800 dark:text-neutral-200">
+                        <CheckCircle2 size={15} className="text-emerald-500 shrink-0 mt-0.5" />
+                        <span>{h}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               </div>
-
-              {/* Thesis Specification Box */}
-              <div className="p-4 bg-neutral-100 dark:bg-[#1A1A1A] border-2 border-black dark:border-neutral-700 mb-6">
-                <span className="font-mono text-xs font-black uppercase text-[#FF5C00] block mb-1">
-                  JUDUL SKRIPSI PENELITIAN:
-                </span>
-                <p className="font-sans text-sm font-medium italic leading-relaxed text-neutral-900 dark:text-neutral-100">
-                  "{EDUCATION.thesis}"
-                </p>
-              </div>
-
-              {/* Competency Highlights */}
-              <div className="space-y-2">
-                <span className="font-mono text-xs font-black uppercase text-neutral-600 dark:text-neutral-400 block">
-                  KOMPETENSI AKADEMIK UTAMA:
-                </span>
-                <ul className="space-y-2 font-mono text-xs">
-                  {EDUCATION.highlights.map((h, i) => (
-                    <li key={i} className="flex items-start gap-2 text-neutral-800 dark:text-neutral-200">
-                      <CheckCircle2 size={15} className="text-emerald-500 shrink-0 mt-0.5" />
-                      <span>{h}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
+            </CardTilt3D>
 
             {/* Quick Sticker Tag */}
             <div className="p-4 bg-[#0047FF] text-white border-3 border-black shadow-[4px_4px_0px_#000] font-mono text-xs font-bold leading-relaxed">

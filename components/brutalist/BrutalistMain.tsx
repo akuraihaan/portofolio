@@ -4,12 +4,14 @@ import React from "react";
 import type { Bundle } from "@/lib/data";
 import { text, safeHref } from "@/lib/domain";
 import { ThemeProvider } from "../editorial/ThemeContext";
-import { MotionProvider } from "../motion/MotionProvider";
+import {
+  MotionProvider,
+  CustomCursor,
+  SmoothScrollProvider,
+  NoiseOverlay,
+  ScrollProgress,
+} from "../motion";
 import { BrandPreloader } from "../motion/BrandPreloader";
-import { CursorFollower } from "../motion/CursorFollower";
-import { SmoothScrollProvider } from "../motion/SmoothScrollProvider";
-import { NoiseOverlay } from "../motion/NoiseOverlay";
-import { BrutalistScrollProgress } from "./BrutalistScrollProgress";
 import { BrutalistNavbar } from "./BrutalistNavbar";
 import { BrutalistHero } from "./BrutalistHero";
 import { BrutalistAbout } from "./BrutalistAbout";
@@ -172,13 +174,13 @@ export function BrutalistMain({ bundle }: BrutalistMainProps) {
           <NoiseOverlay />
 
           {/* Sticky Reading & Scroll Progress Indicator */}
-          <BrutalistScrollProgress />
+          <ScrollProgress />
 
           {/* Animated Brand Preloader Bumper */}
           <BrandPreloader />
 
           {/* Custom Cursor with Trailing Physics & Dynamic Context */}
-          <CursorFollower />
+          <CustomCursor />
 
           <div className="min-h-screen bg-[#F4F4F0] dark:bg-[#0A0A0A] text-black dark:text-[#F4F4F0] font-sans selection:bg-[#FFE500] selection:text-black">
             {/* Main Neo-Brutalist Sticky Navbar */}

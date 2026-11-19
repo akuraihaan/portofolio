@@ -6,21 +6,24 @@ import { motion, useReducedMotion } from "framer-motion";
 interface MagneticButtonProps {
   children: React.ReactNode;
   className?: string;
-  onClick?: () => void;
+  strength?: number;
   variant?: "primary" | "secondary" | "lime";
+  onClick?: () => void;
   href?: string;
   target?: string;
   rel?: string;
+  ariaLabel?: string;
 }
 
 export function MagneticButton({
   children,
   className = "",
+  strength = 0.35,
   onClick,
-  variant = "primary",
   href,
   target,
   rel,
+  ariaLabel,
 }: MagneticButtonProps) {
   const ref = useRef<HTMLDivElement | null>(null);
   const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -30,36 +33,29 @@ export function MagneticButton({
     if (prefersReduced || !ref.current) return;
     const { clientX, clientY } = e;
     const { left, top, width, height } = ref.current.getBoundingClientRect();
-    const middleX = clientX - (left + width / 2);
-    const middleY = clientY - (top + height / 2);
-    setPosition({ x: middleX * 0.15, y: middleY * 0.15 });
+    const centerX = left + width / 2;
+    const centerY = top + height / 2;
+
+    const deltaX = (clientX - centerX) * strength;
+    const deltaY = (clientY - centerY) * strength;
+
+    setPosition({ x: deltaX, y: deltaY });
   };
 
-  const reset = () => {
+  const handleMouseLeave = () => {
     setPosition({ x: 0, y: 0 });
   };
-
-  const variantClass =
-    variant === "lime"
-      ? "bg-[#C8F169] text-[#171816] border-2 border-[#171816] shadow-pixel hover:shadow-pixel-lg"
-      : variant === "secondary"
-      ? "bg-white dark:bg-[#1C1F1A] text-[#171816] dark:text-[#F4F3EE] border-2 border-[#171816] dark:border-[#C8F169] shadow-pixel dark:shadow-pixel-lime hover:shadow-pixel-lg"
-      : "bg-[#171816] text-[#F4F3EE] dark:bg-[#C8F169] dark:text-[#171816] border-2 border-[#171816] dark:border-[#C8F169] shadow-pixel dark:shadow-pixel-lime hover:shadow-pixel-lg";
 
   const content = (
     <motion.div
       ref={ref}
       animate={{ x: position.x, y: position.y }}
-      transition={{ type: "spring", stiffness: 350, damping: 20 }}
+      transition={{ type: "spring", stiffness: 350, damping: 18, mass: 0.5 }}
       onMouseMove={handleMouseMove}
-      onMouseLeave={reset}
-      className="inline-block"
+      onMouseLeave={handleMouseLeave}
+      className={`inline-block ${className}`}
     >
-      <div
-        className={`px-5 py-3 font-pixel text-[10px] tracking-wider uppercase transition-all duration-100 active:translate-x-1 active:translate-y-1 active:shadow-none select-none flex items-center justify-center gap-2 ${variantClass} ${className}`}
-      >
-        {children}
-      </div>
+      {children}
     </motion.div>
   );
 
@@ -70,7 +66,8 @@ export function MagneticButton({
         target={target}
         rel={rel}
         onClick={onClick}
-        className="inline-block no-underline"
+        aria-label={ariaLabel}
+        className="inline-block text-inherit no-underline"
       >
         {content}
       </a>
@@ -78,9 +75,8 @@ export function MagneticButton({
   }
 
   return (
-    <button onClick={onClick} type="button" className="inline-block bg-transparent p-0 border-0 cursor-pointer">
+    <div onClick={onClick} className="inline-block cursor-pointer">
       {content}
-    </button>
+    </div>
   );
 }
-

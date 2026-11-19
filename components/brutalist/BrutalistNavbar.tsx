@@ -4,6 +4,8 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, ArrowUpRight, Sun, Moon, Sparkles } from "lucide-react";
 import { useTheme } from "../editorial/ThemeContext";
+import { MagneticButton } from "../motion/MagneticButton";
+import { useMotionContext } from "../motion/MotionProvider";
 
 interface NavLinkItem {
   name: string;
@@ -46,6 +48,8 @@ export function BrutalistNavbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  const { setCursor, resetCursor } = useMotionContext();
+
   return (
     <header className="fixed top-0 left-0 right-0 z-50 transition-all duration-200">
       {/* Top Mini Marquee Ticker */}
@@ -72,7 +76,9 @@ export function BrutalistNavbar() {
           {/* Logo & Brand Sticker */}
           <a
             href="#hero"
-            className="flex items-center gap-2 group text-inherit no-underline"
+            onMouseEnter={() => setCursor({ active: true, text: "BWORIEY" })}
+            onMouseLeave={resetCursor}
+            className="flex items-center gap-2 group text-inherit no-underline focus-visible:ring-2 focus-visible:ring-[#FFE500] focus-visible:outline-none"
           >
             <div className="bg-black text-[#FFE500] dark:bg-[#FFE500] dark:text-black font-display font-black text-xl md:text-2xl px-2.5 py-1 tracking-tighter border-2 border-black dark:border-white shadow-[3px_3px_0px_#FF5C00] group-hover:translate-x-0.5 group-hover:translate-y-0.5 group-hover:shadow-none transition-all">
               BWORIEY
@@ -90,7 +96,9 @@ export function BrutalistNavbar() {
                 <a
                   key={link.name}
                   href={link.href}
-                  className={`font-mono text-xs font-bold px-3 py-1.5 border-2 transition-all flex items-center gap-1.5 ${
+                  onMouseEnter={() => setCursor({ active: true, text: link.name })}
+                  onMouseLeave={resetCursor}
+                  className={`font-mono text-xs font-bold px-3 py-1.5 border-2 transition-all flex items-center gap-1.5 focus-visible:ring-2 focus-visible:ring-[#FFE500] focus-visible:outline-none ${
                     isActive
                       ? "bg-black text-[#FFE500] border-black dark:bg-[#FFE500] dark:text-black dark:border-white shadow-[2px_2px_0px_#0047FF]"
                       : "border-transparent hover:border-black dark:hover:border-white hover:bg-white dark:hover:bg-[#1C1F1A]"
@@ -109,19 +117,25 @@ export function BrutalistNavbar() {
             <button
               onClick={toggleTheme}
               aria-label="Toggle Mode"
-              className="p-2 border-2 border-black dark:border-white bg-white dark:bg-[#1A1A1A] text-black dark:text-white shadow-[2px_2px_0px_#000] dark:shadow-[2px_2px_0px_#FFF] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all cursor-pointer"
+              onMouseEnter={() => setCursor({ active: true, text: theme === "dark" ? "LIGHT" : "DARK" })}
+              onMouseLeave={resetCursor}
+              className="p-2 border-2 border-black dark:border-white bg-white dark:bg-[#1A1A1A] text-black dark:text-white shadow-[2px_2px_0px_#000] dark:shadow-[2px_2px_0px_#FFF] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all cursor-pointer focus-visible:ring-2 focus-visible:ring-[#FFE500] focus-visible:outline-none"
             >
               {theme === "dark" ? <Sun size={16} className="text-[#FFE500]" /> : <Moon size={16} />}
             </button>
 
-            {/* Desktop Contact CTA */}
-            <a
-              href="#contact"
-              className="hidden sm:flex items-center gap-1.5 bg-[#FFE500] text-black font-display font-black text-xs px-4 py-2 border-2 border-black shadow-[3px_3px_0px_#000] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all no-underline"
-            >
-              <span>HUBUNGI SAYA</span>
-              <ArrowUpRight size={14} className="stroke-[3]" />
-            </a>
+            {/* Desktop Contact CTA with Magnetic feel */}
+            <MagneticButton strength={0.3}>
+              <a
+                href="#contact"
+                onMouseEnter={() => setCursor({ active: true, text: "KONTAK" })}
+                onMouseLeave={resetCursor}
+                className="hidden sm:flex items-center gap-1.5 bg-[#FFE500] text-black font-display font-black text-xs px-4 py-2 border-2 border-black shadow-[3px_3px_0px_#000] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all no-underline focus-visible:ring-2 focus-visible:ring-black focus-visible:outline-none"
+              >
+                <span>HUBUNGI SAYA</span>
+                <ArrowUpRight size={14} className="stroke-[3]" />
+              </a>
+            </MagneticButton>
 
             {/* Mobile Drawer Trigger */}
             <button
