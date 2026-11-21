@@ -3,6 +3,9 @@ import { text, safeHref } from "@/lib/domain";
 import { origin } from "@/lib/data";
 import { BrutalistMain } from "@/components/brutalist/BrutalistMain";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export async function generateMetadata() {
   const b = await getPublicBundle();
   const s = b.settings;

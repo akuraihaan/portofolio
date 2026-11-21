@@ -19,6 +19,10 @@ interface BrutalistHeroProps {
   primaryButtonUrl?: string;
   secondaryButtonLabel?: string;
   secondaryButtonUrl?: string;
+  projectCount?: number;
+  certificateCount?: number;
+  gpaText?: string;
+  almamaterText?: string;
 }
 
 export function BrutalistHero({
@@ -33,6 +37,10 @@ export function BrutalistHero({
   primaryButtonUrl = "#projects",
   secondaryButtonLabel = "UNDUH CV (PDF)",
   secondaryButtonUrl,
+  projectCount,
+  certificateCount,
+  gpaText,
+  almamaterText,
 }: BrutalistHeroProps) {
   const { setCursor, resetCursor } = useMotionContext();
 
@@ -212,11 +220,11 @@ export function BrutalistHero({
             <div className="w-full max-w-sm p-3.5 bg-neutral-100 dark:bg-[#141414] border-3 border-black dark:border-neutral-700 font-mono text-[11px] space-y-1.5 shadow-[3px_3px_0px_#000]">
               <div className="flex justify-between items-center border-b border-neutral-300 dark:border-neutral-800 pb-1">
                 <span className="text-neutral-500 font-bold">ALMAMATER:</span>
-                <span className="font-black">UNIV. LAMBUNG MANGKURAT</span>
+                <span className="font-black">{almamaterText || "UNIV. LAMBUNG MANGKURAT"}</span>
               </div>
               <div className="flex justify-between items-center border-b border-neutral-300 dark:border-neutral-800 pb-1">
                 <span className="text-neutral-500 font-bold">IPK KELULUSAN:</span>
-                <span className="font-black text-[#FF5C00]">3.54 / 4.00</span>
+                <span className="font-black text-[#FF5C00]">{gpaText || "3.54 / 4.00"}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-neutral-500 font-bold">CORE DOMAIN:</span>
@@ -230,9 +238,21 @@ export function BrutalistHero({
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4 pt-4">
           {[
             { label: "TAHUN EKSPLORASI", value: "4+ TAHUN", color: "bg-[#FFE500] text-black" },
-            { label: "PROYEK SELESAI", value: "15+ KARYA", color: "bg-[#FF5C00] text-white" },
-            { label: "IPK KELULUSAN", value: "3.54 / 4.00", color: "bg-[#0047FF] text-white" },
-            { label: "KREDENSIAL RESMI", value: "10+ SERTIFIKAT", color: "bg-[#C8F169] text-black" },
+            {
+              label: "PROYEK REKAYASA",
+              value: projectCount ? `${projectCount} KARYA` : "7+ KARYA",
+              color: "bg-[#FF5C00] text-white",
+            },
+            {
+              label: "IPK KELULUSAN",
+              value: gpaText || "3.54 / 4.00",
+              color: "bg-[#0047FF] text-white",
+            },
+            {
+              label: "KREDENSIAL RESMI",
+              value: certificateCount ? `${certificateCount} SERTIFIKAT` : "5+ SERTIFIKAT",
+              color: "bg-[#C8F169] text-black",
+            },
           ].map((stat, idx) => (
             <motion.div
               key={idx}

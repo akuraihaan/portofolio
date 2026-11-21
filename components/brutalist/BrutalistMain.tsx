@@ -25,6 +25,7 @@ import {
   BrutalistExperienceEducation,
   type ExperienceItem,
   type EducationItem,
+  defaultExperiences,
 } from "./BrutalistExperienceEducation";
 import {
   BrutalistCertificates,
@@ -47,7 +48,7 @@ export function BrutalistMain({ bundle }: BrutalistMainProps) {
     "Taufik Raihandani";
 
   const ownerEmail =
-    text(bundle?.settings?.owner_email) || "raihan@bworiey.my.id";
+    text(bundle?.settings?.owner_email) || "taufikraihandani@gmail.com";
 
   const resumeUrl =
     safeHref(bundle?.settings?.resume_url) ||
@@ -71,27 +72,46 @@ export function BrutalistMain({ bundle }: BrutalistMainProps) {
     const caseStudy = row.case_study as Record<string, string> | undefined;
     const title = text(row.title) || "Proyek Rekayasa";
 
-    let coverUrl = safeHref(row.cover_url) || safeHref(row.thumbnail_url);
+    let coverUrl =
+      safeHref(row.cover_url) ||
+      safeHref(row.thumbnail_url) ||
+      safeHref(row.cover_image_url);
     let repoUrl = safeHref(row.repository_url);
+    let projectUrl = safeHref(row.project_url);
 
-    if (title.toLowerCase().includes("tailwind") || title.toLowerCase().includes("flowwind")) {
-      coverUrl = "https://txsqhxhnamgteofarqfz.supabase.co/storage/v1/object/public/portfolio-public/projects/cover-flowwind.png";
-      repoUrl = repoUrl || "https://github.com/bworiey/web-pembelajaran-interaktif-tailwind";
-    } else if (title.toLowerCase().includes("combridge") || title.toLowerCase().includes("bisindo")) {
-      coverUrl = "https://txsqhxhnamgteofarqfz.supabase.co/storage/v1/object/public/portfolio-public/experiences/logos/ef4d0997-13e2-4034-97ee-328963e2351a/b7d3bc6d-213a-41eb-81d8-c63ba5b9640a-images.png";
-      repoUrl = repoUrl || "https://github.com/bworiey/combridge-bisindo-cloud";
-    } else if (title.toLowerCase().includes("dayak")) {
-      repoUrl = repoUrl || "https://github.com/bworiey/game-kuis-dayak-ngaju";
-    } else if (title.toLowerCase().includes("lahan basah") || title.toLowerCase().includes("ikan")) {
-      repoUrl = repoUrl || "https://github.com/bworiey/edugame-ikan-lahan-basah";
-    } else if (title.toLowerCase().includes("konversi")) {
-      repoUrl = repoUrl || "https://github.com/bworiey/aplikasi-konversi-satuan";
-    } else if (title.toLowerCase().includes("pencatatan") || title.toLowerCase().includes("android")) {
-      repoUrl = repoUrl || "https://github.com/bworiey/android-smart-notes";
-    } else if (title.toLowerCase().includes("scraping") || title.toLowerCase().includes("kaggle")) {
-      repoUrl = repoUrl || "https://github.com/bworiey/data-science-scraping-kaggle";
-    } else if (title.toLowerCase().includes("webgis") || title.toLowerCase().includes("pemetaan")) {
-      repoUrl = repoUrl || "https://github.com/bworiey/webgis-pemetaan-sekolah-banjarmasin";
+    // Fallbacks only when absent from the Supabase database
+    if (!coverUrl) {
+      if (title.toLowerCase().includes("tailwind") || title.toLowerCase().includes("flowwind")) {
+        coverUrl = "https://txsqhxhnamgteofarqfz.supabase.co/storage/v1/object/public/portfolio-public/projects/cover-flowwind.png";
+      } else if (title.toLowerCase().includes("combridge") || title.toLowerCase().includes("bisindo")) {
+        coverUrl = "https://txsqhxhnamgteofarqfz.supabase.co/storage/v1/object/public/portfolio-public/experiences/logos/ef4d0997-13e2-4034-97ee-328963e2351a/b7d3bc6d-213a-41eb-81d8-c63ba5b9640a-images.png";
+      }
+    }
+
+    if (!repoUrl) {
+      if (title.toLowerCase().includes("tailwind") || title.toLowerCase().includes("flowwind")) {
+        repoUrl = "https://github.com/bworiey/web-pembelajaran-interaktif-tailwind";
+      } else if (title.toLowerCase().includes("combridge") || title.toLowerCase().includes("bisindo")) {
+        repoUrl = "https://github.com/bworiey/combridge-bisindo-cloud";
+      } else if (title.toLowerCase().includes("dayak")) {
+        repoUrl = "https://github.com/bworiey/game-kuis-dayak-ngaju";
+      } else if (title.toLowerCase().includes("lahan basah") || title.toLowerCase().includes("ikan")) {
+        repoUrl = "https://github.com/bworiey/edugame-ikan-lahan-basah";
+      } else if (title.toLowerCase().includes("konversi")) {
+        repoUrl = "https://github.com/bworiey/aplikasi-konversi-satuan";
+      } else if (title.toLowerCase().includes("pencatatan") || title.toLowerCase().includes("android")) {
+        repoUrl = "https://github.com/bworiey/android-smart-notes";
+      } else if (title.toLowerCase().includes("scraping") || title.toLowerCase().includes("kaggle")) {
+        repoUrl = "https://github.com/bworiey/data-science-scraping-kaggle";
+      } else if (title.toLowerCase().includes("webgis") || title.toLowerCase().includes("pemetaan")) {
+        repoUrl = "https://github.com/bworiey/webgis-pemetaan-sekolah-banjarmasin";
+      }
+    }
+
+    if (!projectUrl) {
+      if (title.toLowerCase().includes("tailwind") || title.toLowerCase().includes("flowwind")) {
+        projectUrl = "https://flowwind-learn.vercel.app/";
+      }
     }
 
     return {
@@ -100,16 +120,16 @@ export function BrutalistMain({ bundle }: BrutalistMainProps) {
       title,
       subtitle: text(row.subtitle) || (idx === 0 ? "Penerapan Learning Analytics pada Web Pembelajaran Interaktif Framework CSS Tailwind Dasar" : undefined),
       category: text(row.category) || (idx === 1 ? "Cloud & Machine Learning" : "Teknologi Pendidikan"),
-      year: row.created_at ? String(row.created_at).slice(0, 4) : "2024",
+      year: row.project_year ? String(row.project_year) : row.created_at ? String(row.created_at).slice(0, 4) : "2024",
       role: text(row.role) || "Software Engineer",
       summary: text(row.summary) || text(row.description) || "Pengembangan sistem berbasis web dengan arsitektur modern.",
       description: text(row.description) || text(row.summary) || "Proyek rekayasa perangkat lunak terstruktur.",
       technologies: technologies.length > 0 ? technologies : ["Next.js", "TypeScript", "Tailwind CSS"],
       cover_url: coverUrl || null,
       thumbnail_url: coverUrl || null,
-      project_url: safeHref(row.project_url) || null,
+      project_url: projectUrl || null,
       repository_url: repoUrl || null,
-      is_featured: idx < 2,
+      is_featured: row.is_featured === true || idx < 2,
       case_study: {
         background: caseStudy?.background || undefined,
         features: caseStudy?.features || undefined,
@@ -120,40 +140,46 @@ export function BrutalistMain({ bundle }: BrutalistMainProps) {
     };
   });
 
-  const finalProjects = dbProjects.length >= 8 ? dbProjects : defaultBrutalistProjects;
+  // Always prioritize Supabase projects; fall back to defaults only if table is empty
+  const finalProjects = dbProjects.length > 0 ? dbProjects : defaultBrutalistProjects;
 
   // Dynamic Database Mapping for Certificates
   const rawCerts = bundle?.collections?.certificates?.data || [];
   const dbCerts: BrutalistCertificateItem[] = rawCerts.map((row, idx) => {
     const title = text(row.title) || "Sertifikat Resmi";
     const issuer = text(row.issuer) || "Lembaga Terakreditasi";
-    const certUrl = safeHref(row.certificate_url) || safeHref(row.image_url);
+    const certUrl =
+      safeHref(row.certificate_url) ||
+      safeHref(row.image_url) ||
+      safeHref(row.file_url);
 
     let desc = text(row.description);
-    let category = "Sertifikasi Resmi";
-    let isAward = false;
+    let category = text(row.category) || "Sertifikasi Resmi";
+    let isAward = Boolean(row.is_featured);
 
-    if (title.toLowerCase().includes("sendikom") || title.toLowerCase().includes("seminar")) {
-      category = "Publikasi Ilmiah";
-      isAward = true;
-      desc = desc || "Sertifikat Pemakalah dalam Seminar Nasional Komputer (SENDIKOM 2026) dalam diseminasi riset komputasi.";
-    } else if (title.toLowerCase().includes("peksiminas")) {
-      category = "Penghargaan Kompetisi";
-      isAward = true;
-      desc = desc || "Juara 2 Lomba Perancangan Desain Media Kampanye Sosial pada Pekan Seni Mahasiswa FKIP ULM.";
-    } else if (title.toLowerCase().includes("google") || title.toLowerCase().includes("bangkit")) {
-      category = "Teknologi Industri";
-      isAward = true;
-      desc = desc || "Sertifikat kelulusan program studi independen jalur Google Cloud Computing dengan predikat Distinction.";
-    } else if (title.toLowerCase().includes("scratch") || title.toLowerCase().includes("sman 1")) {
-      category = "Instruktur & Pengabdian";
-      desc = desc || "Sertifikat Instruktur Pelatihan Pemrograman Berbasis Visual (Scratch) di SMAN 1 Panyipatan.";
-    } else if (title.toLowerCase().includes("lahan basah") || title.toLowerCase().includes("literasi")) {
-      category = "Literasi Digital";
-      desc = desc || "Sertifikat penerapan TIK untuk kemajuan literasi digital masyarakat lingkungan lahan basah.";
-    } else if (title.toLowerCase().includes("gdsc")) {
-      category = "Teknologi Industri";
-      desc = desc || "Webinar Nasional Google Developer Student Club (GDSC) x IT FEST mengenai ekosistem cloud.";
+    if (!text(row.category)) {
+      if (title.toLowerCase().includes("sendikom") || title.toLowerCase().includes("seminar")) {
+        category = "Publikasi Ilmiah";
+        isAward = true;
+        desc = desc || "Sertifikat Pemakalah dalam Seminar Nasional Komputer (SENDIKOM 2026) dalam diseminasi riset komputasi.";
+      } else if (title.toLowerCase().includes("peksiminas")) {
+        category = "Penghargaan Kompetisi";
+        isAward = true;
+        desc = desc || "Juara 2 Lomba Perancangan Desain Media Kampanye Sosial pada Pekan Seni Mahasiswa FKIP ULM.";
+      } else if (title.toLowerCase().includes("google") || title.toLowerCase().includes("bangkit")) {
+        category = "Teknologi Industri";
+        isAward = true;
+        desc = desc || "Sertifikat kelulusan program studi independen jalur Google Cloud Computing dengan predikat Distinction.";
+      } else if (title.toLowerCase().includes("scratch") || title.toLowerCase().includes("sman 1")) {
+        category = "Instruktur & Pengabdian";
+        desc = desc || "Sertifikat Instruktur Pelatihan Pemrograman Berbasis Visual (Scratch) di SMAN 1 Panyipatan.";
+      } else if (title.toLowerCase().includes("lahan basah") || title.toLowerCase().includes("literasi")) {
+        category = "Literasi Digital";
+        desc = desc || "Sertifikat penerapan TIK untuk kemajuan literasi digital masyarakat lingkungan lahan basah.";
+      } else if (title.toLowerCase().includes("gdsc")) {
+        category = "Teknologi Industri";
+        desc = desc || "Webinar Nasional Google Developer Student Club (GDSC) x IT FEST mengenai ekosistem cloud.";
+      }
     }
 
     return {
@@ -169,7 +195,8 @@ export function BrutalistMain({ bundle }: BrutalistMainProps) {
     };
   });
 
-  const finalCertificates = dbCerts.length >= 6 ? dbCerts : defaultBrutalistCertificates;
+  // Always prioritize Supabase certificates; fall back to defaults only if table is empty
+  const finalCertificates = dbCerts.length > 0 ? dbCerts : defaultBrutalistCertificates;
 
   // Dynamic Database Mapping for Navigation
   const rawNav = bundle?.collections?.navigation?.data || [];
@@ -184,16 +211,25 @@ export function BrutalistMain({ bundle }: BrutalistMainProps) {
 
   // Dynamic Database Mapping for Sections
   const rawSections = bundle?.collections?.sections?.data || [];
-  const heroSection = rawSections.find((s) => text(s.section_key) === "hero");
+  const heroSection = rawSections.find(
+    (s) =>
+      text(s.section_key) === "hero" ||
+      text(s.section_key) === "featured_projects" ||
+      text(s.section_key) === "statistics"
+  );
   const aboutSection = rawSections.find((s) => text(s.section_key) === "about");
   const contactSection = rawSections.find((s) => text(s.section_key) === "contact");
 
   const availabilityStatus =
+    text(bundle?.settings?.availability_label) ||
     text(bundle?.settings?.availability_status) ||
     text(heroSection?.badge_text) ||
     "AVAILABLE FOR PROJECTS";
 
   const brandName = text(bundle?.settings?.site_name) || "BWORIEY";
+  const locationText = text(bundle?.settings?.owner_location)
+    ? `${text(bundle?.settings?.owner_location).toUpperCase()}, ID (UTC+8)`
+    : "BANJARMASIN, ID (UTC+8)";
 
   // Dynamic Database Mapping for Skills
   const rawSkills = bundle?.collections?.skills?.data || [];
@@ -217,35 +253,52 @@ export function BrutalistMain({ bundle }: BrutalistMainProps) {
   ];
   const dynamicExperiences: ExperienceItem[] | undefined =
     rawExperiences.length > 0
-      ? rawExperiences.map((row, idx) => {
-          const resp = Array.isArray(row.responsibilities)
-            ? row.responsibilities.map(String)
-            : typeof row.responsibilities === "string"
-            ? row.responsibilities.split(/[\n,]+/).map((s) => s.trim()).filter(Boolean)
-            : [];
-          const ach = Array.isArray(row.achievements)
-            ? row.achievements.map(String)
-            : typeof row.achievements === "string"
-            ? row.achievements.split(/[\n,]+/).map((s) => s.trim()).filter(Boolean)
-            : [];
+      ? [
+          ...rawExperiences.map((row, idx) => {
+            const resp = Array.isArray(row.responsibilities)
+              ? row.responsibilities.map(String)
+              : typeof row.responsibilities === "string"
+              ? row.responsibilities.split(/[\n,]+/).map((s) => s.trim()).filter(Boolean)
+              : [];
+            const ach = Array.isArray(row.achievements)
+              ? row.achievements.map(String)
+              : typeof row.achievements === "string"
+              ? row.achievements.split(/[\n,]+/).map((s) => s.trim()).filter(Boolean)
+              : [];
 
-          const highlights = ach.length > 0 ? ach : resp;
-          const startDate = row.start_date ? String(row.start_date).slice(0, 4) : "";
-          const endDate = row.is_current ? "Sekarang" : row.end_date ? String(row.end_date).slice(0, 4) : "";
-          const period = startDate && endDate ? `${startDate} — ${endDate}` : startDate || endDate || "2024";
+            const highlights = ach.length > 0 ? ach : resp;
+            const startDate = row.start_date ? String(row.start_date).slice(0, 4) : "";
+            const endDate = row.is_current ? "Sekarang" : row.end_date ? String(row.end_date).slice(0, 4) : "";
+            const period = startDate && endDate ? `${startDate} — ${endDate}` : startDate || endDate || "2024";
 
-          return {
-            id: text(row.id) || `exp-${idx}`,
-            role: text(row.role_title) || "Software Engineer",
-            company: text(row.company) || "Organisasi / Perusahaan",
-            period,
-            location: text(row.location) || "Indonesia",
-            type: text(row.experience_type) || "Program Profesional",
-            description: text(row.description) || "Rekayasa perangkat lunak dan manajemen sistem digital.",
-            highlights: highlights.length > 0 ? highlights : ["Membangun dan memelihara sistem digital berkinerja tinggi."],
-            badgeColor: badgePalette[idx % badgePalette.length],
-          };
-        })
+            return {
+              id: text(row.id) || `exp-db-${idx}`,
+              role: text(row.role_title) || "Software Engineer",
+              company: text(row.company) || "Organisasi / Perusahaan",
+              period,
+              location: text(row.location) || "Indonesia",
+              type: text(row.experience_type) || "Program Profesional",
+              description: text(row.description) || "Rekayasa perangkat lunak dan manajemen sistem digital.",
+              highlights:
+                highlights.length > 0
+                  ? highlights
+                  : [
+                      "Program kesiapan karier bersertifikat Google, GoTo, dan Traveloka.",
+                      "Fokus pada implementasi teknologi digital dan kerja sama tim industri.",
+                    ],
+              badgeColor: badgePalette[idx % badgePalette.length],
+            };
+          }),
+          // Append default experiences that do not clash with the database companies
+          ...defaultExperiences.filter(
+            (def) =>
+              !rawExperiences.some(
+                (r) =>
+                  text(r.company).toLowerCase().includes(def.company.toLowerCase()) ||
+                  def.company.toLowerCase().includes(text(r.company).toLowerCase())
+              )
+          ),
+        ]
       : undefined;
 
   // Dynamic Database Mapping for Education
@@ -259,15 +312,16 @@ export function BrutalistMain({ bundle }: BrutalistMainProps) {
           ? `${String(primaryEdu.start_date).slice(0, 4)} — ${primaryEdu.is_current ? "Sekarang" : primaryEdu.end_date ? String(primaryEdu.end_date).slice(0, 4) : "2026"}`
           : "2020 — 2026",
         gpa: "3.54 / 4.00 (Sangat Memuaskan)",
-        focus: text(primaryEdu.field_of_study) || "Rekayasa Perangkat Lunak Web & Media Pembelajaran Interaktif",
+        focus: text(primaryEdu.field_of_study) || text(primaryEdu.description) || "Rekayasa Perangkat Lunak Web & Media Pembelajaran Interaktif",
         thesis: "Penerapan Learning Analytics pada Web Pembelajaran Interaktif Framework CSS Tailwind Dasar",
-        highlights: Array.isArray(primaryEdu.related_achievements)
-          ? primaryEdu.related_achievements.map(String)
-          : [
-              "Konsentrasi keahlian pada rekayasa web frontend modern dan integrasi basis data awan.",
-              "Skripsi berhasil diuji dan dinyatakan lulus dengan nilai memuaskan.",
-              "Aktif dalam organisasi kepengurusan mahasiswa teknologi dan asisten laboratorium.",
-            ],
+        highlights:
+          Array.isArray(primaryEdu.related_achievements) && primaryEdu.related_achievements.length > 0
+            ? primaryEdu.related_achievements.map(String)
+            : [
+                text(primaryEdu.description) || "Pendidikan pada bidang komputer, pembelajaran, dan pengembangan teknologi pendidikan.",
+                "Konsentrasi keahlian pada rekayasa web frontend modern dan integrasi basis data awan.",
+                "Skripsi berhasil diuji dan dinyatakan lulus dengan nilai memuaskan.",
+              ],
       }
     : undefined;
 
@@ -281,9 +335,20 @@ export function BrutalistMain({ bundle }: BrutalistMainProps) {
   const linkedinUrl = safeHref(linkedinRow?.url) || "https://linkedin.com/in/taufik-raihandani";
   const instagramUrl = safeHref(instagramRow?.url) || "https://instagram.com/bworiey";
 
+  const socialLinks = rawSocial.length > 0
+    ? rawSocial.map((row) => ({
+        platform: text(row.platform) || "Web",
+        label: text(row.label) || undefined,
+        url: safeHref(row.url) || "#",
+      }))
+    : undefined;
+
   // Bio Paragraphs for About Section
   const rawBio = text(bundle?.profile?.bio) || text(aboutSection?.description);
-  const bioParagraphs = rawBio ? rawBio.split(/\n\n+/).filter(Boolean) : undefined;
+  const normalizedBio = rawBio
+    ? rawBio.charAt(0).toUpperCase() + rawBio.slice(1)
+    : undefined;
+  const bioParagraphs = normalizedBio ? normalizedBio.split(/\n\n+/).filter(Boolean) : undefined;
 
   const enableCursor = bundle?.settings?.enable_cursor !== false;
 
@@ -316,14 +381,19 @@ export function BrutalistMain({ bundle }: BrutalistMainProps) {
               <BrutalistHero
                 ownerName={ownerName}
                 resumeUrl={resumeUrl}
-                headline={text(heroSection?.title) || undefined}
-                subheadline={text(heroSection?.description) || undefined}
-                badgeText={text(heroSection?.badge_text) || undefined}
+                headline={text(bundle?.settings?.hero_title) || text(heroSection?.title) || undefined}
+                subheadline={text(bundle?.settings?.hero_description) || text(heroSection?.description) || undefined}
+                badgeText={text(bundle?.settings?.hero_badge) || text(heroSection?.badge_text) || undefined}
                 availabilityStatus={availabilityStatus}
+                locationText={locationText}
                 primaryButtonLabel={text(heroSection?.primary_button_label) || undefined}
                 primaryButtonUrl={safeHref(heroSection?.primary_button_url) || undefined}
                 secondaryButtonLabel={text(heroSection?.secondary_button_label) || undefined}
                 secondaryButtonUrl={safeHref(heroSection?.secondary_button_url) || undefined}
+                projectCount={finalProjects.length}
+                certificateCount={finalCertificates.length}
+                gpaText={dynamicEducation?.gpa}
+                almamaterText={dynamicEducation?.institution}
               />
 
               {/* 02. About Section (Max 3 Sentences, Asymmetric Grid) */}
@@ -331,6 +401,8 @@ export function BrutalistMain({ bundle }: BrutalistMainProps) {
                 avatarUrl={avatarUrl}
                 bioParagraphs={bioParagraphs}
                 ownerName={ownerName}
+                almamater={dynamicEducation?.institution}
+                degree={dynamicEducation?.degree}
               />
 
               {/* 03. Project Archive Section (Varied Preview Sizes, Real-time Search, Case Study Modal) */}
@@ -354,6 +426,7 @@ export function BrutalistMain({ bundle }: BrutalistMainProps) {
                 githubUrl={githubUrl}
                 linkedinUrl={linkedinUrl}
                 instagramUrl={instagramUrl}
+                socialLinks={socialLinks}
                 title={text(contactSection?.title) || undefined}
                 description={text(contactSection?.description) || undefined}
               />
@@ -363,6 +436,7 @@ export function BrutalistMain({ bundle }: BrutalistMainProps) {
             <BrutalistFooter
               ownerName={ownerName}
               brandName={brandName}
+              locationText={text(bundle?.settings?.owner_location) || undefined}
               availabilityStatus={availabilityStatus}
             />
           </div>

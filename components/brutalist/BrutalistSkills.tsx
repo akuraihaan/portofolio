@@ -143,6 +143,73 @@ interface BrutalistSkillsProps {
   dynamicSkills?: DynamicSkillRow[];
 }
 
+function matchSkillToCategory(s: DynamicSkillRow, catKey: string): boolean {
+  const c = (s.category || "").toLowerCase();
+  const n = (s.name || "").toLowerCase();
+
+  if (catKey === "frontend") {
+    return (
+      c.includes("front") ||
+      c.includes("web") ||
+      c.includes("ui") ||
+      n.includes("html") ||
+      n.includes("css") ||
+      n.includes("react") ||
+      n.includes("next") ||
+      n.includes("javascript") ||
+      n.includes("tailwind")
+    );
+  }
+  if (catKey === "backend") {
+    return (
+      c.includes("back") ||
+      c.includes("api") ||
+      c.includes("server") ||
+      n.includes("node") ||
+      n.includes("express") ||
+      n.includes("python") ||
+      n.includes("fastapi")
+    );
+  }
+  if (catKey === "database") {
+    return (
+      c.includes("data") ||
+      c.includes("db") ||
+      c.includes("sql") ||
+      n.includes("sql") ||
+      n.includes("postgres") ||
+      n.includes("supabase")
+    );
+  }
+  if (catKey === "cloud") {
+    return (
+      c.includes("cloud") ||
+      c.includes("infra") ||
+      c.includes("devops") ||
+      n.includes("cloud") ||
+      n.includes("gcp") ||
+      n.includes("docker")
+    );
+  }
+  if (catKey === "tools") {
+    return (
+      c.includes("tool") ||
+      c.includes("hard") ||
+      c.includes("soft") ||
+      c.includes("app") ||
+      c.includes("mobile") ||
+      c.includes("workflow") ||
+      c.includes("design") ||
+      n.includes("git") ||
+      n.includes("figma") ||
+      n.includes("office") ||
+      n.includes("android") ||
+      n.includes("teamwork")
+    );
+  }
+  return false;
+}
+
 export function BrutalistSkills({ dynamicSkills }: BrutalistSkillsProps) {
   const { setCursor, resetCursor } = useMotionContext();
 
@@ -152,16 +219,20 @@ export function BrutalistSkills({ dynamicSkills }: BrutalistSkillsProps) {
     }
 
     return SKILL_CATEGORIES.map((cat) => {
-      const matchingDynamic = dynamicSkills.filter((s) => {
-        const c = (s.category || "").toLowerCase();
-        return c.includes(cat.key) || cat.title.toLowerCase().includes(c);
-      });
+      const matchingDynamic = dynamicSkills.filter((s) => matchSkillToCategory(s, cat.key));
+      const unassignedDynamic =
+        cat.key === "tools"
+          ? dynamicSkills.filter(
+              (s) => !["frontend", "backend", "database", "cloud"].some((k) => matchSkillToCategory(s, k))
+            )
+          : [];
 
-      if (matchingDynamic.length === 0) return cat;
+      const combinedDynamic = Array.from(new Set([...matchingDynamic, ...unassignedDynamic]));
+      if (combinedDynamic.length === 0) return cat;
 
-      const dynamicItems: SkillItem[] = matchingDynamic.map((s) => ({
+      const dynamicItems: SkillItem[] = combinedDynamic.map((s) => ({
         name: s.name,
-        tag: s.description || (s.level ? `Level ${s.level}%` : undefined),
+        tag: s.description || (s.level ? `Level ${s.level}%` : "Database Live"),
       }));
 
       // Combine and deduplicate
@@ -203,6 +274,29 @@ export function BrutalistSkills({ dynamicSkills }: BrutalistSkillsProps) {
             Daftar teknologi dan alat kerja nyata yang digunakan dalam pengembangan produk digital, sistem serverless, dan riset edukasi.
           </p>
         </div>
+
+        {/* Dynamic Supabase Live Skills Pill Bar */}
+        {dynamicSkills && dynamicSkills.length > 0 && (
+          <div className="mb-10 p-3.5 md:p-4 bg-white dark:bg-[#141414] border-3 border-black dark:border-white shadow-[4px_4px_0px_#FFE500] flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-2 font-mono text-xs font-black uppercase text-black dark:text-white">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+              </span>
+              <span>TERINTEGRASI SUPABASE LIVE: {dynamicSkills.length} SKILLS AKTIF DARI BASIS DATA</span>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {dynamicSkills.map((s, sIdx) => (
+                <span
+                  key={sIdx}
+                  className="font-mono text-[11px] font-black px-2.5 py-0.5 bg-[#FFE500] text-black border border-black shadow-[1.5px_1.5px_0px_#000]"
+                >
+                  ✦ {s.name} {s.category ? `(${s.category})` : ""}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* 5 Distinct Neo-Brutalist Category Containers */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-14">
