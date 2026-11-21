@@ -1,7 +1,9 @@
 "use client";
 
 import React from "react";
+import { motion } from "framer-motion";
 import { ArrowUp, Terminal, Heart, Sparkles, MapPin, Globe } from "lucide-react";
+import { MagneticButton } from "../motion/MagneticButton";
 
 interface BrutalistFooterProps {
   ownerName?: string;
@@ -47,21 +49,30 @@ export function BrutalistFooter({
           </div>
 
           <div className="flex flex-col md:items-end justify-between">
-            <button
-              onClick={scrollToTop}
-              className="px-4 py-2 bg-[#FFE500] text-black font-display font-black text-xs uppercase border-2 border-black shadow-[3px_3px_0px_#FF5C00] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all flex items-center gap-1.5 cursor-pointer w-fit"
-            >
-              <ArrowUp size={16} className="stroke-[3]" />
-              <span>KEMBALI KE ATAS</span>
-            </button>
+            <MagneticButton strength={0.3}>
+              <motion.button
+                onClick={scrollToTop}
+                whileHover={{ y: -4, scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                transition={{ type: "spring", stiffness: 450, damping: 18 }}
+                className="px-4 py-2 bg-[#FFE500] text-black font-display font-black text-xs uppercase border-2 border-black shadow-[3px_3px_0px_#FF5C00] hover:shadow-none transition-shadow flex items-center gap-1.5 cursor-pointer w-fit"
+              >
+                <ArrowUp size={16} className="stroke-[3]" />
+                <span>KEMBALI KE ATAS</span>
+              </motion.button>
+            </MagneticButton>
           </div>
         </div>
 
-        {/* Massive Oversized Experimental Display Typography */}
+        {/* Massive Oversized Experimental Display Typography with Spring Hover */}
         <div className="py-12 md:py-16 text-center overflow-hidden">
-          <div className="font-display font-black text-6xl sm:text-8xl md:text-9xl lg:text-[11rem] tracking-tighter leading-none text-neutral-900 select-none hover:text-[#FFE500] transition-colors duration-300">
+          <motion.div
+            whileHover={{ scale: 1.03, letterSpacing: "0.02em" }}
+            transition={{ type: "spring", stiffness: 350, damping: 20 }}
+            className="font-display font-black text-6xl sm:text-8xl md:text-9xl lg:text-[11rem] tracking-tighter leading-none text-neutral-900 select-none hover:text-[#FFE500] transition-colors duration-300 cursor-default"
+          >
             {brandName}
-          </div>
+          </motion.div>
           <div className="font-mono text-xs sm:text-sm md:text-base font-black tracking-widest text-neutral-400 mt-2 uppercase">
             {ownerName} — EXPERIMENTAL BRUTALIST ARCHIVE
           </div>

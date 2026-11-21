@@ -99,25 +99,46 @@ export function BrutalistNavbar({
             </span>
           </a>
 
-          {/* Desktop Nav Links */}
+          {/* Desktop Nav Links with Dynamic Spring layoutId Highlight */}
           <div className="hidden lg:flex items-center gap-1">
             {navLinks.map((link: NavLinkItem) => {
               const isActive = activeSection === link.href.replace("#", "");
               return (
-                <a
+                <motion.a
                   key={link.name}
                   href={link.href}
+                  whileHover={{ y: -2 }}
+                  whileTap={{ scale: 0.96 }}
                   onMouseEnter={() => setCursor({ active: true, text: link.name })}
                   onMouseLeave={resetCursor}
-                  className={`font-mono text-xs font-bold px-3 py-1.5 border-2 transition-all flex items-center gap-1.5 focus-visible:ring-2 focus-visible:ring-[#FFE500] focus-visible:outline-none ${
-                    isActive
-                      ? "bg-black text-[#FFE500] border-black dark:bg-[#FFE500] dark:text-black dark:border-white shadow-[2px_2px_0px_#0047FF]"
-                      : "border-transparent hover:border-black dark:hover:border-white hover:bg-white dark:hover:bg-[#1C1F1A]"
-                  }`}
+                  className="relative font-mono text-xs font-bold px-3.5 py-1.5 transition-colors flex items-center gap-1.5 focus-visible:ring-2 focus-visible:ring-[#FFE500] focus-visible:outline-none z-10"
                 >
-                  <span className="opacity-60 text-[10px]">{link.num ? `${link.num}.` : "✦"}</span>
-                  <span>{link.name}</span>
-                </a>
+                  {isActive && (
+                    <motion.div
+                      layoutId="activeNavTab"
+                      transition={{ type: "spring", stiffness: 380, damping: 28 }}
+                      className="absolute inset-0 bg-black dark:bg-[#FFE500] border-2 border-black dark:border-white shadow-[2px_2px_0px_#0047FF] -z-10"
+                    />
+                  )}
+                  <span
+                    className={`text-[10px] ${
+                      isActive
+                        ? "text-[#FFE500] dark:text-black font-black"
+                        : "opacity-60 text-neutral-600 dark:text-neutral-400"
+                    }`}
+                  >
+                    {link.num ? `${link.num}.` : "✦"}
+                  </span>
+                  <span
+                    className={
+                      isActive
+                        ? "text-[#FFE500] dark:text-black font-black"
+                        : "text-black dark:text-white hover:text-[#0047FF] dark:hover:text-[#FFE500]"
+                    }
+                  >
+                    {link.name}
+                  </span>
+                </motion.a>
               );
             })}
           </div>
@@ -160,21 +181,39 @@ export function BrutalistNavbar({
         </div>
       </nav>
 
-      {/* Mobile Drawer */}
+      {/* Mobile Drawer with Staggered Framer Motion Reveal */}
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
             className="lg:hidden bg-[#F4F4F0] dark:bg-[#0A0A0A] border-b-4 border-black dark:border-white px-6 py-6 overflow-hidden"
           >
-            <div className="flex flex-col gap-3">
+            <motion.div
+              initial="hidden"
+              animate="visible"
+              variants={{
+                hidden: { opacity: 0 },
+                visible: {
+                  opacity: 1,
+                  transition: { staggerChildren: 0.06, delayChildren: 0.05 },
+                },
+              }}
+              className="flex flex-col gap-3"
+            >
               {navLinks.map((link: NavLinkItem) => (
-                <a
+                <motion.a
                   key={link.name}
                   href={link.href}
                   onClick={() => setMobileOpen(false)}
+                  variants={{
+                    hidden: { opacity: 0, x: -20 },
+                    visible: { opacity: 1, x: 0, transition: { type: "spring", stiffness: 350, damping: 24 } },
+                  }}
+                  whileHover={{ x: 6 }}
+                  whileTap={{ scale: 0.98 }}
                   className="flex items-center justify-between p-3 border-2 border-black dark:border-white bg-white dark:bg-[#1A1A1A] font-display font-black text-lg tracking-tight shadow-[3px_3px_0px_#000] dark:shadow-[3px_3px_0px_#FFF] active:translate-x-0.5 active:translate-y-0.5 no-underline text-inherit"
                 >
                   <span className="flex items-center gap-2">
@@ -182,19 +221,25 @@ export function BrutalistNavbar({
                     <span>{link.name}</span>
                   </span>
                   <ArrowUpRight size={18} />
-                </a>
+                </motion.a>
               ))}
 
-              <div className="pt-2 flex flex-col gap-2">
+              <motion.div
+                variants={{
+                  hidden: { opacity: 0, y: 15 },
+                  visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 22 } },
+                }}
+                className="pt-2 flex flex-col gap-2"
+              >
                 <a
                   href="#contact"
                   onClick={() => setMobileOpen(false)}
-                  className="w-full py-3 bg-[#FFE500] text-black font-display font-black text-center text-sm border-2 border-black shadow-[4px_4px_0px_#000] no-underline block"
+                  className="w-full py-3 bg-[#FFE500] text-black font-display font-black text-center text-sm border-2 border-black shadow-[4px_4px_0px_#000] no-underline block hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all"
                 >
                   HUBUNGI SAYA SEKARANG
                 </a>
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>

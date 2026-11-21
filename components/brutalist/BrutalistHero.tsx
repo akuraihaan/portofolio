@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { motion, useMotionValue, useTransform, useSpring } from "framer-motion";
+import { motion, useMotionValue, useTransform, useSpring, useScroll } from "framer-motion";
 import { ArrowDownRight, Download, Terminal, Sparkles, Code2, Cloud, GraduationCap, Zap } from "lucide-react";
 import { AnimatedText, FloatingObject, MagneticButton } from "../motion";
 import { Brutalist3DMesh } from "./Brutalist3DMesh";
@@ -35,6 +35,9 @@ export function BrutalistHero({
   secondaryButtonUrl,
 }: BrutalistHeroProps) {
   const { setCursor, resetCursor } = useMotionContext();
+
+  const { scrollY } = useScroll();
+  const headlineScrollY = useTransform(scrollY, [0, 400], [0, 45]);
 
   const names = (ownerName || "TAUFIK RAIHANDANI").trim().split(/\s+/);
   const firstName = names[0] || "TAUFIK";
@@ -129,15 +132,18 @@ export function BrutalistHero({
             </FloatingObject>
           </motion.div>
 
-          {/* Oversized Name Header with Character-by-Character Staggered Typography Reveal */}
-          <h1 className="font-display font-black text-5xl sm:text-7xl md:text-8xl lg:text-[7.5rem] tracking-tighter uppercase leading-[0.88] select-none break-words">
+          {/* Oversized Name Header with Character-by-Character Staggered Typography Reveal & Scroll Parallax */}
+          <motion.h1
+            style={{ y: headlineScrollY }}
+            className="font-display font-black text-5xl sm:text-7xl md:text-8xl lg:text-[7.5rem] tracking-tighter uppercase leading-[0.88] select-none break-words"
+          >
             <span className="block text-black dark:text-white drop-shadow-[4px_4px_0px_#FFE500]">
               <AnimatedText text={firstName} type="chars" stagger={0.05} delay={0.1} />
             </span>
             <span className="block text-transparent bg-clip-text bg-gradient-to-r from-black via-neutral-800 to-black dark:from-white dark:via-neutral-200 dark:to-white [-webkit-text-stroke:2px_#000] dark:[-webkit-text-stroke:2px_#FFF] hover:text-black dark:hover:text-white transition-colors duration-300">
               <AnimatedText text={lastName} type="chars" stagger={0.04} delay={0.35} />
             </span>
-          </h1>
+          </motion.h1>
         </div>
 
         {/* Asymmetrical Grid: Headline, Description & Interactive 3D Mesh */}

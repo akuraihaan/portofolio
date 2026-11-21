@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Award, ExternalLink, Calendar, Building, X, ZoomIn, CheckCircle2, ShieldCheck } from "lucide-react";
 import { CardTilt3D } from "../motion/CardTilt3D";
@@ -113,6 +113,23 @@ export function BrutalistCertificates({
   const { setCursor, resetCursor } = useMotionContext();
   const [activeCert, setActiveCert] = useState<BrutalistCertificateItem | null>(null);
 
+  // Close modal on Escape key press and prevent background scroll
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setActiveCert(null);
+    };
+
+    if (activeCert) {
+      window.addEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = "hidden";
+    }
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = "";
+    };
+  }, [activeCert]);
+
   return (
     <section
       id="certificates"
@@ -140,10 +157,17 @@ export function BrutalistCertificates({
           </p>
         </div>
 
-        {/* Visual Gallery Grid */}
+        {/* Visual Gallery Grid with Staggered Scroll Reveals */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {certificates.map((cert, idx) => (
-            <div key={cert.id} className="h-full">
+            <motion.div
+              key={cert.id}
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-40px" }}
+              transition={{ duration: 0.4, delay: idx * 0.06 }}
+              className="h-full"
+            >
               <CardTilt3D tiltMax={6} scaleHover={1.02}>
                 <div
                   onMouseEnter={() => setCursor({ active: true, text: "INSPEKSI" })}
@@ -223,19 +247,26 @@ export function BrutalistCertificates({
                   </div>
                 </div>
               </CardTilt3D>
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>
 
-      {/* Full Resolution Inspection Modal */}
+      {/* Full Resolution Inspection Modal with Spring Physics */}
       <AnimatePresence>
         {activeCert && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xs">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setActiveCert(null)}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+          >
             <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              initial={{ scale: 0.9, y: 30, opacity: 0 }}
+              animate={{ scale: 1, y: 0, opacity: 1, transition: { type: "spring", stiffness: 350, damping: 25 } }}
+              exit={{ scale: 0.92, y: 20, opacity: 0, transition: { duration: 0.2 } }}
               className="relative w-full max-w-4xl max-h-[90vh] bg-[#F4F4F0] dark:bg-[#121212] text-black dark:text-[#F4F4F0] border-4 border-black dark:border-white shadow-[12px_12px_0px_#FFE500] flex flex-col overflow-hidden"
             >
               {/* Modal Top Header */}
@@ -317,7 +348,7 @@ export function BrutalistCertificates({
                 </div>
               </div>
             </motion.div>
-          </div>
+          </motion.div>
         )}
       </AnimatePresence>
     </section>

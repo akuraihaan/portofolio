@@ -159,7 +159,11 @@ export function BrutalistExperienceEducation({
             <div className="space-y-4">
               {activeExperiences.map((exp, idx) => (
                 <Reveal key={exp.id} direction="up" delay={idx * 0.08}>
-                  <div className="p-5 md:p-6 bg-white dark:bg-[#141414] border-4 border-black dark:border-white shadow-[5px_5px_0px_#000] dark:shadow-[5px_5px_0px_#FFF] hover:shadow-[8px_8px_0px_#FFE500] hover:-translate-x-1 hover:-translate-y-1 transition-all duration-200">
+                  <motion.div
+                    whileHover={{ x: 6, y: -4 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 22 }}
+                    className="p-5 md:p-6 bg-white dark:bg-[#141414] border-4 border-black dark:border-white shadow-[5px_5px_0px_#000] dark:shadow-[5px_5px_0px_#FFF] hover:shadow-[9px_9px_0px_#FFE500] transition-shadow duration-200"
+                  >
                     {/* Top Bar with Badge */}
                     <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
                       <span
@@ -186,16 +190,18 @@ export function BrutalistExperienceEducation({
 
                     <ul className="space-y-1.5 border-t-2 border-dashed border-neutral-300 dark:border-neutral-700 pt-3">
                       {exp.highlights.map((h, hIdx) => (
-                        <li
+                        <motion.li
                           key={hIdx}
-                          className="font-mono text-xs text-neutral-700 dark:text-neutral-300 flex items-start gap-2"
+                          whileHover={{ x: 6 }}
+                          transition={{ type: "spring", stiffness: 450, damping: 20 }}
+                          className="font-mono text-xs text-neutral-700 dark:text-neutral-300 flex items-start gap-2 cursor-default select-none"
                         >
                           <span className="text-[#FF5C00] font-bold">›</span>
                           <span>{h}</span>
-                        </li>
+                        </motion.li>
                       ))}
                     </ul>
-                  </div>
+                  </motion.div>
                 </Reveal>
               ))}
             </div>
@@ -230,25 +236,33 @@ export function BrutalistExperienceEducation({
                   {activeEducation.degree}
                 </p>
 
-                {/* GPA Stamp Box */}
-                <div className="p-4 bg-[#FFE500] text-black border-3 border-black shadow-[4px_4px_0px_#000] mb-6">
+                {/* GPA Stamp Box with Spring Hover */}
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                  className="p-4 bg-[#FFE500] text-black border-3 border-black shadow-[4px_4px_0px_#000] mb-6 cursor-default select-none"
+                >
                   <span className="font-mono text-[10px] font-black uppercase text-neutral-800 block">
                     INDEKS PRESTASI KUMULATIF (IPK):
                   </span>
                   <div className="font-display font-black text-3xl tracking-tight">
                     {activeEducation.gpa}
                   </div>
-                </div>
+                </motion.div>
 
-                {/* Thesis Specification Box */}
-                <div className="p-4 bg-neutral-100 dark:bg-[#1A1A1A] border-2 border-black dark:border-neutral-700 mb-6">
+                {/* Thesis Specification Box with Spring Hover */}
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                  className="p-4 bg-neutral-100 dark:bg-[#1A1A1A] border-2 border-black dark:border-neutral-700 mb-6 cursor-default select-none"
+                >
                   <span className="font-mono text-xs font-black uppercase text-[#FF5C00] block mb-1">
                     JUDUL SKRIPSI PENELITIAN:
                   </span>
                   <p className="font-sans text-sm font-medium italic leading-relaxed text-neutral-900 dark:text-neutral-100">
                     "{activeEducation.thesis}"
                   </p>
-                </div>
+                </motion.div>
 
                 {/* Competency Highlights */}
                 <div className="space-y-2">

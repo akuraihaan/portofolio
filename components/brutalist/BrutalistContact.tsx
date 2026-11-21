@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import confetti from "canvas-confetti";
 import {
   Mail,
@@ -155,17 +156,22 @@ export function BrutalistContact({
               </button>
             </div>
 
-            {/* Social Channels Strip */}
+            {/* Social Channels Strip with Spring Physics */}
             <div className="space-y-3">
               <span className="font-mono text-xs font-black uppercase text-neutral-600 dark:text-neutral-400 block">
                 SALURAN DIGITAL & PROFIL RESMI:
               </span>
 
-              <a
+              <motion.a
                 href={githubUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-between p-4 bg-white dark:bg-[#141414] border-3 border-black dark:border-white shadow-[4px_4px_0px_#000] dark:shadow-[4px_4px_0px_#FFF] hover:shadow-[6px_6px_0px_#0047FF] hover:-translate-x-1 hover:-translate-y-1 transition-all no-underline text-inherit group"
+                whileHover={{ x: 8, scale: 1.015 }}
+                whileTap={{ scale: 0.98 }}
+                transition={{ type: "spring", stiffness: 400, damping: 22 }}
+                onMouseEnter={() => setCursor({ active: true, text: "GITHUB" })}
+                onMouseLeave={resetCursor}
+                className="flex items-center justify-between p-4 bg-white dark:bg-[#141414] border-3 border-black dark:border-white shadow-[4px_4px_0px_#000] dark:shadow-[4px_4px_0px_#FFF] hover:shadow-[7px_7px_0px_#0047FF] transition-shadow no-underline text-inherit group"
               >
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-black text-white dark:bg-white dark:text-black border-2 border-black">
@@ -177,13 +183,18 @@ export function BrutalistContact({
                   </div>
                 </div>
                 <ArrowUpRight size={20} className="stroke-[2.5] group-hover:rotate-45 transition-transform" />
-              </a>
+              </motion.a>
 
-              <a
+              <motion.a
                 href={linkedinUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-between p-4 bg-white dark:bg-[#141414] border-3 border-black dark:border-white shadow-[4px_4px_0px_#000] dark:shadow-[4px_4px_0px_#FFF] hover:shadow-[6px_6px_0px_#0047FF] hover:-translate-x-1 hover:-translate-y-1 transition-all no-underline text-inherit group"
+                whileHover={{ x: 8, scale: 1.015 }}
+                whileTap={{ scale: 0.98 }}
+                transition={{ type: "spring", stiffness: 400, damping: 22 }}
+                onMouseEnter={() => setCursor({ active: true, text: "LINKEDIN" })}
+                onMouseLeave={resetCursor}
+                className="flex items-center justify-between p-4 bg-white dark:bg-[#141414] border-3 border-black dark:border-white shadow-[4px_4px_0px_#000] dark:shadow-[4px_4px_0px_#FFF] hover:shadow-[7px_7px_0px_#0047FF] transition-shadow no-underline text-inherit group"
               >
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-[#0047FF] text-white border-2 border-black">
@@ -195,13 +206,18 @@ export function BrutalistContact({
                   </div>
                 </div>
                 <ArrowUpRight size={20} className="stroke-[2.5] group-hover:rotate-45 transition-transform" />
-              </a>
+              </motion.a>
 
-              <a
+              <motion.a
                 href={instagramUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-between p-4 bg-white dark:bg-[#141414] border-3 border-black dark:border-white shadow-[4px_4px_0px_#000] dark:shadow-[4px_4px_0px_#FFF] hover:shadow-[6px_6px_0px_#FF5C00] hover:-translate-x-1 hover:-translate-y-1 transition-all no-underline text-inherit group"
+                whileHover={{ x: 8, scale: 1.015 }}
+                whileTap={{ scale: 0.98 }}
+                transition={{ type: "spring", stiffness: 400, damping: 22 }}
+                onMouseEnter={() => setCursor({ active: true, text: "INSTAGRAM" })}
+                onMouseLeave={resetCursor}
+                className="flex items-center justify-between p-4 bg-white dark:bg-[#141414] border-3 border-black dark:border-white shadow-[4px_4px_0px_#000] dark:shadow-[4px_4px_0px_#FFF] hover:shadow-[7px_7px_0px_#FF5C00] transition-shadow no-underline text-inherit group"
               >
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-[#FF5C00] text-white border-2 border-black">
@@ -213,33 +229,53 @@ export function BrutalistContact({
                   </div>
                 </div>
                 <ArrowUpRight size={20} className="stroke-[2.5] group-hover:rotate-45 transition-transform" />
-              </a>
+              </motion.a>
             </div>
           </div>
 
-          {/* Right Column: Neo-Brutalist Form (7 cols) */}
+          {/* Right Column: Neo-Brutalist Form with Interactive Physics Shake (7 cols) */}
           <div className="lg:col-span-7">
-            <div className="p-6 md:p-8 bg-white dark:bg-[#141414] border-4 border-black dark:border-white shadow-[8px_8px_0px_#000] dark:shadow-[8px_8px_0px_#FFF]">
+            <motion.div
+              animate={
+                status === "error"
+                  ? { x: [-10, 10, -8, 8, -4, 4, 0], transition: { duration: 0.45 } }
+                  : {}
+              }
+              className="p-6 md:p-8 bg-white dark:bg-[#141414] border-4 border-black dark:border-white shadow-[8px_8px_0px_#000] dark:shadow-[8px_8px_0px_#FFF]"
+            >
               <div className="flex items-center gap-2 mb-6 pb-4 border-b-2 border-black dark:border-neutral-700 font-mono text-xs font-black">
                 <MessageSquare size={16} />
                 <span>FORMULIR PENGIRIMAN PESAN LANGSUNG</span>
               </div>
 
-              {status === "success" && (
-                <div className="mb-6 p-4 bg-[#C8F169] text-black border-3 border-black shadow-[4px_4px_0px_#000] font-mono text-xs font-bold space-y-1">
-                  <div className="text-sm font-display font-black">✓ PESAN TERKIRIM DENGAN SUKSES!</div>
-                  <p>
-                    Terima kasih telah menghubungi. Pesan telah tercatat di basis data Supabase dan saya akan membalas via email secepat mungkin.
-                  </p>
-                </div>
-              )}
+              <AnimatePresence>
+                {status === "success" && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.9, y: -10 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                    className="mb-6 p-4 bg-[#C8F169] text-black border-3 border-black shadow-[4px_4px_0px_#000] font-mono text-xs font-bold space-y-1"
+                  >
+                    <div className="text-sm font-display font-black">✓ PESAN TERKIRIM DENGAN SUKSES!</div>
+                    <p>
+                      Terima kasih telah menghubungi. Pesan telah tercatat di basis data Supabase dan saya akan membalas via email secepat mungkin.
+                    </p>
+                  </motion.div>
+                )}
 
-              {status === "error" && (
-                <div className="mb-6 p-4 bg-red-100 text-red-900 border-3 border-red-600 font-mono text-xs font-bold flex items-start gap-2">
-                  <AlertCircle size={18} className="shrink-0 mt-0.5 text-red-600" />
-                  <span>{errorMessage}</span>
-                </div>
-              )}
+                {status === "error" && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.9, y: -10 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    className="mb-6 p-4 bg-red-100 text-red-900 border-3 border-red-600 font-mono text-xs font-bold flex items-start gap-2"
+                  >
+                    <AlertCircle size={18} className="shrink-0 mt-0.5 text-red-600" />
+                    <span>{errorMessage}</span>
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
               <form onSubmit={handleSubmit} className="space-y-5">
                 {/* Field: Name */}
@@ -253,7 +289,7 @@ export function BrutalistContact({
                     placeholder="cth. Sarah Wijaya / PT Inovasi Digital"
                     value={formState.name}
                     onChange={(e) => setFormState({ ...formState, name: e.target.value })}
-                    className="w-full px-4 py-3 bg-neutral-50 dark:bg-[#1A1A1A] text-black dark:text-white border-3 border-black dark:border-white font-mono text-sm focus:outline-none focus:ring-2 focus:ring-[#FFE500] shadow-[3px_3px_0px_#000] dark:shadow-[3px_3px_0px_#FFF]"
+                    className="w-full px-4 py-3 bg-neutral-50 dark:bg-[#1A1A1A] text-black dark:text-white border-3 border-black dark:border-white font-mono text-sm focus:outline-none focus:ring-2 focus:ring-[#FFE500] shadow-[3px_3px_0px_#000] dark:shadow-[3px_3px_0px_#FFF] transition-shadow"
                   />
                 </div>
 
@@ -268,7 +304,7 @@ export function BrutalistContact({
                     placeholder="nama@domain.com"
                     value={formState.email}
                     onChange={(e) => setFormState({ ...formState, email: e.target.value })}
-                    className="w-full px-4 py-3 bg-neutral-50 dark:bg-[#1A1A1A] text-black dark:text-white border-3 border-black dark:border-white font-mono text-sm focus:outline-none focus:ring-2 focus:ring-[#FFE500] shadow-[3px_3px_0px_#000] dark:shadow-[3px_3px_0px_#FFF]"
+                    className="w-full px-4 py-3 bg-neutral-50 dark:bg-[#1A1A1A] text-black dark:text-white border-3 border-black dark:border-white font-mono text-sm focus:outline-none focus:ring-2 focus:ring-[#FFE500] shadow-[3px_3px_0px_#000] dark:shadow-[3px_3px_0px_#FFF] transition-shadow"
                   />
                 </div>
 
@@ -283,18 +319,21 @@ export function BrutalistContact({
                     placeholder="Ceritakan gambaran proyek, target waktu pengerjaan, atau diskusi yang ingin dilakukan..."
                     value={formState.message}
                     onChange={(e) => setFormState({ ...formState, message: e.target.value })}
-                    className="w-full px-4 py-3 bg-neutral-50 dark:bg-[#1A1A1A] text-black dark:text-white border-3 border-black dark:border-white font-mono text-sm focus:outline-none focus:ring-2 focus:ring-[#FFE500] shadow-[3px_3px_0px_#000] dark:shadow-[3px_3px_0px_#FFF] resize-none"
+                    className="w-full px-4 py-3 bg-neutral-50 dark:bg-[#1A1A1A] text-black dark:text-white border-3 border-black dark:border-white font-mono text-sm focus:outline-none focus:ring-2 focus:ring-[#FFE500] shadow-[3px_3px_0px_#000] dark:shadow-[3px_3px_0px_#FFF] resize-none transition-shadow"
                   />
                 </div>
 
-                {/* Submit Button with Magnetic Feel */}
+                {/* Submit Button with Magnetic Feel & Spring Tap */}
                 <BrutalistMagnetic strength={0.2} className="w-full">
-                  <button
+                  <motion.button
                     type="submit"
                     disabled={status === "loading"}
+                    whileHover={{ scale: 1.01 }}
+                    whileTap={{ scale: 0.98 }}
+                    transition={{ type: "spring", stiffness: 450, damping: 20 }}
                     onMouseEnter={() => setCursor({ active: true, text: "KIRIM" })}
                     onMouseLeave={resetCursor}
-                    className="w-full py-4 bg-[#FF5C00] text-white hover:bg-[#e05200] font-display font-black text-base uppercase tracking-wider border-3 border-black shadow-[5px_5px_0px_#000] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                    className="w-full py-4 bg-[#FF5C00] text-white hover:bg-[#e05200] font-display font-black text-base uppercase tracking-wider border-3 border-black shadow-[5px_5px_0px_#000] transition-colors flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
                   >
                     {status === "loading" ? (
                       <span>SEDANG MEMPROSES PENGIRIMAN...</span>
@@ -304,10 +343,10 @@ export function BrutalistContact({
                         <span>KIRIMKAN PESAN SEKARANG</span>
                       </>
                     )}
-                  </button>
+                  </motion.button>
                 </BrutalistMagnetic>
               </form>
-            </div>
+            </motion.div>
           </div>
         </div>
       </div>

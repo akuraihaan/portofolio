@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { motion } from "framer-motion";
 import { GraduationCap, Award, MapPin, CheckCircle, Terminal, ExternalLink } from "lucide-react";
 import { CardTilt3D, FloatingObject, Reveal, TextScramble } from "../motion";
 import { useMotionContext } from "../motion/MotionProvider";
@@ -142,9 +143,13 @@ export function BrutalistAbout({
               </div>
             </Reveal>
 
-            {/* Neo-Brutalist Specs Matrix */}
+            {/* Neo-Brutalist Specs Matrix with Spring Physics */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="p-4 bg-[#FFE500] text-black border-3 border-black shadow-[4px_4px_0px_#000]">
+              <motion.div
+                whileHover={{ y: -4, scale: 1.02 }}
+                transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                className="p-4 bg-[#FFE500] text-black border-3 border-black shadow-[4px_4px_0px_#000] cursor-default select-none"
+              >
                 <div className="flex items-center gap-2 font-display font-black text-sm mb-1">
                   <GraduationCap size={18} className="stroke-[2.5]" />
                   <span>AKADEMIK & RISET</span>
@@ -152,9 +157,13 @@ export function BrutalistAbout({
                 <p className="font-mono text-xs font-semibold leading-relaxed">
                   Lulusan Pendidikan Komputer ULM dengan skripsi implementasi <em>Learning Analytics</em> pada media pembelajaran interaktif Tailwind CSS.
                 </p>
-              </div>
+              </motion.div>
 
-              <div className="p-4 bg-[#0047FF] text-white border-3 border-black shadow-[4px_4px_0px_#000]">
+              <motion.div
+                whileHover={{ y: -4, scale: 1.02 }}
+                transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                className="p-4 bg-[#0047FF] text-white border-3 border-black shadow-[4px_4px_0px_#000] cursor-default select-none"
+              >
                 <div className="flex items-center gap-2 font-display font-black text-sm mb-1">
                   <Award size={18} className="stroke-[2.5]" />
                   <span>INDUSTRI & KOMPETISI</span>
@@ -162,18 +171,23 @@ export function BrutalistAbout({
                 <p className="font-mono text-xs font-semibold leading-relaxed">
                   Alumni Bangkit Academy (Google, GoTo, Traveloka) & Juara 2 Pekan Seni Mahasiswa (Peksiminas) bidang desain media kampanye.
                 </p>
-              </div>
+              </motion.div>
             </div>
 
-            {/* Personal Tags & Core Focus */}
+            {/* Personal Tags & Core Focus with Interactive Spring Micro-Rotations */}
             <div className="flex flex-wrap gap-2 pt-2">
               {tags.map((tag, i) => (
-                <span
+                <motion.span
                   key={i}
-                  className="px-3 py-1 bg-neutral-200 dark:bg-neutral-800 text-black dark:text-white font-mono text-xs font-bold border-2 border-black dark:border-neutral-600 shadow-[2px_2px_0px_#000] dark:shadow-[2px_2px_0px_#FFE500]"
+                  whileHover={{ scale: 1.08, rotate: i % 2 === 0 ? -2 : 2, y: -3 }}
+                  whileTap={{ scale: 0.94 }}
+                  transition={{ type: "spring", stiffness: 450, damping: 18 }}
+                  onMouseEnter={() => setCursor({ active: true, text: tag })}
+                  onMouseLeave={resetCursor}
+                  className="px-3 py-1 bg-neutral-200 dark:bg-neutral-800 text-black dark:text-white font-mono text-xs font-bold border-2 border-black dark:border-neutral-600 shadow-[2px_2px_0px_#000] dark:shadow-[2px_2px_0px_#FFE500] hover:bg-[#FFE500] hover:text-black hover:border-black cursor-pointer select-none transition-colors"
                 >
                   #{tag}
-                </span>
+                </motion.span>
               ))}
             </div>
           </div>

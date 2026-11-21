@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ExternalLink,
@@ -269,6 +269,23 @@ export function BrutalistProjects({ projects = defaultBrutalistProjects }: Bruta
   const [searchQuery, setSearchQuery] = useState<string>("" );
   const [activeModalProject, setActiveModalProject] = useState<BrutalistProjectItem | null>(null);
 
+  // Close modal on Escape key press and prevent background scroll
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setActiveModalProject(null);
+    };
+
+    if (activeModalProject) {
+      window.addEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = "hidden";
+    }
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = "";
+    };
+  }, [activeModalProject]);
+
   // Derive categories
   const categories = useMemo(() => {
     const set = new Set<string>(["Semua"]);
@@ -320,22 +337,29 @@ export function BrutalistProjects({ projects = defaultBrutalistProjects }: Bruta
 
         {/* Filter & Search Bar Controls */}
         <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 mb-10 pb-6 border-b-3 border-black dark:border-white">
-          {/* Category Tabs */}
+          {/* Category Tabs with Dynamic Animated Spring Pill */}
           <div className="flex flex-wrap gap-2">
             {categories.map((cat) => {
               const isActive = selectedCategory === cat;
               return (
-                <button
+                <motion.button
                   key={cat}
                   onClick={() => setSelectedCategory(cat)}
-                  className={`font-mono text-xs font-black px-3.5 py-1.5 border-2 border-black dark:border-white transition-all cursor-pointer ${
-                    isActive
-                      ? "bg-[#FFE500] text-black shadow-[3px_3px_0px_#000] dark:shadow-[3px_3px_0px_#FFF] translate-x-0.5 translate-y-0.5"
-                      : "bg-white dark:bg-[#1A1A1A] text-black dark:text-white hover:bg-neutral-100 shadow-[2px_2px_0px_#000]"
-                  }`}
+                  whileHover={{ y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="relative font-mono text-xs font-black px-4 py-2 border-2 border-black dark:border-white transition-colors cursor-pointer select-none"
                 >
-                  {cat}
-                </button>
+                  {isActive && (
+                    <motion.div
+                      layoutId="activeCategoryPill"
+                      transition={{ type: "spring", stiffness: 420, damping: 28 }}
+                      className="absolute inset-0 bg-[#FFE500] border-2 border-black shadow-[3px_3px_0px_#000] -z-10"
+                    />
+                  )}
+                  <span className={isActive ? "text-black" : "text-black dark:text-white"}>
+                    {cat}
+                  </span>
+                </motion.button>
               );
             })}
           </div>
@@ -353,32 +377,33 @@ export function BrutalistProjects({ projects = defaultBrutalistProjects }: Bruta
           </div>
         </div>
 
-        {/* Varied Editorial Grid for Projects */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
-          {filteredProjects.map((project, idx) => {
-            // Asymmetric layout rules:
-            // First 2 items get larger spans
-            const isHeroCard = idx === 0;
-            const isWideCard = idx === 1;
-            const colSpan = isHeroCard
-              ? "md:col-span-12 lg:col-span-12"
-              : isWideCard
-              ? "md:col-span-12 lg:col-span-7"
-              : idx === 2
-              ? "md:col-span-12 lg:col-span-5"
-              : "md:col-span-6 lg:col-span-4";
+        {/* Varied Editorial Grid for Projects with PopLayout Physics */}
+        <motion.div layout className="grid grid-cols-1 md:grid-cols-12 gap-8">
+          <AnimatePresence mode="popLayout">
+            {filteredProjects.map((project, idx) => {
+              // Asymmetric layout rules:
+              // First 2 items get larger spans
+              const isHeroCard = idx === 0;
+              const isWideCard = idx === 1;
+              const colSpan = isHeroCard
+                ? "md:col-span-12 lg:col-span-12"
+                : isWideCard
+                ? "md:col-span-12 lg:col-span-7"
+                : idx === 2
+                ? "md:col-span-12 lg:col-span-5"
+                : "md:col-span-6 lg:col-span-4";
 
-            return (
-              <motion.article
-                key={project.id}
-                layout
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-50px" }}
-                transition={{ duration: 0.35, delay: idx * 0.05 }}
-                className={`${colSpan}`}
-              >
-                <CardTilt3D tiltMax={6} scaleHover={1.015}>
+              return (
+                <motion.article
+                  key={project.id}
+                  layout
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.92, transition: { duration: 0.2 } }}
+                  transition={{ type: "spring", stiffness: 350, damping: 26 }}
+                  className={`${colSpan}`}
+                >
+                  <CardTilt3D tiltMax={6} scaleHover={1.015}>
                   <div
                     onMouseEnter={() => setCursor({ active: true, text: "STUDI KASUS" })}
                     onMouseLeave={resetCursor}
@@ -498,11 +523,16 @@ export function BrutalistProjects({ projects = defaultBrutalistProjects }: Bruta
               </motion.article>
             );
           })}
-        </div>
+          </AnimatePresence>
+        </motion.div>
 
         {/* Empty Search State */}
         {filteredProjects.length === 0 && (
-          <div className="p-12 text-center border-4 border-black dark:border-white bg-white dark:bg-[#141414] shadow-[8px_8px_0px_#FF5C00]">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="p-12 text-center border-4 border-black dark:border-white bg-white dark:bg-[#141414] shadow-[8px_8px_0px_#FF5C00]"
+          >
             <Code2 size={48} className="mx-auto mb-4 text-[#FF5C00]" />
             <h4 className="font-display font-black text-2xl uppercase mb-2">
               Tidak Ada Proyek yang Cocok
@@ -519,18 +549,25 @@ export function BrutalistProjects({ projects = defaultBrutalistProjects }: Bruta
             >
               RESET FILTER & PENCARIAN
             </button>
-          </div>
+          </motion.div>
         )}
       </div>
 
-      {/* Interactive Neo-Brutalist Case Study Modal */}
+      {/* Interactive Neo-Brutalist Case Study Modal with Physics Springs */}
       <AnimatePresence>
         {activeModalProject && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs overflow-y-auto">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setActiveModalProject(null)}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm overflow-y-auto"
+          >
             <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              initial={{ scale: 0.9, y: 30, opacity: 0 }}
+              animate={{ scale: 1, y: 0, opacity: 1, transition: { type: "spring", stiffness: 350, damping: 25 } }}
+              exit={{ scale: 0.92, y: 20, opacity: 0, transition: { duration: 0.2 } }}
               className="relative w-full max-w-3xl my-8 bg-[#F4F4F0] dark:bg-[#121212] text-black dark:text-[#F4F4F0] border-4 border-black dark:border-white shadow-[12px_12px_0px_#000] dark:shadow-[12px_12px_0px_#FFF] overflow-hidden"
             >
               {/* Modal Header */}
@@ -690,7 +727,7 @@ export function BrutalistProjects({ projects = defaultBrutalistProjects }: Bruta
                 </div>
               </div>
             </motion.div>
-          </div>
+          </motion.div>
         )}
       </AnimatePresence>
     </section>
