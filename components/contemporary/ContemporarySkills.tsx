@@ -20,6 +20,13 @@ export interface SkillDetail {
   desc: string;
 }
 
+export interface DynamicSkillRecord {
+  name: string;
+  category?: string;
+  description?: string;
+  level?: number | string;
+}
+
 export interface SkillCategoryGroup {
   id: string;
   name: string;
@@ -105,16 +112,68 @@ export const contemporarySkillGroups: SkillCategoryGroup[] = [
   },
 ];
 
+export interface ContemporarySkillsProps {
+  groups?: SkillCategoryGroup[];
+  dynamicSkills?: DynamicSkillRecord[];
+}
+
 export function ContemporarySkills({
   groups = contemporarySkillGroups,
-}: {
-  groups?: SkillCategoryGroup[];
-}) {
+  dynamicSkills = [],
+}: ContemporarySkillsProps) {
   const [activeTab, setActiveTab] = useState<string>("all");
   const prefersReduced = useReducedMotion();
 
+  // Seamlessly integrate dynamic database skills if available
+  const effectiveGroups = React.useMemo(() => {
+    if (!dynamicSkills || dynamicSkills.length === 0) return groups;
+
+    const groupMap = new Map<string, SkillCategoryGroup>();
+    groups.forEach((g) => {
+      groupMap.set(g.id, { ...g, skills: [...g.skills] });
+    });
+
+    dynamicSkills.forEach((ds) => {
+      const rawCat = (ds.category || "").toLowerCase();
+      let targetId = "tools";
+      if (rawCat.includes("front") || rawCat.includes("react") || rawCat.includes("web") || rawCat.includes("css")) {
+        targetId = "frontend";
+      } else if (rawCat.includes("back") || rawCat.includes("server") || rawCat.includes("api") || rawCat.includes("node")) {
+        targetId = "backend";
+      } else if (rawCat.includes("data") || rawCat.includes("sql") || rawCat.includes("sec") || rawCat.includes("aman")) {
+        targetId = "database";
+      } else if (rawCat.includes("design") || rawCat.includes("ui") || rawCat.includes("ux")) {
+        targetId = "uiux";
+      } else if (rawCat.includes("cloud") || rawCat.includes("devops") || rawCat.includes("tool") || rawCat.includes("git")) {
+        targetId = "tools";
+      } else if (rawCat.includes("edu") || rawCat.includes("didaktik") || rawCat.includes("pedagogi")) {
+        targetId = "pedagogy";
+      }
+
+      const targetGroup = groupMap.get(targetId);
+      if (targetGroup) {
+        const alreadyExists = targetGroup.skills.some((s) => s.name.toLowerCase() === ds.name.toLowerCase());
+        if (!alreadyExists) {
+          let lvl: "Mahir" | "Menengah" | "Kompeten" = "Mahir";
+          if (typeof ds.level === "number") {
+            lvl = ds.level >= 80 ? "Mahir" : ds.level >= 60 ? "Menengah" : "Kompeten";
+          } else if (ds.level === "Menengah" || ds.level === "Kompeten") {
+            lvl = ds.level;
+          }
+          targetGroup.skills.push({
+            name: ds.name,
+            level: lvl,
+            desc: ds.description || "Kompetensi teknis terverifikasi dalam rekayasa sistem.",
+          });
+        }
+      }
+    });
+
+    return Array.from(groupMap.values());
+  }, [groups, dynamicSkills]);
+
   const displayed =
-    activeTab === "all" ? groups : groups.filter((g) => g.id === activeTab);
+    activeTab === "all" ? effectiveGroups : effectiveGroups.filter((g) => g.id === activeTab);
 
   const inView = (delay = 0) =>
     prefersReduced
@@ -162,9 +221,9 @@ export function ContemporarySkills({
               : "bg-black/[0.04] text-[#71717A] dark:bg-white/[0.06] hover:text-[#121214] dark:hover:text-[#F4F4F6]"
           }`}
         >
-          Semua Domain ({groups.length})
+          Semua Domain ({effectiveGroups.length})
         </button>
-        {groups.map((group) => (
+        {effectiveGroups.map((group) => (
           <button
             key={group.id}
             onClick={() => setActiveTab(group.id)}

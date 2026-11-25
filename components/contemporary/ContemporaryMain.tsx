@@ -6,10 +6,17 @@ import { text, safeHref } from "@/lib/domain";
 import { ThemeProvider } from "../editorial/ThemeContext";
 import { MotionProvider } from "../motion/MotionProvider";
 import { BrandPreloader } from "../motion/BrandPreloader";
+import { CustomCursor } from "../motion/CustomCursor";
+import { ScrollProgress } from "../motion/ScrollProgress";
 import { ContemporaryNavbar } from "./ContemporaryNavbar";
 import { ContemporaryHero } from "./ContemporaryHero";
+import { ContemporaryMarquee } from "./ContemporaryMarquee";
 import { ContemporaryAbout } from "./ContemporaryAbout";
-import { ContemporarySkills, contemporarySkillGroups } from "./ContemporarySkills";
+import {
+  ContemporarySkills,
+  contemporarySkillGroups,
+  type DynamicSkillRecord,
+} from "./ContemporarySkills";
 import {
   ContemporaryProjects,
   type ContemporaryProjectItem,
@@ -124,7 +131,7 @@ export function ContemporaryMain({ bundle }: ContemporaryMainProps) {
     };
   });
 
-  const finalProjects = dbProjects.length >= 4 ? dbProjects : defaultContemporaryProjects;
+  const finalProjects = dbProjects.length > 0 ? dbProjects : defaultContemporaryProjects;
 
   // Dynamic Database Mapping for Articles
   const rawArticles = bundle?.collections?.articles?.data || [];
@@ -200,6 +207,76 @@ export function ContemporaryMain({ bundle }: ContemporaryMainProps) {
 
   const finalCerts = dbCerts.length > 0 ? dbCerts : defaultContemporaryCertificates;
 
+  // Dynamic Database Mapping for Experiences
+  const rawExperiences = bundle?.collections?.experiences?.data || [];
+  const dbExperiences: ContemporaryExperienceRecord[] = rawExperiences.map((row, idx) => {
+    const rawResp = row.responsibilities;
+    const responsibilities: string[] = Array.isArray(rawResp)
+      ? rawResp.map(String)
+      : typeof rawResp === "string"
+      ? rawResp.split(/[\n,]+/).map((s) => s.trim()).filter(Boolean)
+      : [];
+
+    const startYear = row.start_date ? String(row.start_date).slice(0, 4) : "2024";
+    const endYear = row.is_current ? "Sekarang" : (row.end_date ? String(row.end_date).slice(0, 4) : "2025");
+    const period = `${startYear} – ${endYear}`;
+
+    return {
+      id: text(row.id) || `exp-${idx}`,
+      role: text(row.role_title) || "Software Engineer",
+      organization: text(row.company) || "Universitas Lambung Mangkurat",
+      period,
+      location: text(row.location) || "Banjarmasin, Indonesia",
+      typeBadge: text(row.experience_type) || "Pengalaman Profesional",
+      description: text(row.description) || "Rekam jejak dan kontribusi dalam pengembangan sistem perangkat lunak.",
+      responsibilities: responsibilities.length > 0 ? responsibilities : [
+        "Pengembangan sistem berbasis web dengan arsitektur modern.",
+        "Kolaborasi tim lintas disiplin untuk menghasilkan solusi komputasi berkualitas.",
+      ],
+    };
+  });
+
+  const existingExpRoles = new Set(dbExperiences.map((e) => e.role.toLowerCase()));
+  const supplementaryExp = defaultContemporaryExperiences.filter(
+    (e) => !existingExpRoles.has(e.role.toLowerCase())
+  );
+  const finalExperiences =
+    dbExperiences.length > 0
+      ? [...dbExperiences, ...supplementaryExp]
+      : defaultContemporaryExperiences;
+
+  // Dynamic Database Mapping for Education
+  const rawEdu = bundle?.collections?.educations?.data || [];
+  const primaryEdu = rawEdu[0];
+  const dynamicEducation: ContemporaryEducationRecord = primaryEdu
+    ? {
+        institution: text(primaryEdu.institution) || "Universitas Lambung Mangkurat (ULM)",
+        degree: text(primaryEdu.degree) || "Sarjana Pendidikan (S.Pd.)",
+        field_of_study: text(primaryEdu.field_of_study) || "Pendidikan Komputer",
+        location: text(primaryEdu.location) || "Banjarmasin, Kalimantan Selatan",
+        period: `${primaryEdu.start_date ? String(primaryEdu.start_date).slice(0, 4) : "2022"} – ${
+          primaryEdu.is_current ? "Sekarang" : primaryEdu.end_date ? String(primaryEdu.end_date).slice(0, 4) : "2026"
+        }`,
+        gpa: "3.54 / 4.00",
+      }
+    : {
+        institution: "Universitas Lambung Mangkurat (ULM)",
+        degree: "Sarjana Pendidikan (S.Pd.)",
+        field_of_study: "Pendidikan Komputer",
+        location: "Banjarmasin, Kalimantan Selatan",
+        period: "2022 – 2026",
+        gpa: "3.54 / 4.00",
+      };
+
+  // Dynamic Database Mapping for Skills
+  const rawSkills = bundle?.collections?.skills?.data || [];
+  const dbSkills: DynamicSkillRecord[] = rawSkills.map((row) => ({
+    name: text(row.name) || "Skill",
+    category: text(row.category) || undefined,
+    description: text(row.description) || undefined,
+    level: typeof row.level === "number" ? row.level : undefined,
+  }));
+
   // Dynamic Social Links
   const rawSocial = bundle?.collections?.social_links?.data || [];
   const dbSocial = rawSocial.map((row) => ({
@@ -214,6 +291,12 @@ export function ContemporaryMain({ bundle }: ContemporaryMainProps) {
         {/* Initial Brand Experience */}
         <BrandPreloader />
 
+        {/* Contemporary Swiss Precision Cursor */}
+        <CustomCursor />
+
+        {/* Contemporary Hairline Scroll Progress */}
+        <ScrollProgress color="#2563EB" showPercentage={true} />
+
         <div className="relative min-h-screen bg-[#F8F8F6] dark:bg-[#0B0B0C] text-[#121214] dark:text-[#F4F4F6] font-sans selection:bg-[#2563EB] selection:text-white dark:selection:bg-[#C8F169] dark:selection:text-[#121214] transition-colors duration-200">
           {/* Navigation Bar */}
           <ContemporaryNavbar />
@@ -224,7 +307,12 @@ export function ContemporaryMain({ bundle }: ContemporaryMainProps) {
               ownerName={ownerName.toUpperCase()}
               description={profileBio}
               resumeUrl={resumeUrl}
+              projectCount={finalProjects.length}
+              certificateCount={finalCerts.length}
             />
+
+            {/* Kinetic Typography Marquee Ticker */}
+            <ContemporaryMarquee />
 
             {/* 01 / Tentang Saya */}
             <ContemporaryAbout
@@ -239,16 +327,19 @@ export function ContemporaryMain({ bundle }: ContemporaryMainProps) {
             />
 
             {/* 02 / Keahlian & Spesifikasi Teknologi */}
-            <ContemporarySkills groups={contemporarySkillGroups} />
+            <ContemporarySkills
+              groups={contemporarySkillGroups}
+              dynamicSkills={dbSkills}
+            />
 
             {/* 03 / Proyek Rekayasa & Karya Pilihan */}
             <ContemporaryProjects projects={finalProjects} />
 
             {/* 04 / Pengalaman & Rekam Jejak */}
-            <ContemporaryExperience experiences={defaultContemporaryExperiences} />
+            <ContemporaryExperience experiences={finalExperiences} />
 
             {/* 05 / Pendidikan & Riset Akademik */}
-            <ContemporaryEducation />
+            <ContemporaryEducation education={dynamicEducation} />
 
             {/* 06 / Sertifikasi & Penghargaan */}
             <ContemporaryCertificates certificates={finalCerts} />

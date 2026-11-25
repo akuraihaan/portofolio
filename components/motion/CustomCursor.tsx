@@ -70,24 +70,31 @@ export function CustomCursor() {
       >
         <motion.div
           animate={{
-            scale: isPointerDown ? 0.8 : hasLabel ? 1.3 : cursor.active ? 1.7 : 1,
-            width: hasLabel ? "auto" : 32,
-            height: hasLabel ? "auto" : 32,
-            borderRadius: hasLabel ? 4 : 999,
-            borderColor: hasLabel ? "#000" : "#FFE500",
-            backgroundColor: hasLabel ? "#FFE500" : "transparent",
-            borderWidth: 2,
-            boxShadow: hasLabel ? "4px 4px 0px #000" : "none",
+            scale: isPointerDown ? 0.85 : hasLabel ? 1.15 : cursor.active ? 1.5 : 1,
+            width: hasLabel ? "auto" : 28,
+            height: hasLabel ? "auto" : 28,
+            borderRadius: 9999,
+            borderColor: hasLabel
+              ? "transparent"
+              : cursor.active
+              ? "rgba(37, 99, 235, 0.6)"
+              : "rgba(113, 113, 122, 0.45)",
+            backgroundColor: hasLabel
+              ? "rgba(18, 18, 20, 0.92)"
+              : cursor.active
+              ? "rgba(37, 99, 235, 0.08)"
+              : "transparent",
+            borderWidth: hasLabel ? 0 : 1.5,
           }}
           transition={{ type: "spring", stiffness: 450, damping: 25 }}
-          className="flex items-center justify-center px-2.5 py-1 border-dashed"
+          className="flex items-center justify-center px-3 py-1 shadow-sm"
         >
           {hasLabel && (
             <motion.span
-              initial={{ opacity: 0, scale: 0.8 }}
+              initial={{ opacity: 0, scale: 0.85 }}
               animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.8 }}
-              className="font-mono text-[11px] font-black uppercase tracking-wider text-black whitespace-nowrap"
+              exit={{ opacity: 0, scale: 0.85 }}
+              className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-white dark:text-[#F4F4F6] whitespace-nowrap"
             >
               {cursor.text}
             </motion.span>
@@ -95,7 +102,7 @@ export function CustomCursor() {
         </motion.div>
       </motion.div>
 
-      {/* Center Core Pixel Point */}
+      {/* Center Core Precision Dot */}
       {!hasLabel && (
         <motion.div
           aria-hidden="true"
@@ -107,13 +114,13 @@ export function CustomCursor() {
         >
           <motion.div
             animate={{
-              scale: isPointerDown ? 0.6 : cursor.active ? 1.4 : 1,
-              width: cursor.active ? 10 : 6,
-              height: cursor.active ? 10 : 6,
-              backgroundColor: cursor.active ? "#FF5C00" : "#0A0A0A",
+              scale: isPointerDown ? 0.6 : cursor.active ? 0.8 : 1,
+              width: 5,
+              height: 5,
+              backgroundColor: cursor.active ? "#2563EB" : "#121214",
             }}
             transition={{ type: "spring", stiffness: 600, damping: 30 }}
-            className="rounded-none dark:bg-white border border-black shadow-[1px_1px_0px_#FFE500]"
+            className="rounded-full dark:bg-[#F4F4F6]"
           />
         </motion.div>
       )}
