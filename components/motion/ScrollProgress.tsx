@@ -9,7 +9,7 @@ interface ScrollProgressProps {
 }
 
 export function ScrollProgress({
-  color = "#2563EB",
+  color = "#D1FF00",
   showPercentage = false,
 }: ScrollProgressProps) {
   const { scrollYProgress } = useScroll();

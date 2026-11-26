@@ -10,11 +10,33 @@ export default {
     extend: {
       fontFamily: {
         display: ['"Space Grotesk"', 'sans-serif'],
-        sans: ['Inter', 'sans-serif'],
+        editorial: ['"Cormorant Garamond"', 'Brier', 'Cinzel', 'Georgia', 'serif'],
+        serif: ['"Cormorant Garamond"', 'Brier', 'Cinzel', 'Georgia', 'serif'],
+        sans: ['Inter', '"Mona Sans"', '-apple-system', 'sans-serif'],
         mono: ['"JetBrains Mono"', 'monospace'],
         pixel: ['"Press Start 2P"', 'monospace'],
       },
+      borderRadius: {
+        'action': '0.75rem',
+        'card': '1rem',
+        'panel': '1.5rem',
+      },
       colors: {
+        // DESIGN.md: Editorial Motorsport System Tokens
+        action: '#D1FF00', // Signature Neon Lime
+        ink: '#111111',    // Primary Ink / Near Black
+        'muted-ink': '#555555', // Secondary body text / Muted Ink
+        canvas: '#F5F5F0', // Primary Page Background / Warm Off-White
+        surface: '#1A1A1A', // Dark Gallery & Footer Charcoal Surface
+        border: '#333333', // Subtle dividers, card outlines on dark
+        racing: {
+          lime: '#D1FF00',
+          ink: '#111111',
+          muted: '#555555',
+          canvas: '#F5F5F0',
+          surface: '#1A1A1A',
+          border: '#333333',
+        },
         // Neo-Brutalism & Experimental Editorial Palette
         brutal: {
           yellow: '#FFE500', // Acid Yellow

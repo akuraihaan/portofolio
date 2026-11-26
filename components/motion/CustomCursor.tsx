@@ -77,24 +77,24 @@ export function CustomCursor() {
             borderColor: hasLabel
               ? "transparent"
               : cursor.active
-              ? "rgba(37, 99, 235, 0.6)"
-              : "rgba(113, 113, 122, 0.45)",
+              ? "#D1FF00"
+              : "rgba(85, 85, 85, 0.45)",
             backgroundColor: hasLabel
-              ? "rgba(18, 18, 20, 0.92)"
+              ? "#111111"
               : cursor.active
-              ? "rgba(37, 99, 235, 0.08)"
+              ? "rgba(209, 255, 0, 0.15)"
               : "transparent",
             borderWidth: hasLabel ? 0 : 1.5,
           }}
           transition={{ type: "spring", stiffness: 450, damping: 25 }}
-          className="flex items-center justify-center px-3 py-1 shadow-sm"
+          className="flex items-center justify-center px-3 py-1 shadow-sm border border-[#D1FF00]/40"
         >
           {hasLabel && (
             <motion.span
               initial={{ opacity: 0, scale: 0.85 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.85 }}
-              className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-white dark:text-[#F4F4F6] whitespace-nowrap"
+              className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-[#D1FF00] whitespace-nowrap"
             >
               {cursor.text}
             </motion.span>
@@ -114,13 +114,13 @@ export function CustomCursor() {
         >
           <motion.div
             animate={{
-              scale: isPointerDown ? 0.6 : cursor.active ? 0.8 : 1,
-              width: 5,
-              height: 5,
-              backgroundColor: cursor.active ? "#2563EB" : "#121214",
+              scale: isPointerDown ? 0.6 : cursor.active ? 1.2 : 1,
+              width: cursor.active ? 6 : 5,
+              height: cursor.active ? 6 : 5,
+              backgroundColor: cursor.active ? "#D1FF00" : "#111111",
             }}
             transition={{ type: "spring", stiffness: 600, damping: 30 }}
-            className="rounded-full dark:bg-[#F4F4F6]"
+            className="rounded-full dark:bg-[#F5F5F0]"
           />
         </motion.div>
       )}
