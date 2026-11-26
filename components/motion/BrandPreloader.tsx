@@ -1,208 +1,186 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+/**
+ * BrandPreloader — Cinematic BWORIEY intro sequence.
+ *
+ * Sequence:
+ * 1. Black canvas fills viewport
+ * 2. BWORIEY wordmark: character-by-character reveal
+ * 3. Progress percentage + lime line run to 100%
+ * 4. Brief pause at "presentation" state
+ * 5. Clip-path curtain rises revealing the page below
+ * 6. AnimatePresence unmounts
+ *
+ * Respects prefers-reduced-motion & session-caches for repeat visits.
+ */
+import React, { useEffect, useState, useCallback } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { EASINGS } from "./MotionSystem";
+
+const SESSION_KEY = "bworiey_preloader_v2";
+const BRAND_CHARS = ["B", "W", "O", "R", "I", "E", "Y"];
+
+type Stage = "entering" | "counting" | "presentation" | "exit" | "done";
 
 interface BrandPreloaderProps {
   onComplete?: () => void;
 }
 
-const LETTERS = ["B", "W", "O", "R", "I", "E", "Y"];
-
 export function BrandPreloader({ onComplete }: BrandPreloaderProps) {
   const prefersReduced = useReducedMotion();
-  const [stage, setStage] = useState<"appearance" | "assembly" | "presentation" | "exit">("appearance");
   const [isFinished, setIsFinished] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
+  const [stage, setStage] = useState<Stage>("entering");
+  const [progress, setProgress] = useState(0);
+
+  const finish = useCallback(() => {
+    document.body.style.overflow = "";
+    setIsFinished(true);
+    onComplete?.();
+    try { sessionStorage.setItem(SESSION_KEY, "1"); } catch {}
+  }, [onComplete]);
 
   useEffect(() => {
-    setIsMounted(true);
-
-    // Run only once per browser session
+    // Skip for repeat visits
     try {
-      const hasSeen = sessionStorage.getItem("bworiey_motorsport_preloader_seen");
-      if (hasSeen) {
-        setIsFinished(true);
-        onComplete?.();
-        return;
-      }
-    } catch {
-      // Fallback if sessionStorage is blocked
-    }
+      if (sessionStorage.getItem(SESSION_KEY)) { finish(); return; }
+    } catch {}
 
-    // If user prefers reduced motion, exit immediately
-    if (prefersReduced) {
-      try {
-        sessionStorage.setItem("bworiey_motorsport_preloader_seen", "true");
-      } catch {}
-      setIsFinished(true);
-      onComplete?.();
-      return;
-    }
-
-    // Prevent background scrolling while bumper is active
-    const originalOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
 
-    // Stage 1 -> Stage 2: Logo assembly begins at 350ms
-    const timerAssembly = setTimeout(() => {
-      setStage("assembly");
-    }, 350);
+    if (prefersReduced) { finish(); return; }
 
-    // Stage 2 -> Stage 3: Brand presentation (horizontal line & subtext) at 1100ms
-    const timerPresentation = setTimeout(() => {
-      setStage("presentation");
-    }, 1100);
-
-    // Stage 3 -> Stage 4: Exit transition begins at 1950ms
-    const timerExit = setTimeout(() => {
-      setStage("exit");
-
-      // Complete exit after curtain transition finishes (~2400ms total)
-      setTimeout(() => {
-        try {
-          sessionStorage.setItem("bworiey_motorsport_preloader_seen", "true");
-        } catch {}
-        document.body.style.overflow = originalOverflow;
-        setIsFinished(true);
-        onComplete?.();
-      }, 550);
-    }, 1950);
+    // Sequence timings (ms)
+    const t1 = setTimeout(() => setStage("counting"), 300);
+    // Animate counter from 0 → 100 over ~1.6s
+    const start = performance.now();
+    const duration = 1600;
+    let raf: number;
+    const tick = (now: number) => {
+      const elapsed = now - start;
+      const pct = Math.min(100, Math.round((elapsed / duration) * 100));
+      setProgress(pct);
+      if (pct < 100) {
+        raf = requestAnimationFrame(tick);
+      } else {
+        setStage("presentation");
+        const t2 = setTimeout(() => setStage("exit"), 900);
+        const t3 = setTimeout(() => finish(), 1500);
+        return () => { clearTimeout(t2); clearTimeout(t3); };
+      }
+    };
+    // Delay raf start by 300ms (align with stage transition)
+    const t1b = setTimeout(() => { raf = requestAnimationFrame(tick); }, 300);
 
     return () => {
-      clearTimeout(timerAssembly);
-      clearTimeout(timerPresentation);
-      clearTimeout(timerExit);
-      document.body.style.overflow = originalOverflow;
+      clearTimeout(t1);
+      clearTimeout(t1b);
+      cancelAnimationFrame(raf);
     };
-  }, [prefersReduced, onComplete]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  if (!isMounted || isFinished) return null;
-
-  // Stagger variants for Stage 2 Logo Assembly
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.08,
-        delayChildren: 0.05,
-      },
-    },
-  };
-
-  const letterVariants = {
-    hidden: {
-      opacity: 0,
-      y: 14,
-      scale: 0.95,
-      filter: "blur(2px)",
-    },
-    visible: {
-      opacity: 1,
-      y: 0,
-      scale: 1,
-      filter: "blur(0px)",
-      transition: {
-        duration: 0.45,
-        ease: EASINGS.apple,
-      },
-    },
-  };
+  if (isFinished) return null;
 
   return (
     <AnimatePresence>
-      {!isFinished && (
+      {stage !== "done" && (
         <motion.div
-          key="apple-brand-bumper"
-          initial={{ clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)", opacity: 1 }}
+          key="preloader"
+          className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#111111] select-none"
+          initial={{ clipPath: "inset(0 0 0 0)" }}
           animate={
             stage === "exit"
-              ? {
-                  clipPath: "polygon(0 0, 100% 0, 100% 0, 0 0)",
-                  opacity: 0,
-                  transition: { duration: 0.55, ease: EASINGS.editorial },
-                }
-              : {
-                  clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)",
-                  opacity: 1,
-                }
+              ? { clipPath: "inset(100% 0 0 0)" }
+              : { clipPath: "inset(0 0 0 0)" }
           }
-          className={`fixed inset-0 z-[99999] bg-[#000000] text-[#F5F5F7] flex flex-col items-center justify-center p-6 select-none overflow-hidden ${
-            stage === "exit" ? "pointer-events-none" : ""
-          }`}
-          style={{ willChange: "clip-path, opacity" }}
-          role="status"
-          aria-label="BWORIEY Brand Introduction"
+          transition={
+            stage === "exit"
+              ? { duration: 0.75, ease: EASINGS.expo }
+              : { duration: 0 }
+          }
         >
-          {/* Subtle Ambient Vignette */}
-          <div className="absolute inset-0 bg-radial from-white/[0.04] to-transparent pointer-events-none" />
+          {/* Background decorative line */}
+          <motion.div
+            className="absolute left-0 right-0 bottom-[44%] h-[1px] bg-[#333333] origin-left"
+            initial={{ scaleX: 0 }}
+            animate={{ scaleX: 1 }}
+            transition={{ duration: 1.0, delay: 0.1, ease: EASINGS.editorial }}
+          />
 
-          {/* Center Brand Assembly */}
-          <div
-            className={`relative z-10 flex flex-col items-center justify-center text-center transition-transform duration-500 ease-out ${
-              stage === "exit" ? "-translate-y-4" : "translate-y-0"
-            }`}
-          >
-            {/* Stage 1: Central Origin Pixel */}
-            <AnimatePresence>
-              {stage === "appearance" && (
-                <motion.div
-                  key="origin-pixel"
-                  initial={{ scale: 0, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  exit={{ scale: 1.5, opacity: 0 }}
-                  transition={{ duration: 0.3, ease: "easeOut" }}
-                  className="w-2.5 h-2.5 bg-white rounded-sm shadow-[0_0_12px_rgba(255,255,255,0.7)]"
-                />
-              )}
-            </AnimatePresence>
+          {/* Progress lime line */}
+          <motion.div
+            className="absolute left-0 bottom-[44%] h-[1.5px] bg-[#D1FF00] origin-left"
+            style={{ scaleX: progress / 100 }}
+            animate={{ scaleX: progress / 100 }}
+            transition={{ type: "spring", stiffness: 60, damping: 20 }}
+          />
 
-            {/* Stage 2 & 3: BWORIEY Letters with Stagger Animation */}
-            {stage !== "appearance" && (
-              <motion.div
-                variants={containerVariants}
-                initial="hidden"
-                animate="visible"
-                className={`flex items-baseline justify-center tracking-tight leading-none whitespace-nowrap transition-transform duration-500 ${
-                  stage === "presentation" ? "scale-[1.02]" : "scale-100"
-                }`}
-              >
-                {LETTERS.map((char, index) => (
-                  <motion.span
-                    key={`${char}-${index}`}
-                    variants={letterVariants}
-                    className="font-editorial font-bold text-[clamp(3.5rem,9.5vw,7.5rem)] tracking-tight text-[#F5F5F0] inline-block leading-none"
-                  >
-                    {char}
-                  </motion.span>
-                ))}
-                <span className="w-2.5 h-2.5 rounded-full bg-[#D1FF00] ml-2 mb-2 inline-block animate-pulse" />
-              </motion.div>
-            )}
+          {/* Core wordmark */}
+          <div className="relative flex flex-col items-center gap-5">
+            {/* Character reveal */}
+            <div
+              className="flex items-baseline overflow-hidden"
+              aria-label="BWORIEY"
+            >
+              {BRAND_CHARS.map((char, i) => (
+                <motion.span
+                  key={char + i}
+                  initial={{ y: "110%", opacity: 0 }}
+                  animate={
+                    stage !== "entering"
+                      ? { y: "0%", opacity: 1 }
+                      : { y: "110%", opacity: 0 }
+                  }
+                  transition={{
+                    duration: 0.72,
+                    delay: i * 0.065,
+                    ease: EASINGS.organic,
+                  }}
+                  className="inline-block font-editorial font-bold text-[clamp(3.5rem,10vw,8rem)] tracking-tight text-[#F5F5F0] leading-none"
+                >
+                  {char}
+                </motion.span>
+              ))}
+              {/* Lime accent dot */}
+              <motion.span
+                initial={{ opacity: 0, scale: 0 }}
+                animate={stage !== "entering" ? { opacity: 1, scale: 1 } : {}}
+                transition={{ delay: BRAND_CHARS.length * 0.065 + 0.1, duration: 0.3, ease: EASINGS.elasticOvershoot }}
+                className="inline-block w-2.5 h-2.5 rounded-full bg-[#D1FF00] ml-1.5 mb-2 self-end"
+              />
+            </div>
 
-            {/* Stage 3: Thin Refined Horizontal Divider Line */}
+            {/* Separator line */}
             {stage === "presentation" && (
               <motion.div
                 initial={{ scaleX: 0, opacity: 0 }}
                 animate={{ scaleX: 1, opacity: 1 }}
-                transition={{ duration: 0.45, ease: EASINGS.editorial }}
-                className="h-[1.5px] bg-[#D1FF00] w-48 sm:w-64 my-4 origin-center"
+                transition={{ duration: 0.4, ease: EASINGS.editorial }}
+                className="h-[1.5px] bg-[#D1FF00] w-56 origin-center"
               />
             )}
 
-            {/* Stage 3: Subtitle `00 // EDITORIAL MOTORSPORT PORTFOLIO` */}
-            {stage === "presentation" && (
+            {/* Subtitle + counter row */}
+            <div className="flex items-center gap-6 font-mono text-[11px]">
               <motion.span
-                initial={{ opacity: 0, y: 6 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.35, delay: 0.1, ease: EASINGS.editorial }}
-                className="font-mono text-[9px] sm:text-[10px] font-semibold text-[#AAAAAA] uppercase tracking-[0.25em]"
+                initial={{ opacity: 0 }}
+                animate={stage === "counting" || stage === "presentation" ? { opacity: 1 } : {}}
+                transition={{ duration: 0.3 }}
+                className="text-[#555555] uppercase tracking-[0.25em]"
               >
-                00 // EDITORIAL MOTORSPORT PORTFOLIO &middot; TAUFIK RAIHANDANI
+                {stage === "presentation"
+                  ? "EDITORIAL MOTORSPORT"
+                  : "LOADING"}
               </motion.span>
-            )}
+              <motion.span
+                initial={{ opacity: 0 }}
+                animate={stage !== "entering" ? { opacity: 1 } : {}}
+                transition={{ duration: 0.3, delay: 0.2 }}
+                className="text-[#D1FF00] font-bold tabular-nums w-10 text-right"
+              >
+                {progress}%
+              </motion.span>
+            </div>
           </div>
         </motion.div>
       )}

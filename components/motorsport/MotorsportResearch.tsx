@@ -4,7 +4,15 @@ import React from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { BookOpen, Clock, ArrowUpRight, Tag } from "lucide-react";
 import { useMotionContext } from "../motion/MotionProvider";
-import { EASINGS } from "../motion/MotionSystem";
+import { SplitText } from "../motion/SplitText";
+import { AnimatedUnderline } from "../motion/AnimatedUnderline";
+import {
+  EASINGS,
+  SPRINGS,
+  VIEWPORT_ONCE,
+  staggerContainer,
+  staggerItem,
+} from "../motion/MotionSystem";
 
 export interface MotorsportArticleItem {
   id: string;
@@ -92,24 +100,35 @@ export function MotorsportResearch({
       </motion.div>
 
       {/* Main Headline */}
-      <motion.div {...inView(0.06)} className="max-w-3xl mb-14">
+      <div className="max-w-3xl mb-14">
         <h2 className="font-section-display text-4xl sm:text-5xl text-[#111111] dark:text-[#F5F5F0] leading-[0.95] uppercase font-bold mb-4">
-          Dokumentasi riset, pemikiran arsitektur, dan diseminasi keilmuan.
+          <SplitText text="Dokumentasi riset, pemikiran arsitektur, dan diseminasi keilmuan." type="words" />
         </h2>
-        <p className="font-body-editorial text-sm sm:text-base text-[#555555] dark:text-[#AAAAAA] leading-relaxed">
+        <motion.p
+          {...inView(0.15)}
+          className="font-body-editorial text-sm sm:text-base text-[#555555] dark:text-[#AAAAAA] leading-relaxed"
+        >
           Refleksi mendalam seputar desain perangkat lunak instruksional, efisiensi komputasi awan, dan rekayasa web berbasis bukti empiris.
-        </p>
-      </motion.div>
+        </motion.p>
+      </div>
 
       {/* Editorial Article Stack */}
-      <div className="space-y-6">
-        {articles.map((art, idx) => (
+      <motion.div
+        className="space-y-6"
+        initial={prefersReduced ? {} : "hidden"}
+        whileInView="visible"
+        viewport={VIEWPORT_ONCE}
+        variants={staggerContainer(0.1, 0.05)}
+      >
+        {articles.map((art) => (
           <motion.article
             key={art.id}
-            {...inView(0.06 * idx)}
-            onMouseEnter={() => setCursor({ active: true, text: "BACA RISET" })}
+            variants={staggerItem}
+            whileHover={prefersReduced ? {} : { x: 6 }}
+            transition={SPRINGS.fluid}
+            onMouseEnter={() => setCursor({ active: true, text: "BACA RISET", variant: "project" })}
             onMouseLeave={resetCursor}
-            className="group p-6 sm:p-8 rounded-[1.5rem] bg-[#1A1A1A] border border-[#333333] hover:border-[#D1FF00]/80 transition-all flex flex-col sm:flex-row sm:items-baseline justify-between gap-6 cursor-pointer"
+            className="group p-6 sm:p-8 rounded-[1.5rem] bg-[#1A1A1A] border border-[#333333] hover:border-[#D1FF00]/80 transition-colors flex flex-col sm:flex-row sm:items-baseline justify-between gap-6 cursor-pointer"
           >
             <div className="space-y-3 max-w-3xl">
               <div className="flex items-center gap-3 font-mono text-xs">
@@ -126,7 +145,9 @@ export function MotorsportResearch({
               </div>
 
               <h3 className="font-editorial text-2xl sm:text-3xl font-bold text-[#F5F5F0] group-hover:text-[#D1FF00] transition-colors leading-snug">
-                {art.title}
+                <AnimatedUnderline color="#D1FF00" thickness={1.5}>
+                  {art.title}
+                </AnimatedUnderline>
               </h3>
 
               <p className="font-body-editorial text-xs sm:text-sm text-[#AAAAAA] leading-relaxed font-light">
@@ -138,7 +159,7 @@ export function MotorsportResearch({
                 {art.tags.map((tag) => (
                   <span
                     key={tag}
-                    className="font-mono text-[10px] px-2 py-0.5 rounded bg-[#111111] text-[#888888] border border-[#333333]"
+                    className="font-mono text-[10px] px-2 py-0.5 rounded bg-[#111111] text-[#888888] border border-[#333333] group-hover:border-[#D1FF00]/30 transition-colors"
                   >
                     #{tag}
                   </span>
@@ -154,7 +175,7 @@ export function MotorsportResearch({
             </div>
           </motion.article>
         ))}
-      </div>
+      </motion.div>
     </section>
   );
 }

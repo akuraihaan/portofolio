@@ -14,7 +14,9 @@ import {
 } from "lucide-react";
 import { GithubIcon } from "../space/SocialIcons";
 import { useMotionContext } from "../motion/MotionProvider";
-import { EASINGS } from "../motion/MotionSystem";
+import { SplitText } from "../motion/SplitText";
+import { RevealImage } from "../motion/RevealImage";
+import { EASINGS, SPRINGS, DURATION, VIEWPORT_ONCE } from "../motion/MotionSystem";
 
 export interface MotorsportProjectItem {
   id: string;
@@ -314,14 +316,17 @@ export function MotorsportGallery({
 
         {/* Section Headline */}
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-14">
-          <motion.div {...inView(0.06)} className="max-w-2xl">
+          <div className="max-w-2xl">
             <h2 className="font-hero-display text-4xl sm:text-6xl text-[#F5F5F0] leading-[0.95] uppercase font-bold mb-4">
-              Pilihan Proyek &middot; Eksplorasi Rekayasa
+              <SplitText text="Pilihan Proyek · Eksplorasi Rekayasa" type="words" />
             </h2>
-            <p className="font-body-editorial text-sm sm:text-base text-[#AAAAAA] leading-relaxed font-light">
+            <motion.p
+              {...inView(0.15)}
+              className="font-body-editorial text-sm sm:text-base text-[#AAAAAA] leading-relaxed font-light"
+            >
               Struktur grid disiplin yang menyajikan seluruh karya web, cloud microservices, dan media pembelajaran interaktif. Klik kartu mana pun untuk membuka studi kasus lengkap.
-            </p>
-          </motion.div>
+            </motion.p>
+          </div>
 
           {/* Search Box */}
           <motion.div {...inView(0.1)} className="w-full lg:w-80">
@@ -338,95 +343,113 @@ export function MotorsportGallery({
           </motion.div>
         </div>
 
-        {/* Category Filters */}
+        {/* Category Filters with layoutId indicator */}
         <motion.div {...inView(0.12)} className="flex flex-wrap items-center gap-2 mb-12">
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setSelectedCategory(cat)}
-              className={`px-4 py-2 rounded-[0.75rem] font-mono text-xs uppercase tracking-wider transition-all cursor-pointer ${
-                selectedCategory === cat
-                  ? "bg-[#D1FF00] text-[#111111] font-bold"
-                  : "bg-[#111111] text-[#888888] hover:text-[#F5F5F0] border border-[#333333]"
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
-        </motion.div>
-
-        {/* Gallery Grid (Disciplined Grid with Varied Layouts) */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-          {filteredProjects.map((project, idx) => {
-            const isFeatured = idx === 0 || idx === 1;
+          {categories.map((cat) => {
+            const isSelected = selectedCategory === cat;
             return (
-              <motion.div
-                key={project.id}
-                {...inView(0.04 * idx)}
-                onMouseEnter={() => setCursor({ active: true, text: "LIHAT PROYEK" })}
+              <button
+                key={cat}
+                onClick={() => setSelectedCategory(cat)}
+                onMouseEnter={() => setCursor({ active: true, variant: "hover" })}
                 onMouseLeave={resetCursor}
-                onClick={() => setSelectedProject(project)}
-                className={`group relative bg-[#111111] rounded-[1rem] border border-[#333333] hover:border-[#D1FF00]/80 p-5 sm:p-6 transition-all duration-300 flex flex-col justify-between cursor-pointer ${
-                  isFeatured && filteredProjects.length > 2
-                    ? "lg:col-span-2 lg:flex-row lg:gap-8"
-                    : "col-span-1"
+                className={`relative px-4 py-2 rounded-[0.75rem] font-mono text-xs uppercase tracking-wider transition-colors cursor-pointer ${
+                  isSelected
+                    ? "text-[#111111] font-bold"
+                    : "bg-[#111111] text-[#888888] hover:text-[#F5F5F0] border border-[#333333]"
                 }`}
               >
-                {/* Visual Image / Wireframe Display */}
-                <div
-                  className={`relative rounded-[0.75rem] overflow-hidden bg-[#1A1A1A] border border-[#333333] mb-5 lg:mb-0 flex items-center justify-center ${
+                {isSelected && (
+                  <motion.span
+                    layoutId="activeProjectCategory"
+                    transition={SPRINGS.snappy}
+                    className="absolute inset-0 rounded-[0.75rem] bg-[#D1FF00] -z-0"
+                  />
+                )}
+                <span className="relative z-10">{cat}</span>
+              </button>
+            );
+          })}
+        </motion.div>
+
+        {/* Gallery Grid (Disciplined Grid with Varied Layouts & Layout Transitions) */}
+        <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+          <AnimatePresence mode="popLayout">
+            {filteredProjects.map((project, idx) => {
+              const isFeatured = idx === 0 || idx === 1;
+              return (
+                <motion.div
+                  key={project.id}
+                  layout
+                  initial={prefersReduced ? { opacity: 0 } : { opacity: 0, y: 28, scale: 0.97 }}
+                  whileInView={prefersReduced ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
+                  exit={prefersReduced ? { opacity: 0 } : { opacity: 0, scale: 0.94 }}
+                  viewport={VIEWPORT_ONCE}
+                  transition={{ duration: DURATION.medium, delay: Math.min(idx * 0.05, 0.25), ease: EASINGS.fluid }}
+                  onMouseEnter={() => setCursor({ active: true, text: "LIHAT PROYEK", variant: "project" })}
+                  onMouseLeave={resetCursor}
+                  onClick={() => setSelectedProject(project)}
+                  className={`group relative bg-[#111111] rounded-[1rem] border border-[#333333] hover:border-[#D1FF00]/80 p-5 sm:p-6 transition-colors duration-300 flex flex-col justify-between cursor-pointer ${
                     isFeatured && filteredProjects.length > 2
-                      ? "lg:w-1/2 aspect-[16/10]"
-                      : "aspect-[16/10] w-full"
+                      ? "lg:col-span-2 lg:flex-row lg:gap-8"
+                      : "col-span-1"
                   }`}
                 >
-                  {project.cover_url ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={project.cover_url}
-                      alt={project.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 filter contrast-105"
-                    />
-                  ) : (
-                    <div className="p-6 text-center space-y-2">
-                      <div className="w-12 h-12 rounded-full border border-[#D1FF00]/40 mx-auto flex items-center justify-center text-[#D1FF00]">
-                        <Layers className="w-5 h-5" />
+                  {/* Visual Image / Wireframe Display with Clip-Path Reveal */}
+                  <div
+                    className={`relative rounded-[0.75rem] overflow-hidden bg-[#1A1A1A] border border-[#333333] mb-5 lg:mb-0 flex items-center justify-center ${
+                      isFeatured && filteredProjects.length > 2
+                        ? "lg:w-1/2 aspect-[16/10]"
+                        : "aspect-[16/10] w-full"
+                    }`}
+                  >
+                    {project.cover_url ? (
+                      <RevealImage
+                        src={project.cover_url}
+                        alt={project.title}
+                        className="w-full h-full"
+                        imgClassName="group-hover:scale-105 transition-transform duration-700 filter contrast-105"
+                      />
+                    ) : (
+                      <div className="p-6 text-center space-y-2">
+                        <div className="w-12 h-12 rounded-full border border-[#D1FF00]/40 mx-auto flex items-center justify-center text-[#D1FF00]">
+                          <Layers className="w-5 h-5" />
+                        </div>
+                        <span className="font-mono text-[10px] text-[#888888] uppercase tracking-wider block">
+                          KARYA REKAYASA SISTEM
+                        </span>
                       </div>
-                      <span className="font-mono text-[10px] text-[#888888] uppercase tracking-wider block">
-                        KARYA REKAYASA SISTEM
+                    )}
+
+                    {/* Corner Overlay Badge Pairing Name with Year in Action Lime */}
+                    <div className="absolute bottom-3 right-3 flex items-center gap-2 bg-[#111111]/90 backdrop-blur-md px-3 py-1 rounded-[0.5rem] border border-[#333333]">
+                      <span className="font-mono text-[10px] text-[#F5F5F0] font-medium uppercase">
+                        {project.number}
+                      </span>
+                      <span className="text-[#333333]">&middot;</span>
+                      <span className="font-mono text-[10px] text-[#D1FF00] font-bold">
+                        {project.year}
                       </span>
                     </div>
-                  )}
-
-                  {/* Corner Overlay Badge Pairing Name with Year in Action Lime (DESIGN.md Helmet Card Pattern) */}
-                  <div className="absolute bottom-3 right-3 flex items-center gap-2 bg-[#111111]/90 backdrop-blur-md px-3 py-1 rounded-[0.5rem] border border-[#333333]">
-                    <span className="font-mono text-[10px] text-[#F5F5F0] font-medium uppercase">
-                      {project.number}
-                    </span>
-                    <span className="text-[#333333]">&middot;</span>
-                    <span className="font-mono text-[10px] text-[#D1FF00] font-bold">
-                      {project.year}
-                    </span>
                   </div>
-                </div>
 
-                {/* Content Side */}
-                <div
-                  className={`flex flex-col justify-between ${
-                    isFeatured && filteredProjects.length > 2 ? "lg:w-1/2" : ""
-                  }`}
-                >
-                  <div>
-                    <div className="flex items-center justify-between gap-2 mb-2">
-                      <span className="font-mono text-[11px] uppercase tracking-wider text-[#D1FF00] font-semibold">
-                        {project.category}
-                      </span>
-                      <ArrowUpRight className="w-4 h-4 text-[#888888] group-hover:text-[#D1FF00] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
-                    </div>
+                  {/* Content Side */}
+                  <div
+                    className={`flex flex-col justify-between ${
+                      isFeatured && filteredProjects.length > 2 ? "lg:w-1/2" : ""
+                    }`}
+                  >
+                    <div>
+                      <div className="flex items-center justify-between gap-2 mb-2">
+                        <span className="font-mono text-[11px] uppercase tracking-wider text-[#D1FF00] font-semibold">
+                          {project.category}
+                        </span>
+                        <ArrowUpRight className="w-4 h-4 text-[#888888] group-hover:text-[#D1FF00] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+                      </div>
 
-                    <h3 className="font-editorial text-2xl sm:text-3xl font-bold text-[#F5F5F0] group-hover:text-[#D1FF00] transition-colors mb-2">
-                      {project.title}
-                    </h3>
+                      <h3 className="font-editorial text-2xl sm:text-3xl font-bold text-[#F5F5F0] group-hover:text-[#D1FF00] group-hover:translate-x-1 transition-all duration-300 mb-2">
+                        {project.title}
+                      </h3>
 
                     <p className="font-body-editorial text-xs sm:text-sm text-[#AAAAAA] line-clamp-3 leading-relaxed mb-4 font-light">
                       {project.summary}
@@ -470,7 +493,8 @@ export function MotorsportGallery({
               </motion.div>
             );
           })}
-        </div>
+          </AnimatePresence>
+        </motion.div>
 
         {/* Empty State */}
         {filteredProjects.length === 0 && (

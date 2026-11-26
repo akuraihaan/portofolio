@@ -8,6 +8,8 @@ import { MotorsportNavbar } from "@/components/motorsport/MotorsportNavbar";
 import { MotorsportFooter } from "@/components/motorsport/MotorsportFooter";
 import { ScrollProgress } from "@/components/motion/ScrollProgress";
 import { CustomCursor } from "@/components/motion/CustomCursor";
+import { MotionProvider } from "@/components/motion/MotionProvider";
+import { PageTransition } from "@/components/motion/PageTransition";
 import { defaultMotorsportProjects, type MotorsportProjectItem } from "@/components/motorsport/MotorsportGallery";
 import type { Metadata } from "next";
 
@@ -111,12 +113,14 @@ export default async function ProjectDetailPage({ params }: PageProps) {
   const ownerName = text(bundle.profile?.full_name) || text(bundle.settings.owner_name) || "Taufik Raihandani";
 
   return (
-    <div className="min-h-screen bg-[#F5F5F0] dark:bg-[#111111] text-[#111111] dark:text-[#F5F5F0] font-sans selection:bg-[#D1FF00] selection:text-[#111111]">
-      <ScrollProgress color="#D1FF00" />
-      <CustomCursor />
-      <MotorsportNavbar />
+    <MotionProvider>
+      <div className="min-h-screen bg-[#F5F5F0] dark:bg-[#111111] text-[#111111] dark:text-[#F5F5F0] font-sans selection:bg-[#D1FF00] selection:text-[#111111]">
+        <ScrollProgress color="#D1FF00" />
+        <CustomCursor />
+        <MotorsportNavbar />
 
-      <main className="pt-32 pb-24 max-w-6xl mx-auto px-6 sm:px-8">
+        <PageTransition pageKey={project.id}>
+          <main className="pt-32 pb-24 max-w-6xl mx-auto px-6 sm:px-8">
         {/* Navigation Breadcrumb Back to Exhibition */}
         <div className="mb-12">
           <Link
@@ -360,8 +364,10 @@ export default async function ProjectDetailPage({ params }: PageProps) {
           </div>
         </section>
       </main>
+        </PageTransition>
 
       <MotorsportFooter ownerName={ownerName} />
     </div>
+    </MotionProvider>
   );
 }

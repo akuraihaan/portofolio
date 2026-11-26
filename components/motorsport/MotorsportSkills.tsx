@@ -3,7 +3,16 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Code2, Server, Database, Palette, Terminal, BookOpen } from "lucide-react";
-import { EASINGS } from "../motion/MotionSystem";
+import { SplitText } from "../motion/SplitText";
+import { useMotionContext } from "../motion/MotionProvider";
+import {
+  EASINGS,
+  SPRINGS,
+  DURATION,
+  VIEWPORT_ONCE,
+  staggerContainer,
+  staggerItem,
+} from "../motion/MotionSystem";
 
 export interface SkillDetail {
   name: string;
@@ -114,6 +123,7 @@ export function MotorsportSkills({
 }: MotorsportSkillsProps) {
   const [activeTab, setActiveTab] = useState<string>("all");
   const prefersReduced = useReducedMotion();
+  const { setCursor, resetCursor } = useMotionContext();
 
   // Merge dynamic skills from database
   const effectiveGroups = React.useMemo(() => {
@@ -193,58 +203,67 @@ export function MotorsportSkills({
       </motion.div>
 
       {/* Main Headline */}
-      <motion.div {...inView(0.06)} className="max-w-3xl mb-12">
+      <div className="max-w-3xl mb-12">
         <h2 className="font-section-display text-4xl sm:text-5xl text-[#111111] dark:text-[#F5F5F0] leading-[0.95] uppercase font-bold mb-4">
-          Spesifikasi kapabilitas teruji dan siap produksi.
+          <SplitText text="Spesifikasi kapabilitas teruji dan siap produksi." type="words" />
         </h2>
-        <p className="font-body-editorial text-sm sm:text-base text-[#555555] dark:text-[#AAAAAA] leading-relaxed">
-          Enam pilar teknis tanpa estimasi persentase acak: seluruh keahlian didukung portofolio kode nyata, skripsi divalidasi ahli, dan sertifikasi industri resmi.
-        </p>
-      </motion.div>
-
-      {/* Filter Tabs */}
-      <motion.div {...inView(0.1)} className="flex flex-wrap items-center gap-2 mb-12">
-        <button
-          onClick={() => setActiveTab("all")}
-          className={`px-4 py-2 rounded-[0.75rem] font-mono text-xs uppercase tracking-wider transition-all cursor-pointer ${
-            activeTab === "all"
-              ? "bg-[#D1FF00] text-[#111111] font-bold"
-              : "bg-[#1A1A1A] text-[#AAAAAA] hover:text-[#F5F5F0] border border-[#333333]"
-          }`}
+        <motion.p
+          {...inView(0.15)}
+          className="font-body-editorial text-sm sm:text-base text-[#555555] dark:text-[#AAAAAA] leading-relaxed"
         >
-          Semua Domain ({effectiveGroups.length})
-        </button>
-        {effectiveGroups.map((group) => (
-          <button
-            key={group.id}
-            onClick={() => setActiveTab(group.id)}
-            className={`px-4 py-2 rounded-[0.75rem] font-mono text-xs uppercase tracking-wider transition-all cursor-pointer ${
-              activeTab === group.id
-                ? "bg-[#D1FF00] text-[#111111] font-bold"
-                : "bg-[#1A1A1A] text-[#AAAAAA] hover:text-[#F5F5F0] border border-[#333333]"
-            }`}
-          >
-            {group.name}
-          </button>
-        ))}
+          Enam pilar teknis tanpa estimasi persentase acak: seluruh keahlian didukung portofolio kode nyata, skripsi divalidasi ahli, dan sertifikasi industri resmi.
+        </motion.p>
+      </div>
+
+      {/* Filter Tabs with Animated layoutId Indicator */}
+      <motion.div {...inView(0.1)} className="flex flex-wrap items-center gap-2 mb-12">
+        {[
+          { id: "all", label: `Semua Domain (${effectiveGroups.length})` },
+          ...effectiveGroups.map((g) => ({ id: g.id, label: g.name })),
+        ].map((tab) => {
+          const isActive = activeTab === tab.id;
+          return (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              onMouseEnter={() => setCursor({ active: true, variant: "hover" })}
+              onMouseLeave={resetCursor}
+              className={`relative px-4 py-2 rounded-[0.75rem] font-mono text-xs uppercase tracking-wider transition-colors cursor-pointer ${
+                isActive
+                  ? "text-[#111111] font-bold"
+                  : "bg-[#1A1A1A] text-[#AAAAAA] hover:text-[#F5F5F0] border border-[#333333]"
+              }`}
+            >
+              {isActive && (
+                <motion.span
+                  layoutId="activeSkillTab"
+                  transition={SPRINGS.snappy}
+                  className="absolute inset-0 rounded-[0.75rem] bg-[#D1FF00] -z-0"
+                />
+              )}
+              <span className="relative z-10">{tab.label}</span>
+            </button>
+          );
+        })}
       </motion.div>
 
       {/* Skills Matrix Grid */}
       <AnimatePresence mode="wait">
         <motion.div
           key={activeTab}
-          initial={prefersReduced ? {} : { opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={prefersReduced ? {} : { opacity: 0, y: -8 }}
-          transition={{ duration: 0.35, ease: EASINGS.editorial }}
+          initial={prefersReduced ? {} : "hidden"}
+          animate="visible"
+          exit={prefersReduced ? {} : { opacity: 0, y: -8, transition: { duration: DURATION.fast } }}
+          variants={staggerContainer(0.06, 0.02)}
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
         >
           {displayed.map((group) => {
             const Icon = group.icon;
             return (
-              <div
+              <motion.div
                 key={group.id}
-                className="bg-[#1A1A1A] rounded-[1rem] p-6 sm:p-7 border border-[#333333] shadow-md flex flex-col justify-between"
+                variants={staggerItem}
+                className="bg-[#1A1A1A] rounded-[1rem] p-6 sm:p-7 border border-[#333333] hover:border-[#D1FF00]/40 transition-colors shadow-md flex flex-col justify-between"
               >
                 <div>
                   {/* Category Header */}
@@ -265,12 +284,14 @@ export function MotorsportSkills({
                   {/* Skill Items */}
                   <div className="space-y-4">
                     {group.skills.map((skill) => (
-                      <div
+                      <motion.div
                         key={skill.name}
-                        className="pb-3 border-b border-[#333333]/40 last:border-b-0"
+                        whileHover={prefersReduced ? {} : { x: 4 }}
+                        transition={SPRINGS.snappy}
+                        className="pb-3 border-b border-[#333333]/40 last:border-b-0 group/skill"
                       >
                         <div className="flex items-baseline justify-between mb-1">
-                          <span className="font-medium text-xs sm:text-sm text-[#F5F5F0]">
+                          <span className="font-medium text-xs sm:text-sm text-[#F5F5F0] group-hover/skill:text-[#D1FF00] transition-colors">
                             {skill.name}
                           </span>
                           <span className="font-mono text-[10px] px-2 py-0.5 rounded bg-[#111111] text-[#D1FF00] border border-[#D1FF00]/30 font-bold">
@@ -280,11 +301,11 @@ export function MotorsportSkills({
                         <p className="text-xs text-[#AAAAAA] leading-relaxed font-sans font-light">
                           {skill.desc}
                         </p>
-                      </div>
+                      </motion.div>
                     ))}
                   </div>
                 </div>
-              </div>
+              </motion.div>
             );
           })}
         </motion.div>

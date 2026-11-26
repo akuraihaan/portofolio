@@ -2,6 +2,7 @@
 
 import React, { useRef, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
+import { SPRINGS } from "./MotionSystem";
 
 interface MagneticButtonProps {
   children: React.ReactNode;
@@ -13,6 +14,8 @@ interface MagneticButtonProps {
   target?: string;
   rel?: string;
   ariaLabel?: string;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
 }
 
 export function MagneticButton({
@@ -24,35 +27,35 @@ export function MagneticButton({
   target,
   rel,
   ariaLabel,
+  onMouseEnter,
+  onMouseLeave,
 }: MagneticButtonProps) {
   const ref = useRef<HTMLDivElement | null>(null);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [pos, setPos] = useState({ x: 0, y: 0 });
   const prefersReduced = useReducedMotion();
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (prefersReduced || !ref.current) return;
-    const { clientX, clientY } = e;
     const { left, top, width, height } = ref.current.getBoundingClientRect();
-    const centerX = left + width / 2;
-    const centerY = top + height / 2;
-
-    const deltaX = (clientX - centerX) * strength;
-    const deltaY = (clientY - centerY) * strength;
-
-    setPosition({ x: deltaX, y: deltaY });
+    setPos({
+      x: (e.clientX - (left + width / 2)) * strength,
+      y: (e.clientY - (top + height / 2)) * strength,
+    });
   };
 
-  const handleMouseLeave = () => {
-    setPosition({ x: 0, y: 0 });
+  const handleLeave = () => {
+    setPos({ x: 0, y: 0 });
+    onMouseLeave?.();
   };
 
   const content = (
     <motion.div
       ref={ref}
-      animate={{ x: position.x, y: position.y }}
-      transition={{ type: "spring", stiffness: 350, damping: 18, mass: 0.5 }}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
+      animate={{ x: pos.x, y: pos.y }}
+      transition={SPRINGS.magnetic}
+      onMouseMove={handleMove}
+      onMouseLeave={handleLeave}
+      onMouseEnter={onMouseEnter}
       className={`inline-block ${className}`}
     >
       {children}
@@ -61,14 +64,7 @@ export function MagneticButton({
 
   if (href) {
     return (
-      <a
-        href={href}
-        target={target}
-        rel={rel}
-        onClick={onClick}
-        aria-label={ariaLabel}
-        className="inline-block text-inherit no-underline"
-      >
+      <a href={href} target={target} rel={rel} onClick={onClick} aria-label={ariaLabel} className="inline-block text-inherit no-underline">
         {content}
       </a>
     );

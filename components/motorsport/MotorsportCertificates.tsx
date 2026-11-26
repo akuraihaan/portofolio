@@ -1,10 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Award, Eye, X, ArrowUpRight } from "lucide-react";
 import { useMotionContext } from "../motion/MotionProvider";
-import { EASINGS } from "../motion/MotionSystem";
+import { SplitText } from "../motion/SplitText";
+import { RevealImage } from "../motion/RevealImage";
+import { EASINGS, SPRINGS, DURATION, VIEWPORT_ONCE, staggerContainer, staggerItem } from "../motion/MotionSystem";
 
 export interface MotorsportCertificateItem {
   id: string;
@@ -98,6 +100,16 @@ export function MotorsportCertificates({
   const prefersReduced = useReducedMotion();
   const { setCursor, resetCursor } = useMotionContext();
 
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setSelectedCert(null);
+    };
+    if (selectedCert) {
+      window.addEventListener("keydown", onKeyDown);
+    }
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [selectedCert]);
+
   const inView = (delay = 0) =>
     prefersReduced
       ? {}
@@ -126,35 +138,46 @@ export function MotorsportCertificates({
         </motion.div>
 
         {/* Section Headline */}
-        <motion.div {...inView(0.06)} className="max-w-3xl mb-14">
+        <div className="max-w-3xl mb-14">
           <h2 className="font-hero-display text-4xl sm:text-6xl text-[#F5F5F0] leading-[0.95] uppercase font-bold mb-4">
-            Kredensial Industri &middot; Prestasi Kompetisi
+            <SplitText text="Kredensial Industri · Prestasi Kompetisi" type="words" />
           </h2>
-          <p className="font-body-editorial text-sm sm:text-base text-[#AAAAAA] leading-relaxed font-light">
+          <motion.p
+            {...inView(0.15)}
+            className="font-body-editorial text-sm sm:text-base text-[#AAAAAA] leading-relaxed font-light"
+          >
             Sertifikasi resmi dalam rekayasa komputasi awan, seminar publikasi riset, instruktur pelatihan logika pemrograman, dan kejuaraan desain media sosial nasional.
-          </p>
-        </motion.div>
+          </motion.p>
+        </div>
 
         {/* Grid of Certificates (DESIGN.md Gallery Pattern) */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-          {certificates.map((cert, idx) => (
+        <motion.div
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8"
+          initial={prefersReduced ? {} : "hidden"}
+          whileInView="visible"
+          viewport={VIEWPORT_ONCE}
+          variants={staggerContainer(0.08, 0.04)}
+        >
+          {certificates.map((cert) => (
             <motion.div
               key={cert.id}
-              {...inView(0.05 * idx)}
-              onMouseEnter={() => setCursor({ active: true, text: "PREVIEW" })}
+              variants={staggerItem}
+              whileHover={prefersReduced ? {} : { y: -6 }}
+              transition={SPRINGS.fluid}
+              onMouseEnter={() => setCursor({ active: true, text: "PREVIEW", variant: "project" })}
               onMouseLeave={resetCursor}
               onClick={() => setSelectedCert(cert)}
-              className="group bg-[#111111] rounded-[1rem] border border-[#333333] hover:border-[#D1FF00]/80 p-5 sm:p-6 transition-all duration-300 flex flex-col justify-between cursor-pointer"
+              className="group bg-[#111111] rounded-[1rem] border border-[#333333] hover:border-[#D1FF00]/80 p-5 sm:p-6 transition-colors duration-300 flex flex-col justify-between cursor-pointer"
             >
               <div>
-                {/* Visual Thumbnail Container with native rendering */}
+                {/* Visual Thumbnail Container with RevealImage */}
                 <div className="relative aspect-[16/11] rounded-[0.75rem] overflow-hidden bg-[#1A1A1A] border border-[#333333] mb-5 flex items-center justify-center">
                   {cert.certificate_url ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
+                    <RevealImage
                       src={cert.certificate_url}
                       alt={cert.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 filter contrast-105"
+                      className="w-full h-full"
+                      imgClassName="group-hover:scale-105 transition-transform duration-700 filter contrast-105"
                     />
                   ) : (
                     <div className="p-6 text-center space-y-2">
@@ -204,7 +227,7 @@ export function MotorsportCertificates({
               </div>
             </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
 
       {/* Certificate Modal Preview */}

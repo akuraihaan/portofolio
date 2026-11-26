@@ -1,6 +1,15 @@
+// Motion System — Public API barrel
 export * from "./MotionSystem";
 export * from "./MotionProvider";
 export * from "./AnimatedText";
+export * from "./SplitText";
+export * from "./RevealText";
+export * from "./RevealImage";
+export * from "./ParallaxImage";
+export * from "./StaggerContainer";
+export * from "./MotionMarquee";
+export * from "./MotionModal";
+export * from "./AnimatedUnderline";
 export * from "./Reveal";
 export * from "./MagneticButton";
 export * from "./InteractiveCard";
@@ -13,3 +22,4 @@ export * from "./TextScramble";
 export * from "./CardTilt3D";
 export * from "./NoiseOverlay";
 export * from "./SmoothScrollProvider";
+export * from "./BrandPreloader";
