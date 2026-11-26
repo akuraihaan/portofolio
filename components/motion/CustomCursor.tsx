@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   motion,
   AnimatePresence,
@@ -20,11 +20,9 @@ export function CustomCursor() {
   const mx = useMotionValue(-200);
   const my = useMotionValue(-200);
 
-  // Fast dot
   const dx = useSpring(mx, { stiffness: 920, damping: 38, mass: 0.25 });
   const dy = useSpring(my, { stiffness: 920, damping: 38, mass: 0.25 });
 
-  // Slower trailing ring / pill
   const rx = useSpring(mx, { stiffness: 180, damping: 22, mass: 0.9 });
   const ry = useSpring(my, { stiffness: 180, damping: 22, mass: 0.9 });
 
@@ -68,7 +66,6 @@ export function CustomCursor() {
     <AnimatePresence>
       {isVisible && (
         <>
-          {/* ── Trailing pill / ring ── */}
           <motion.div
             aria-hidden
             className="pointer-events-none fixed top-0 left-0 z-[9998] -translate-x-1/2 -translate-y-1/2 select-none"
@@ -86,19 +83,19 @@ export function CustomCursor() {
                 borderColor: hasLabel
                   ? "transparent"
                   : isProject
-                  ? "#D1FF00"
+                  ? "#F05A28"
                   : isHover
-                  ? "rgba(209,255,0,0.6)"
-                  : "rgba(85,85,85,0.4)",
+                  ? "rgba(240,90,40,0.65)"
+                  : "rgba(0,0,0,0.35)",
                 backgroundColor: hasLabel
-                  ? "#111111"
+                  ? "#F05A28"
                   : isProject
-                  ? "rgba(209,255,0,0.12)"
+                  ? "rgba(240,90,40,0.14)"
                   : "transparent",
                 borderWidth: hasLabel ? 0 : 1.5,
               }}
               transition={{ type: "spring", stiffness: 400, damping: 26 }}
-              className="flex items-center justify-center px-3 py-1.5 border"
+              className="flex items-center justify-center px-3 py-1 border"
             >
               <AnimatePresence mode="wait">
                 {hasLabel && (
@@ -108,7 +105,7 @@ export function CustomCursor() {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.82 }}
                     transition={{ duration: 0.18 }}
-                    className="font-mono text-[9px] font-bold uppercase tracking-[0.22em] text-[#D1FF00] whitespace-nowrap"
+                    className="font-mono text-[9px] font-medium uppercase tracking-[0.2em] text-[#FAF8F5] whitespace-nowrap"
                   >
                     {cursor.text}
                   </motion.span>
@@ -119,7 +116,7 @@ export function CustomCursor() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="font-mono text-[9px] text-[#555555]"
+                    className="font-mono text-[9px] text-[#000000] dark:text-[#FAF8F5]"
                   >
                     ↔
                   </motion.span>
@@ -128,7 +125,6 @@ export function CustomCursor() {
             </motion.div>
           </motion.div>
 
-          {/* ── Precision core dot ── */}
           <motion.div
             aria-hidden
             className="pointer-events-none fixed top-0 left-0 z-[9999] -translate-x-1/2 -translate-y-1/2 select-none"
@@ -142,11 +138,15 @@ export function CustomCursor() {
                 scale: isDown ? 0.5 : cursor.active ? 1.3 : 1,
                 width: cursor.active ? 6 : 5,
                 height: cursor.active ? 6 : 5,
-                backgroundColor: isProject ? "#D1FF00" : cursor.active ? "#D1FF00" : "#111111",
+                backgroundColor: isProject
+                  ? "#F05A28"
+                  : cursor.active
+                  ? "#F05A28"
+                  : "#000000",
                 opacity: hasLabel ? 0 : 1,
               }}
               transition={{ type: "spring", stiffness: 600, damping: 32 }}
-              className="rounded-full dark:bg-[#F5F5F0]"
+              className="rounded-full dark:bg-[#FAF8F5]"
             />
           </motion.div>
         </>

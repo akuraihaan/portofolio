@@ -9,19 +9,33 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        display: ['"Space Grotesk"', 'sans-serif'],
-        editorial: ['"Cormorant Garamond"', 'Brier', 'Cinzel', 'Georgia', 'serif'],
-        serif: ['"Cormorant Garamond"', 'Brier', 'Cinzel', 'Georgia', 'serif'],
-        sans: ['Inter', '"Mona Sans"', '-apple-system', 'sans-serif'],
-        mono: ['"JetBrains Mono"', 'monospace'],
+        display: ['"Cormorant Garamond"', 'Georgia', 'serif'],
+        editorial: ['"Cormorant Garamond"', 'Georgia', 'serif'],
+        serif: ['"Cormorant Garamond"', 'Georgia', 'serif'],
+        sans: ['Figtree', 'Inter', '-apple-system', 'sans-serif'],
+        figtree: ['Figtree', 'Inter', '-apple-system', 'sans-serif'],
+        mono: ['"IBM Plex Mono"', '"JetBrains Mono"', 'monospace'],
         pixel: ['"Press Start 2P"', 'monospace'],
       },
       borderRadius: {
-        'action': '0.75rem',
-        'card': '1rem',
-        'panel': '1.5rem',
+        'action': '0.5rem',
+        'card': '0.75rem',
+        'sticker': '0.5rem',
+        'panel': '1rem',
       },
       colors: {
+        // DESIGN.md: Personal Digital Playground System Tokens
+        pg: {
+          canvas: '#FAF8F5',
+          'canvas-dark': '#1A1917',
+          ink: '#000000',
+          'ink-light': '#FAF8F5',
+          orange: '#F05A28',
+          peach: '#FFD4C2',
+          green: '#C4D94E',
+          blue: '#A8D0F0',
+          pink: '#FF8AD8',
+        },
         // DESIGN.md: Editorial Motorsport System Tokens
         action: '#D1FF00', // Signature Neon Lime
         ink: '#111111',    // Primary Ink / Near Black

@@ -25,15 +25,12 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     const saved = localStorage.getItem("bworiey-theme") as Theme | null;
     if (saved === "light" || saved === "dark") {
       setThemeState(saved);
-      if (saved === "dark") {
-        document.documentElement.classList.add("dark");
-      } else {
-        document.documentElement.classList.remove("dark");
-      }
+      document.documentElement.classList.toggle("dark", saved === "dark");
     } else {
-      // Default to light as specified in master prompt art direction
-      setThemeState("light");
-      document.documentElement.classList.remove("dark");
+      const prefersDark = window.matchMedia?.("(prefers-color-scheme: dark)").matches;
+      const initial = prefersDark ? "dark" : "light";
+      setThemeState(initial);
+      document.documentElement.classList.toggle("dark", initial === "dark");
     }
     setMounted(true);
   }, []);

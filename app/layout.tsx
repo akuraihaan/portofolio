@@ -1,25 +1,26 @@
 import type { Metadata } from "next";
-/* ── Modern Editorial Tech Fonts ── */
+/* ── Playground Editorial Fonts (DESIGN.md) ── */
+import "@fontsource/cormorant/latin-400.css";
+import "@fontsource/cormorant/latin-400-italic.css";
+import "@fontsource/cormorant/latin-600.css";
+import "@fontsource/cormorant/latin-700.css";
+import "@fontsource/figtree/latin-300.css";
+import "@fontsource/figtree/latin-400.css";
+import "@fontsource/figtree/latin-500.css";
+import "@fontsource/ibm-plex-mono/latin-400.css";
+import "@fontsource/ibm-plex-mono/latin-500.css";
+/* ── Admin / legacy fonts ── */
 import "@fontsource/space-grotesk/latin-400.css";
 import "@fontsource/space-grotesk/latin-500.css";
 import "@fontsource/space-grotesk/latin-700.css";
 import "@fontsource/jetbrains-mono/latin-400.css";
 import "@fontsource/jetbrains-mono/latin-500.css";
 import "@fontsource/jetbrains-mono/latin-700.css";
-/* ── Body / UI font (Extra Light 200 & 300) ── */
-import "@fontsource/inter/latin-200.css";
 import "@fontsource/inter/latin-300.css";
 import "@fontsource/inter/latin-400.css";
 import "@fontsource/inter/latin-500.css";
-import "@fontsource/inter/latin-600.css";
-/* ── High-Contrast Editorial Display Serif (Brier style) ── */
-import "@fontsource/cormorant/latin-600.css";
-import "@fontsource/cormorant/latin-700.css";
-/* ── Admin / legacy fonts (kept for admin panel) ── */
 import "@fontsource/dm-sans/latin-400.css";
 import "@fontsource/bebas-neue/latin-400.css";
-import "@fontsource/cormorant/latin-300.css";
-import "@fontsource/ibm-plex-mono/latin-500.css";
 import "@fontsource/press-start-2p/latin-400.css";
 import "./globals.css";
 import "./onyx.css";

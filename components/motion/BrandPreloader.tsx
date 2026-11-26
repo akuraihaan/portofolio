@@ -86,7 +86,7 @@ export function BrandPreloader({ onComplete }: BrandPreloaderProps) {
       {stage !== "done" && (
         <motion.div
           key="preloader"
-          className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#111111] select-none"
+          className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#1A1917] select-none"
           initial={{ clipPath: "inset(0 0 0 0)" }}
           animate={
             stage === "exit"
@@ -101,15 +101,15 @@ export function BrandPreloader({ onComplete }: BrandPreloaderProps) {
         >
           {/* Background decorative line */}
           <motion.div
-            className="absolute left-0 right-0 bottom-[44%] h-[1px] bg-[#333333] origin-left"
+            className="absolute left-0 right-0 bottom-[44%] h-[1px] bg-[#FAF8F5]/15 origin-left"
             initial={{ scaleX: 0 }}
             animate={{ scaleX: 1 }}
             transition={{ duration: 1.0, delay: 0.1, ease: EASINGS.editorial }}
           />
 
-          {/* Progress lime line */}
+          {/* Progress orange line */}
           <motion.div
-            className="absolute left-0 bottom-[44%] h-[1.5px] bg-[#D1FF00] origin-left"
+            className="absolute left-0 bottom-[44%] h-[2px] bg-[#F05A28] origin-left"
             style={{ scaleX: progress / 100 }}
             animate={{ scaleX: progress / 100 }}
             transition={{ type: "spring", stiffness: 60, damping: 20 }}
@@ -136,17 +136,17 @@ export function BrandPreloader({ onComplete }: BrandPreloaderProps) {
                     delay: i * 0.065,
                     ease: EASINGS.organic,
                   }}
-                  className="inline-block font-editorial font-bold text-[clamp(3.5rem,10vw,8rem)] tracking-tight text-[#F5F5F0] leading-none"
+                  className="inline-block font-editorial italic font-normal text-[clamp(3.5rem,10vw,8rem)] tracking-tight text-[#FAF8F5] leading-none"
                 >
                   {char}
                 </motion.span>
               ))}
-              {/* Lime accent dot */}
+              {/* Orange accent dot */}
               <motion.span
                 initial={{ opacity: 0, scale: 0 }}
                 animate={stage !== "entering" ? { opacity: 1, scale: 1 } : {}}
                 transition={{ delay: BRAND_CHARS.length * 0.065 + 0.1, duration: 0.3, ease: EASINGS.elasticOvershoot }}
-                className="inline-block w-2.5 h-2.5 rounded-full bg-[#D1FF00] ml-1.5 mb-2 self-end"
+                className="inline-block w-2.5 h-2.5 rounded-full bg-[#F05A28] ml-1.5 mb-2 self-end"
               />
             </div>
 
@@ -156,7 +156,7 @@ export function BrandPreloader({ onComplete }: BrandPreloaderProps) {
                 initial={{ scaleX: 0, opacity: 0 }}
                 animate={{ scaleX: 1, opacity: 1 }}
                 transition={{ duration: 0.4, ease: EASINGS.editorial }}
-                className="h-[1.5px] bg-[#D1FF00] w-56 origin-center"
+                className="h-[1.5px] bg-[#C4D94E] w-56 origin-center"
               />
             )}
 
@@ -166,17 +166,17 @@ export function BrandPreloader({ onComplete }: BrandPreloaderProps) {
                 initial={{ opacity: 0 }}
                 animate={stage === "counting" || stage === "presentation" ? { opacity: 1 } : {}}
                 transition={{ duration: 0.3 }}
-                className="text-[#555555] uppercase tracking-[0.25em]"
+                className="text-[#FAF8F5]/55 uppercase tracking-[0.25em]"
               >
                 {stage === "presentation"
-                  ? "EDITORIAL MOTORSPORT"
+                  ? "DIGITAL PLAYGROUND"
                   : "LOADING"}
               </motion.span>
               <motion.span
                 initial={{ opacity: 0 }}
                 animate={stage !== "entering" ? { opacity: 1 } : {}}
                 transition={{ duration: 0.3, delay: 0.2 }}
-                className="text-[#D1FF00] font-bold tabular-nums w-10 text-right"
+                className="text-[#C4D94E] font-medium tabular-nums w-10 text-right"
               >
                 {progress}%
               </motion.span>
