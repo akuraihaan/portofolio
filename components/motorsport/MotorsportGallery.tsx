@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
+import Link from "next/link";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import {
   ArrowUpRight,
@@ -432,21 +433,38 @@ export function MotorsportGallery({
                     </p>
                   </div>
 
-                  {/* Tech Stack Pills */}
-                  <div className="pt-4 border-t border-[#333333]/60 flex flex-wrap gap-1.5">
-                    {project.technologies.slice(0, 4).map((tech) => (
-                      <span
-                        key={tech}
-                        className="font-mono text-[10px] px-2.5 py-0.5 rounded bg-[#1A1A1A] text-[#CCCCCC] border border-[#333333]"
+                  {/* Tech Stack Pills & Direct Route Link */}
+                  <div>
+                    <div className="pt-4 border-t border-[#333333]/60 flex flex-wrap gap-1.5 mb-3">
+                      {project.technologies.slice(0, 4).map((tech) => (
+                        <span
+                          key={tech}
+                          className="font-mono text-[10px] px-2.5 py-0.5 rounded bg-[#1A1A1A] text-[#CCCCCC] border border-[#333333]"
+                        >
+                          {tech}
+                        </span>
+                      ))}
+                      {project.technologies.length > 4 && (
+                        <span className="font-mono text-[10px] px-2 py-0.5 rounded bg-[#1A1A1A] text-[#888888] border border-[#333333]">
+                          +{project.technologies.length - 4}
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="flex items-center justify-between font-mono text-[11px] pt-1">
+                      <span className="text-[#888888] flex items-center gap-1 group-hover:text-[#D1FF00] transition-colors">
+                        <span>PRATINJAU KASUS</span>
+                        <ChevronRight className="w-3.5 h-3.5" />
+                      </span>
+                      <Link
+                        href={`/projects/${project.id}`}
+                        onClick={(e) => e.stopPropagation()}
+                        className="text-[#D1FF00] font-bold hover:underline flex items-center gap-1"
                       >
-                        {tech}
-                      </span>
-                    ))}
-                    {project.technologies.length > 4 && (
-                      <span className="font-mono text-[10px] px-2 py-0.5 rounded bg-[#1A1A1A] text-[#888888] border border-[#333333]">
-                        +{project.technologies.length - 4}
-                      </span>
-                    )}
+                        <span>HALAMAN DETAIL</span>
+                        <ArrowUpRight className="w-3 h-3" />
+                      </Link>
+                    </div>
                   </div>
                 </div>
               </motion.div>
@@ -588,12 +606,20 @@ export function MotorsportGallery({
 
               {/* Action Buttons in Modal */}
               <div className="pt-6 mt-8 border-t border-[#333333] flex flex-wrap gap-4">
+                <Link
+                  href={`/projects/${selectedProject.id}`}
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-[0.75rem] bg-[#D1FF00] text-[#111111] font-sans text-xs font-bold uppercase tracking-wider hover:brightness-105"
+                >
+                  <span>BUKA HALAMAN STUDI KASUS</span>
+                  <ArrowUpRight className="w-4 h-4" />
+                </Link>
+
                 {selectedProject.project_url && (
                   <a
                     href={selectedProject.project_url}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center gap-2 px-6 py-3 rounded-[0.75rem] bg-[#D1FF00] text-[#111111] font-sans text-xs font-bold uppercase tracking-wider hover:brightness-105"
+                    className="inline-flex items-center gap-2 px-6 py-3 rounded-[0.75rem] bg-[#111111] text-[#F5F5F0] border border-[#333333] hover:border-[#D1FF00] font-sans text-xs font-bold uppercase tracking-wider hover:brightness-105"
                   >
                     <span>LIHAT DEMO LIVE</span>
                     <ExternalLink className="w-4 h-4" />

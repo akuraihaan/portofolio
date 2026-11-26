@@ -21,7 +21,7 @@ export function BrandPreloader({ onComplete }: BrandPreloaderProps) {
 
     // Run only once per browser session
     try {
-      const hasSeen = sessionStorage.getItem("bworiey_apple_bumper_seen");
+      const hasSeen = sessionStorage.getItem("bworiey_motorsport_preloader_seen");
       if (hasSeen) {
         setIsFinished(true);
         onComplete?.();
@@ -34,7 +34,7 @@ export function BrandPreloader({ onComplete }: BrandPreloaderProps) {
     // If user prefers reduced motion, exit immediately
     if (prefersReduced) {
       try {
-        sessionStorage.setItem("bworiey_apple_bumper_seen", "true");
+        sessionStorage.setItem("bworiey_motorsport_preloader_seen", "true");
       } catch {}
       setIsFinished(true);
       onComplete?.();
@@ -62,7 +62,7 @@ export function BrandPreloader({ onComplete }: BrandPreloaderProps) {
       // Complete exit after curtain transition finishes (~2400ms total)
       setTimeout(() => {
         try {
-          sessionStorage.setItem("bworiey_apple_bumper_seen", "true");
+          sessionStorage.setItem("bworiey_motorsport_preloader_seen", "true");
         } catch {}
         document.body.style.overflow = originalOverflow;
         setIsFinished(true);
@@ -165,7 +165,7 @@ export function BrandPreloader({ onComplete }: BrandPreloaderProps) {
                 variants={containerVariants}
                 initial="hidden"
                 animate="visible"
-                className={`flex items-center justify-center tracking-tight leading-none whitespace-nowrap transition-transform duration-500 ${
+                className={`flex items-baseline justify-center tracking-tight leading-none whitespace-nowrap transition-transform duration-500 ${
                   stage === "presentation" ? "scale-[1.02]" : "scale-100"
                 }`}
               >
@@ -173,11 +173,12 @@ export function BrandPreloader({ onComplete }: BrandPreloaderProps) {
                   <motion.span
                     key={`${char}-${index}`}
                     variants={letterVariants}
-                    className="font-display font-black text-[clamp(2.75rem,8vw,6.5rem)] tracking-tight text-[#F5F5F7] inline-block leading-none"
+                    className="font-editorial font-bold text-[clamp(3.5rem,9.5vw,7.5rem)] tracking-tight text-[#F5F5F0] inline-block leading-none"
                   >
                     {char}
                   </motion.span>
                 ))}
+                <span className="w-2.5 h-2.5 rounded-full bg-[#D1FF00] ml-2 mb-2 inline-block animate-pulse" />
               </motion.div>
             )}
 
@@ -186,20 +187,20 @@ export function BrandPreloader({ onComplete }: BrandPreloaderProps) {
               <motion.div
                 initial={{ scaleX: 0, opacity: 0 }}
                 animate={{ scaleX: 1, opacity: 1 }}
-                transition={{ duration: 0.45, ease: EASINGS.apple }}
-                className="h-[1px] bg-white/40 w-44 sm:w-56 my-3.5 origin-center"
+                transition={{ duration: 0.45, ease: EASINGS.editorial }}
+                className="h-[1.5px] bg-[#D1FF00] w-48 sm:w-64 my-4 origin-center"
               />
             )}
 
-            {/* Stage 3: Subtitle `PORTFOLIO / DEVELOPER` */}
+            {/* Stage 3: Subtitle `00 // EDITORIAL MOTORSPORT PORTFOLIO` */}
             {stage === "presentation" && (
               <motion.span
                 initial={{ opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.35, delay: 0.1, ease: EASINGS.apple }}
-                className="font-mono text-[9px] sm:text-[10px] font-medium text-[#86868B] uppercase tracking-[0.28em] pl-[0.28em]"
+                transition={{ duration: 0.35, delay: 0.1, ease: EASINGS.editorial }}
+                className="font-mono text-[9px] sm:text-[10px] font-semibold text-[#AAAAAA] uppercase tracking-[0.25em]"
               >
-                PORTFOLIO / PENGEMBANG WEB
+                00 // EDITORIAL MOTORSPORT PORTFOLIO &middot; TAUFIK RAIHANDANI
               </motion.span>
             )}
           </div>

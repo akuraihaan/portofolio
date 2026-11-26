@@ -1,7 +1,13 @@
 "use client";
 
 import React from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import {
+  motion,
+  useReducedMotion,
+  useMotionValue,
+  useSpring,
+  useTransform,
+} from "framer-motion";
 import { ArrowDownRight, ArrowUpRight, Download, Sparkles } from "lucide-react";
 import { MotorsportAtmosphericLines } from "./MotorsportAtmosphericLines";
 import { MagneticButton } from "../motion/MagneticButton";
@@ -27,6 +33,26 @@ export function MotorsportHero({
 }: MotorsportHeroProps) {
   const prefersReduced = useReducedMotion();
   const { setCursor, resetCursor } = useMotionContext();
+
+  // Interactive 3D spring tilt physics for Driver Card
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+  const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [10, -10]), { stiffness: 240, damping: 25 });
+  const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-10, 10]), { stiffness: 240, damping: 25 });
+
+  const handleCardMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (prefersReduced) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width - 0.5;
+    const y = (e.clientY - rect.top) / rect.height - 0.5;
+    mouseX.set(x);
+    mouseY.set(y);
+  };
+
+  const handleCardMouseLeave = () => {
+    mouseX.set(0);
+    mouseY.set(0);
+  };
 
   const scrollTo = (id: string) => {
     const el = document.getElementById(id);
@@ -75,12 +101,17 @@ export function MotorsportHero({
 
       {/* Asymmetric 1:2 Split Composition (Left 1/3 Imagery, Right 2/3 Typography) */}
       <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center my-auto">
-        {/* Left Column (4 cols ~ 1/3 ratio): Cut-out Portrait / Monogram Visual */}
+        {/* Left Column (4 cols ~ 1/3 ratio): Cut-out Portrait / Monogram Visual with 3D Spring Tilt */}
         <motion.div
           {...anim(0.12)}
-          className="lg:col-span-4 flex flex-col items-center lg:items-start"
+          className="lg:col-span-4 flex flex-col items-center lg:items-start [perspective:1000px]"
         >
-          <div className="relative w-full max-w-[340px] aspect-[4/5] rounded-[1.5rem] bg-[#1A1A1A] border-2 border-[#D1FF00]/40 overflow-hidden shadow-2xl flex flex-col justify-between p-6 group">
+          <motion.div
+            style={prefersReduced ? {} : { rotateX, rotateY, transformStyle: "preserve-3d" }}
+            onMouseMove={handleCardMouseMove}
+            onMouseLeave={handleCardMouseLeave}
+            className="relative w-full max-w-[340px] aspect-[4/5] rounded-[1.5rem] bg-[#1A1A1A] border-2 border-[#D1FF00]/40 overflow-hidden shadow-2xl flex flex-col justify-between p-6 group transition-all duration-300 hover:shadow-[0_20px_50px_rgba(209,255,0,0.15)] hover:border-[#D1FF00]"
+          >
             {/* Corner Badge */}
             <div className="flex items-center justify-between">
               <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#D1FF00] bg-[#111111] px-2.5 py-1 rounded">
@@ -123,7 +154,7 @@ export function MotorsportHero({
               <span className="text-[#555555]">PROYEK: {projectCount}</span>
               <span className="text-[#D1FF00] font-bold">SERTIF: {certificateCount}</span>
             </div>
-          </div>
+          </motion.div>
         </motion.div>
 
         {/* Right Column (8 cols ~ 2/3 ratio): High-Contrast Editorial Typography */}
@@ -183,6 +214,51 @@ export function MotorsportHero({
           </motion.div>
         </div>
       </div>
+
+      {/* Kinetic Editorial Marquee Strip */}
+      <motion.div
+        {...anim(0.24)}
+        className="relative z-10 w-full overflow-hidden py-3 border-y border-[#333333]/15 my-8 select-none bg-black/[0.02] dark:bg-white/[0.02]"
+      >
+        <motion.div
+          animate={prefersReduced ? {} : { x: ["0%", "-50%"] }}
+          transition={{ repeat: Infinity, ease: "linear", duration: 32 }}
+          className="flex whitespace-nowrap font-mono text-[11px] font-semibold tracking-[0.22em] text-[#555555] dark:text-[#AAAAAA] uppercase w-max"
+        >
+          <div className="flex items-center gap-6 px-4">
+            <span className="text-[#D1FF00]">✦</span>
+            <span>FULL-STACK WEB DEVELOPMENT</span>
+            <span className="text-[#D1FF00]">✦</span>
+            <span>CLOUD COMPUTING ARCHITECTURE</span>
+            <span className="text-[#D1FF00]">✦</span>
+            <span>EDUCATIONAL TECHNOLOGY &amp; PEDAGOGY</span>
+            <span className="text-[#D1FF00]">✦</span>
+            <span>INTERACTIVE LEARNING SYSTEMS</span>
+            <span className="text-[#D1FF00]">✦</span>
+            <span>BANGKIT ACADEMY 2024 CAPSTONE LEAD</span>
+            <span className="text-[#D1FF00]">✦</span>
+            <span>NEXT.JS &amp; TAILWIND CSS</span>
+            <span className="text-[#D1FF00]">✦</span>
+            <span>DISTRIBUTED SYSTEMS</span>
+          </div>
+          <div className="flex items-center gap-6 px-4">
+            <span className="text-[#D1FF00]">✦</span>
+            <span>FULL-STACK WEB DEVELOPMENT</span>
+            <span className="text-[#D1FF00]">✦</span>
+            <span>CLOUD COMPUTING ARCHITECTURE</span>
+            <span className="text-[#D1FF00]">✦</span>
+            <span>EDUCATIONAL TECHNOLOGY &amp; PEDAGOGY</span>
+            <span className="text-[#D1FF00]">✦</span>
+            <span>INTERACTIVE LEARNING SYSTEMS</span>
+            <span className="text-[#D1FF00]">✦</span>
+            <span>BANGKIT ACADEMY 2024 CAPSTONE LEAD</span>
+            <span className="text-[#D1FF00]">✦</span>
+            <span>NEXT.JS &amp; TAILWIND CSS</span>
+            <span className="text-[#D1FF00]">✦</span>
+            <span>DISTRIBUTED SYSTEMS</span>
+          </div>
+        </motion.div>
+      </motion.div>
 
       {/* Bottom Ticker Metric Strip */}
       <motion.div
