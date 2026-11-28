@@ -5,6 +5,8 @@ import { text, safeHref } from "@/lib/domain";
 import { ArrowLeft, ExternalLink, ArrowUpRight, ArrowRight } from "lucide-react";
 import { GithubIcon } from "@/components/space/SocialIcons";
 import { ProjectImageViewer } from "@/components/projects/ProjectImageViewer";
+import { CaseStudyBlockRenderer } from "@/components/projects/CaseStudyBlockRenderer";
+import { normalizeCaseStudyBlocks } from "@/lib/case-study-blocks";
 import { ThemeProvider } from "@/components/editorial/ThemeContext";
 import { MotionProvider } from "@/components/motion/MotionProvider";
 import { ScrollProgress } from "@/components/motion/ScrollProgress";
@@ -209,49 +211,12 @@ export default async function ProjectDetailPage({ params }: PageProps) {
                     </p>
                   </section>
 
-                  {project.case_study?.background && (
-                    <InfoCard rotate={-1} mobileRotate={0} binderHoles={false}>
-                      <span className="font-mono text-[11px] uppercase tracking-wider text-[#FAF8F5]/80 block mb-2">
-                        01 // BACKGROUND
-                      </span>
-                      <p className="font-body-editorial text-sm sm:text-base text-[#FAF8F5]">
-                        {project.case_study.background}
-                      </p>
-                    </InfoCard>
-                  )}
-
-                  {project.case_study?.features && (
-                    <section className="space-y-2">
-                      <span className="font-mono text-xs text-[#F05A28] uppercase">
-                        02 // ARCHITECTURE &amp; FEATURES
-                      </span>
-                      <p className="font-body-editorial text-base text-[#000000]/80 dark:text-[#FAF8F5]/80">
-                        {project.case_study.features}
-                      </p>
-                    </section>
-                  )}
-
-                  {project.case_study?.contribution && (
-                    <TextCard rotate={1} mobileRotate={0} foldedCorner>
-                      <span className="font-mono text-[11px] uppercase tracking-wider text-[#F05A28] block mb-2">
-                        03 // CONTRIBUTION
-                      </span>
-                      <p className="font-body-editorial text-sm sm:text-base text-[#000000]">
-                        {project.case_study.contribution}
-                      </p>
-                    </TextCard>
-                  )}
-
-                  {project.case_study?.outcome && (
-                    <section className="space-y-2 pt-2">
-                      <span className="font-mono text-xs text-[#8BA314] dark:text-[#C4D94E] uppercase">
-                        04 // OUTCOME
-                      </span>
-                      <p className="font-body-editorial text-base text-[#000000]/80 dark:text-[#FAF8F5]/80">
-                        {project.case_study.outcome}
-                      </p>
-                    </section>
-                  )}
+                  {/* Dynamic CMS Case Study Blocks */}
+                  <CaseStudyBlockRenderer
+                    blocks={normalizeCaseStudyBlocks(
+                      project.case_study as Record<string, unknown> | undefined
+                    )}
+                  />
                 </div>
 
                 {/* Sidebar Tech Stack */}

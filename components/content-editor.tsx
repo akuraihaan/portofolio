@@ -17,6 +17,7 @@ import { saveEntry } from "@/app/actions";
 import { JsonEditor } from "./json-editor";
 import { MediaPicker } from "./media-picker";
 import { MediaImage } from "./media";
+import { CaseStudyBuilder } from "./admin-editorial/CaseStudyBuilder";
 export function ContentEditor({
   moduleKey,
   id,
@@ -220,7 +221,12 @@ export function ContentEditor({
                         {field.label}
                         {field.required ? " *" : ""}
                       </label>
-                      {field.type === "json" ? (
+                      {field.name === "case_study" ? (
+                        <CaseStudyBuilder
+                          value={(v as Record<string, unknown>) ?? {}}
+                          onChange={(next) => change(field.name, next as Json)}
+                        />
+                      ) : field.type === "json" ? (
                         <JsonEditor
                           value={v ?? {}}
                           onChange={(next) => change(field.name, next)}
