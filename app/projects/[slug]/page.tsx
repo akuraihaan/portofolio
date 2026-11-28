@@ -2,8 +2,9 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getPublicBundle, origin } from "@/lib/data";
 import { text, safeHref } from "@/lib/domain";
-import { ArrowLeft, ExternalLink, ArrowUpRight } from "lucide-react";
+import { ArrowLeft, ExternalLink, ArrowUpRight, ArrowRight } from "lucide-react";
 import { GithubIcon } from "@/components/space/SocialIcons";
+import { ProjectImageViewer } from "@/components/projects/ProjectImageViewer";
 import { ThemeProvider } from "@/components/editorial/ThemeContext";
 import { MotionProvider } from "@/components/motion/MotionProvider";
 import { ScrollProgress } from "@/components/motion/ScrollProgress";
@@ -113,6 +114,15 @@ export default async function ProjectDetailPage({ params }: PageProps) {
 
   if (!project) notFound();
 
+  const currentIdx = defaultMotorsportProjects.findIndex((p) => p.id === project.id);
+  const prevProject =
+    currentIdx > 0
+      ? defaultMotorsportProjects[currentIdx - 1]
+      : defaultMotorsportProjects[defaultMotorsportProjects.length - 1];
+  const nextProject =
+    currentIdx >= 0 && currentIdx < defaultMotorsportProjects.length - 1
+      ? defaultMotorsportProjects[currentIdx + 1]
+      : defaultMotorsportProjects[0];
   const related = defaultMotorsportProjects.filter((p) => p.id !== project.id).slice(0, 3);
   const ownerName =
     text(bundle.profile?.full_name) || text(bundle.settings.owner_name) || "Taufik Raihandani";
@@ -183,16 +193,9 @@ export default async function ProjectDetailPage({ params }: PageProps) {
                 </div>
               </header>
 
-              {/* Sharp Project Image Banner — zero rounded corners per DESIGN.md */}
+              {/* Sharp Project Image Banner with Fullscreen Zoom */}
               {project.cover_url && (
-                <div className="mb-14 aspect-[16/9] w-full overflow-hidden bg-[#1A1917]">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={project.cover_url}
-                    alt={project.title}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
+                <ProjectImageViewer src={project.cover_url} alt={project.title} />
               )}
 
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start mb-20">
@@ -280,6 +283,33 @@ export default async function ProjectDetailPage({ params }: PageProps) {
                   )}
                 </aside>
               </div>
+
+              {/* Next / Previous Project Navigation */}
+              <nav
+                aria-label="Navigasi Proyek"
+                className="mb-14 pt-8 border-t border-[#000000]/15 dark:border-[#FAF8F5]/15 grid grid-cols-1 sm:grid-cols-2 gap-4"
+              >
+                <Link
+                  href={`/projects/${prevProject.id}`}
+                  className="p-5 bg-[#FAF8F5] dark:bg-[#252420] border border-[#000000]/15 dark:border-[#FAF8F5]/15 hover:border-[#F05A28] transition-colors"
+                >
+                  <span className="font-mono text-[10px] uppercase text-[#000000]/55 dark:text-[#FAF8F5]/55 inline-flex items-center gap-1">
+                    <ArrowLeft className="w-3 h-3" />
+                    <span>Proyek Sebelumnya</span>
+                  </span>
+                  <div className="font-editorial text-2xl mt-1">{prevProject.title}</div>
+                </Link>
+                <Link
+                  href={`/projects/${nextProject.id}`}
+                  className="p-5 bg-[#FAF8F5] dark:bg-[#252420] border border-[#000000]/15 dark:border-[#FAF8F5]/15 hover:border-[#F05A28] transition-colors sm:text-right"
+                >
+                  <span className="font-mono text-[10px] uppercase text-[#000000]/55 dark:text-[#FAF8F5]/55 inline-flex items-center gap-1">
+                    <span>Proyek Berikutnya</span>
+                    <ArrowRight className="w-3 h-3" />
+                  </span>
+                  <div className="font-editorial text-2xl mt-1">{nextProject.title}</div>
+                </Link>
+              </nav>
 
               {/* Related Works */}
               <section className="pt-12 border-t border-[#000000]/15 dark:border-[#FAF8F5]/15">
