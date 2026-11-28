@@ -3,10 +3,12 @@
 import React, { useState, useMemo } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
-import { ArrowUpRight, ExternalLink, Search, Layers } from "lucide-react";
+import { ArrowUpRight, ExternalLink, Search, Layers, ChevronDown } from "lucide-react";
 import { GithubIcon } from "../space/SocialIcons";
 import { Sticker, Sprite } from "../collage";
 import { SplitText } from "../motion/SplitText";
+import { HoverImage } from "../motion/HoverImage";
+import { ProjectPreview } from "../motion/ProjectPreview";
 import { useMotionContext } from "../motion/MotionProvider";
 import { EASINGS, SPRINGS, DURATION, VIEWPORT_ONCE } from "../motion/MotionSystem";
 import {
@@ -32,6 +34,12 @@ const SCATTER_LAYOUTS = [
 export function Playground({ projects = defaultMotorsportProjects }: PlaygroundProps) {
   const [selectedCategory, setSelectedCategory] = useState("ALL");
   const [searchQuery, setSearchQuery] = useState("");
+  const [hoveredPreview, setHoveredPreview] = useState<{
+    imageSrc: string | null;
+    title: string;
+    category?: string;
+  } | null>(null);
+  const [expandedProjectId, setExpandedProjectId] = useState<string | null>(null);
   const prefersReduced = useReducedMotion();
   const { setCursor, resetCursor } = useMotionContext();
 
@@ -58,6 +66,12 @@ export function Playground({ projects = defaultMotorsportProjects }: PlaygroundP
       id="playground"
       className="relative w-full max-w-7xl mx-auto py-24 md:py-32 px-6 sm:px-8 overflow-x-clip"
     >
+      {/* Pointer-following floating preview on desktop */}
+      <ProjectPreview
+        imageSrc={hoveredPreview?.imageSrc ?? null}
+        title={hoveredPreview?.title ?? ""}
+        category={hoveredPreview?.category}
+      />
       {/* Sparse Sprites */}
       <Sprite kind="star" color="orange" size="md" className="hidden md:inline-block absolute top-14 right-12" />
       <Sprite kind="leaf" color="green" size="md" className="hidden md:inline-block absolute bottom-20 left-10" />
@@ -144,6 +158,14 @@ export function Playground({ projects = defaultMotorsportProjects }: PlaygroundP
                 key={`strip-${item.id}`}
                 href={`/projects/${item.id}`}
                 onClick={(e) => e.stopPropagation()}
+                onMouseEnter={() =>
+                  setHoveredPreview({
+                    imageSrc: item.cover_url || item.thumbnail_url || null,
+                    title: item.title,
+                    category: item.category,
+                  })
+                }
+                onMouseLeave={() => setHoveredPreview(null)}
                 className="w-60 shrink-0 p-3.5 bg-[#FFD4C2]/65 dark:bg-[#252420] border border-[#000000]/12 dark:border-[#FAF8F5]/12 hover:border-[#F05A28] transition-colors flex flex-col justify-between"
               >
                 <span className="font-mono text-[10px] text-[#F05A28] uppercase">
@@ -192,18 +214,16 @@ export function Playground({ projects = defaultMotorsportProjects }: PlaygroundP
                 onMouseLeave={resetCursor}
                 className={`group ${preset.col} ${preset.offset} flex flex-col`}
               >
-                {/* Sharp Image Tile — NO rounded corners on project images per DESIGN.md */}
+                {/* Sharp Image Tile with 3D Pointer Tilt — NO rounded corners per DESIGN.md */}
                 <Link
                   href={`/projects/${project.id}`}
                   className={`relative block w-full ${preset.aspect} overflow-hidden bg-[#1A1917] mb-4`}
                 >
                   {imageSrc ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
+                    <HoverImage
                       src={imageSrc}
                       alt={project.title}
-                      loading="lazy"
-                      className="w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-700"
+                      className="w-full h-full"
                     />
                   ) : (
                     <div className="w-full h-full flex flex-col items-center justify-center p-6 text-center bg-[#1A1917] text-[#FAF8F5]">
@@ -269,17 +289,65 @@ export function Playground({ projects = defaultMotorsportProjects }: PlaygroundP
                     {project.summary}
                   </p>
 
-                  {/* Tech Stack */}
-                  <div className="flex flex-wrap gap-1.5 pt-1">
-                    {project.technologies.slice(0, 5).map((tech) => (
-                      <span
-                        key={tech}
-                        className="font-mono text-[10px] px-2 py-0.5 bg-[#FAF8F5] dark:bg-[#252420] border border-[#000000]/15 dark:border-[#FAF8F5]/15 text-[#000000]/80 dark:text-[#FAF8F5]/80"
-                      >
-                        {tech}
-                      </span>
-                    ))}
+                  {/* Tech Stack + Expandable Quick-Study Toggle */}
+                  <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
+                    <div className="flex flex-wrap gap-1.5">
+                      {project.technologies.slice(0, 5).map((tech) => (
+                        <span
+                          key={tech}
+                          className="font-mono text-[10px] px-2 py-0.5 bg-[#FAF8F5] dark:bg-[#252420] border border-[#000000]/15 dark:border-[#FAF8F5]/15 text-[#000000]/80 dark:text-[#FAF8F5]/80"
+                        >
+                          {tech}
+                        </span>
+                      ))}
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setExpandedProjectId(
+                          expandedProjectId === project.id ? null : project.id
+                        )
+                      }
+                      className="inline-flex items-center gap-1 font-mono text-[10px] uppercase tracking-wider text-[#F05A28] hover:underline cursor-pointer"
+                    >
+                      <span>{expandedProjectId === project.id ? "HIDE" : "QUICK VIEW"}</span>
+                      <ChevronDown
+                        className={`w-3 h-3 transition-transform ${
+                          expandedProjectId === project.id ? "rotate-180" : ""
+                        }`}
+                      />
+                    </button>
                   </div>
+
+                  {/* Expandable Inline Case-Study Summary */}
+                  <AnimatePresence initial={false}>
+                    {expandedProjectId === project.id && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.28 }}
+                        className="overflow-hidden"
+                      >
+                        <div className="mt-3 p-4 bg-[#FFD4C2]/55 dark:bg-[#252420] border-l-2 border-[#F05A28] space-y-2 text-xs">
+                          <p className="font-mono text-[10px] uppercase text-[#F05A28]">
+                            ROLE: {project.role}
+                          </p>
+                          <p className="font-body-editorial text-[#000000]/85 dark:text-[#FAF8F5]/85">
+                            {project.description}
+                          </p>
+                          <Link
+                            href={`/projects/${project.id}`}
+                            className="inline-flex items-center gap-1 font-mono text-[11px] uppercase text-[#F05A28] hover:underline pt-1"
+                          >
+                            <span>OPEN FULL CASE STUDY</span>
+                            <ArrowUpRight className="w-3 h-3" />
+                          </Link>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
               </motion.article>
             );

@@ -1,9 +1,16 @@
 "use client";
 
-import React, { useRef } from "react";
-import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
+import React, { useRef, useState, useCallback } from "react";
+import {
+  motion,
+  useReducedMotion,
+  useScroll,
+  useTransform,
+  useMotionValue,
+  useSpring,
+} from "framer-motion";
 import { InfoCard, TextCard, Sticker, Sprite } from "../collage";
-import { EASINGS, DURATION, VIEWPORT_ONCE } from "../motion/MotionSystem";
+import { EASINGS, DURATION, SPRINGS, VIEWPORT_ONCE } from "../motion/MotionSystem";
 
 interface AboutProps {
   ownerName?: string;
@@ -32,6 +39,7 @@ export function About({
   },
 }: AboutProps) {
   const prefersReduced = useReducedMotion();
+  const [hoveredCard, setHoveredCard] = useState(false);
   const ref = useRef<HTMLElement>(null);
 
   const { scrollYProgress } = useScroll({
@@ -41,10 +49,26 @@ export function About({
   const peachY = useTransform(scrollYProgress, [0, 1], [18, -18]);
   const stickerY = useTransform(scrollYProgress, [0, 1], [-14, 14]);
 
+  const ptrX = useMotionValue(0);
+  const ptrY = useMotionValue(0);
+  const cardShiftX = useSpring(useTransform(ptrX, [-0.5, 0.5], [-8, 8]), SPRINGS.fluid);
+  const cardShiftY = useSpring(useTransform(ptrY, [-0.5, 0.5], [-6, 6]), SPRINGS.fluid);
+
+  const onPointerMove = useCallback(
+    (e: React.PointerEvent<HTMLElement>) => {
+      if (prefersReduced || e.pointerType !== "mouse" || !ref.current) return;
+      const rect = ref.current.getBoundingClientRect();
+      ptrX.set((e.clientX - rect.left) / rect.width - 0.5);
+      ptrY.set((e.clientY - rect.top) / rect.height - 0.5);
+    },
+    [prefersReduced, ptrX, ptrY]
+  );
+
   return (
     <section
       ref={ref}
       id="about"
+      onPointerMove={onPointerMove}
       className="relative w-full max-w-6xl mx-auto py-24 md:py-32 px-6 sm:px-8 overflow-x-clip"
     >
       {/* Section Tag */}
@@ -74,20 +98,29 @@ export function About({
           IPK {stats.gpa || "3.54"} · MAGNA CUM LAUDE
         </motion.div>
 
-        {/* Large Orange Card (-8deg desktop, -2.5deg mobile) */}
-        <InfoCard
-          rotate={-8}
-          mobileRotate={-2.5}
-          binderHoles
-          className="w-full max-w-[540px] lg:ml-6 z-10"
+        {/* Large Orange Card (-8deg desktop, -2.5deg mobile) with pointer depth */}
+        <motion.div
+          style={prefersReduced ? {} : { x: cardShiftX, y: cardShiftY }}
+          onMouseEnter={() => setHoveredCard(true)}
+          onMouseLeave={() => setHoveredCard(false)}
+          className="w-full max-w-[540px] lg:ml-6 z-10 relative"
         >
-          <h2 className="font-hero-display text-3xl sm:text-5xl text-[#FAF8F5] leading-[1.1] mb-5">
-            Crafting interactive learning systems &amp; resilient web architecture.
-          </h2>
-          <p className="font-body-editorial text-sm sm:text-base text-[#FAF8F5]/90 leading-relaxed">
-            Saya {ownerName}, lulusan S1 Pendidikan Komputer FKIP Universitas Lambung Mangkurat. Fokus utama saya berada di persimpangan antara rekayasa perangkat lunak modern, <em>Learning Analytics</em>, dan infrastruktur cloud berlatensi rendah.
-          </p>
-        </InfoCard>
+          <InfoCard rotate={-8} mobileRotate={-2.5} binderHoles className="w-full">
+            <h2 className="font-hero-display text-3xl sm:text-5xl text-[#FAF8F5] leading-[1.1] mb-5">
+              Crafting interactive learning systems &amp; resilient web architecture.
+            </h2>
+            <p className="font-body-editorial text-sm sm:text-base text-[#FAF8F5]/90 leading-relaxed">
+              Saya {ownerName}, lulusan S1 Pendidikan Komputer FKIP Universitas Lambung Mangkurat. Fokus utama saya berada di persimpangan antara rekayasa perangkat lunak modern, <em>Learning Analytics</em>, dan infrastruktur cloud berlatensi rendah.
+            </p>
+            <div
+              className={`mt-4 pt-3 border-t border-[#FAF8F5]/20 font-mono text-[11px] uppercase tracking-wider text-[#FAF8F5] transition-opacity duration-300 ${
+                hoveredCard ? "opacity-100" : "opacity-65"
+              }`}
+            >
+              ✿ {stats.projectsCount || 7} SHIPPED WORKS · {stats.certificatesCount || 5} VERIFIED CERTS
+            </div>
+          </InfoCard>
+        </motion.div>
 
         {/* Overlapping Peach Text Box (+3deg, lower right) */}
         <motion.div

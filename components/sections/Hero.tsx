@@ -51,8 +51,10 @@ export function Hero({
 
   const ptrX = useMotionValue(0);
   const ptrY = useMotionValue(0);
-  const smoothX = useSpring(useTransform(ptrX, [-0.5, 0.5], [-12, 12]), SPRINGS.fluid);
+  const smoothX = useSpring(useTransform(ptrX, [-0.5, 0.5], [-14, 14]), SPRINGS.fluid);
   const smoothY = useSpring(useTransform(ptrY, [-0.5, 0.5], [-10, 10]), SPRINGS.fluid);
+  const titleX = useSpring(useTransform(ptrX, [-0.5, 0.5], [10, -10]), SPRINGS.fluid);
+  const titleSkew = useSpring(useTransform(ptrX, [-0.5, 0.5], [-1.2, 1.2]), SPRINGS.fluid);
 
   const handlePointerMove = useCallback(
     (e: React.PointerEvent<HTMLElement>) => {
@@ -115,7 +117,12 @@ export function Hero({
         </Sticker>
 
         <h1 className="font-hero-display text-[clamp(4rem,13vw,10.5rem)] text-[#000000] dark:text-[#FAF8F5] leading-[0.94] tracking-[-0.02em]">
-          <SplitText text="BWORIEY" type="chars" immediate />
+          <motion.span
+            style={prefersReduced ? {} : { x: titleX, skewX: titleSkew }}
+            className="inline-block"
+          >
+            <SplitText text="BWORIEY" type="chars" immediate />
+          </motion.span>
         </h1>
         <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-4 mt-2">
           <p className="font-editorial italic text-[clamp(2rem,5vw,4rem)] text-[#F05A28] leading-[1.05]">
@@ -204,6 +211,35 @@ export function Hero({
             )}
           </div>
         </motion.div>
+      </motion.div>
+
+      {/* Animated Desktop Scroll Indicator */}
+      <motion.div
+        initial={prefersReduced ? {} : { opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: DURATION.slow, delay: 0.9, ease: EASINGS.editorial }}
+        className="mt-16 flex items-center justify-between pt-6 border-t border-[#000000]/10 dark:border-[#FAF8F5]/10"
+      >
+        <button
+          type="button"
+          onClick={() => scrollTo("about")}
+          onMouseEnter={() => setCursor({ active: true, text: "SCROLL", variant: "hover" })}
+          onMouseLeave={resetCursor}
+          className="inline-flex items-center gap-3 font-mono text-[11px] uppercase tracking-[0.06em] text-[#000000]/70 dark:text-[#FAF8F5]/70 hover:text-[#F05A28] cursor-pointer transition-colors"
+        >
+          <span className="relative w-4 h-7 rounded-full border border-current flex items-start justify-center p-1">
+            <motion.span
+              animate={prefersReduced ? {} : { y: [0, 8, 0] }}
+              transition={{ repeat: Infinity, duration: 1.8, ease: "easeInOut" }}
+              className="w-1 h-1.5 rounded-full bg-[#F05A28]"
+            />
+          </span>
+          <span>SCROLL TO EXPLORE</span>
+        </button>
+
+        <span className="hidden sm:inline-block font-mono text-[11px] text-[#000000]/50 dark:text-[#FAF8F5]/50 uppercase tracking-[0.05em]">
+          NEXT.JS 16 · FRAMER MOTION · SUPABASE
+        </span>
       </motion.div>
     </section>
   );

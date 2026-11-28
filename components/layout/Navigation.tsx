@@ -19,6 +19,7 @@ const NAV_ITEMS = [
 
 export function Navigation() {
   const [active, setActive] = useState("hero");
+  const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
   const prefersReduced = useReducedMotion();
@@ -26,8 +27,9 @@ export function Navigation() {
   const isHome = pathname === "/";
 
   useEffect(() => {
-    if (!isHome) return;
     const onScroll = () => {
+      setScrolled(window.scrollY > 40);
+      if (!isHome) return;
       const ids = ["hero", ...NAV_ITEMS.map((n) => n.id)];
       const pos = window.scrollY + 220;
       for (let i = ids.length - 1; i >= 0; i--) {
@@ -62,9 +64,19 @@ export function Navigation() {
 
   return (
     <>
-      {/* DESIGN.md Navigation Bar: transparent, no border, no shadow, py-6 px-6 sm:px-8 */}
-      <header className="relative z-40 w-full py-6 px-6 sm:px-8">
-        <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
+      {/* Floating Navigation Bar — transitions from transparent top bar to crisp floating bar on scroll */}
+      <header
+        className={`sticky top-0 z-40 w-full transition-all duration-300 px-6 sm:px-8 ${
+          scrolled ? "pt-3 pb-2" : "py-6"
+        }`}
+      >
+        <div
+          className={`max-w-7xl mx-auto flex items-center justify-between gap-4 transition-all duration-300 ${
+            scrolled
+              ? "bg-[#FAF8F5]/95 dark:bg-[#1A1917]/95 border border-[#000000]/15 dark:border-[#FAF8F5]/15 px-5 py-3 rounded-[0.75rem]"
+              : ""
+          }`}
+        >
           {/* Brand Wordmark */}
           <Link
             href="/"

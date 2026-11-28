@@ -23,3 +23,6 @@ export * from "./CardTilt3D";
 export * from "./NoiseOverlay";
 export * from "./SmoothScrollProvider";
 export * from "./BrandPreloader";
+export * from "./HoverImage";
+export * from "./ProjectPreview";
+export * from "./AnimatedSection";
