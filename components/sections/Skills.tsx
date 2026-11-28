@@ -1,7 +1,9 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
+import Link from "next/link";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { ArrowUpRight } from "lucide-react";
 import { SplitText } from "../motion/SplitText";
 import { AnimatedUnderline } from "../motion/AnimatedUnderline";
 import { Sprite } from "../collage";
@@ -18,17 +20,24 @@ import {
   type SkillCategoryGroup,
   type DynamicSkillRecord,
 } from "../motorsport/MotorsportSkills";
+import type { MotorsportProjectItem } from "../motorsport/MotorsportGallery";
 
 interface SkillsProps {
   groups?: SkillCategoryGroup[];
   dynamicSkills?: DynamicSkillRecord[];
+  projects?: MotorsportProjectItem[];
 }
 
 export function Skills({
   groups = motorsportSkillGroups,
   dynamicSkills = [],
+  projects = [],
 }: SkillsProps) {
   const [activeTab, setActiveTab] = useState("all");
+  const [selectedSkill, setSelectedSkill] = useState<{
+    name: string;
+    desc: string;
+  } | null>(null);
   const prefersReduced = useReducedMotion();
   const { setCursor, resetCursor } = useMotionContext();
 
@@ -51,7 +60,7 @@ export function Skills({
         grp.skills.push({
           name: ds.name,
           level: "Mahir",
-          desc: ds.description || "Verified production engineering capability.",
+          desc: ds.description || "Digunakan pada pengembangan aplikasi produksi.",
         });
       }
     });
@@ -61,6 +70,19 @@ export function Skills({
   const displayed =
     activeTab === "all" ? effectiveGroups : effectiveGroups.filter((g) => g.id === activeTab);
 
+  // Match projects that use the selected technology
+  const relatedProjects = useMemo(() => {
+    if (!selectedSkill) return [];
+    const keyword = selectedSkill.name.toLowerCase().split(" ")[0];
+    return projects.filter((p) =>
+      p.technologies.some(
+        (t) =>
+          t.toLowerCase().includes(keyword) ||
+          selectedSkill.name.toLowerCase().includes(t.toLowerCase())
+      )
+    );
+  }, [selectedSkill, projects]);
+
   return (
     <section
       id="skills"
@@ -68,22 +90,22 @@ export function Skills({
     >
       <Sprite kind="spark" color="green" size="md" className="hidden md:inline-block absolute top-16 right-16" />
 
-      <div className="max-w-3xl mb-12 space-y-4">
+      <div className="max-w-3xl mb-10 space-y-3">
         <span className="inline-block px-2.5 py-1 rounded-[0.5rem] bg-[#C4D94E] text-[#000000] font-mono text-xs uppercase tracking-[0.05em]">
-          03 // TECHNICAL TOOLKIT
+          Teknologi
         </span>
         <h2 className="font-hero-display text-4xl sm:text-5xl text-[#000000] dark:text-[#FAF8F5] leading-[1.08]">
-          <SplitText text="Interactive typographic stack & engineering craft." type="words" />
+          <SplitText text="Alat dan bahasa yang saya gunakan." type="words" />
         </h2>
         <p className="font-body-editorial text-sm sm:text-base text-[#000000]/75 dark:text-[#FAF8F5]/75">
-          Tanpa persentase artifisial — setiap teknologi didukung implementasi sistem nyata dan riset akademik.
+          Pilih salah satu teknologi di bawah untuk melihat peran dan proyek yang memakainya.
         </p>
       </div>
 
       {/* Category Filter */}
-      <div className="flex flex-wrap items-center gap-2 mb-12">
+      <div className="flex flex-wrap items-center gap-2 mb-8">
         {[
-          { id: "all", label: `All (${effectiveGroups.length})` },
+          { id: "all", label: `Semua (${effectiveGroups.length})` },
           ...effectiveGroups.map((g) => ({ id: g.id, label: g.name })),
         ].map((tab) => {
           const isActive = activeTab === tab.id;
@@ -113,6 +135,45 @@ export function Skills({
         })}
       </div>
 
+      {/* Interactive Technology Explorer Drawer */}
+      <AnimatePresence>
+        {selectedSkill && (
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={SPRINGS.snappy}
+            className="mb-10 p-5 sm:p-6 rounded-[0.75rem] bg-[#FFD4C2] text-[#000000] flex flex-col md:flex-row md:items-center justify-between gap-4"
+          >
+            <div className="space-y-1 max-w-2xl">
+              <span className="font-mono text-[10px] uppercase tracking-wider text-[#F05A28]">
+                Teknologi terpilih
+              </span>
+              <h3 className="font-editorial text-2xl">{selectedSkill.name}</h3>
+              <p className="font-body-editorial text-sm text-[#000000]/80">{selectedSkill.desc}</p>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              {relatedProjects.length > 0 ? (
+                relatedProjects.map((proj) => (
+                  <Link
+                    key={proj.id}
+                    href={`/projects/${proj.id}`}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[0.45rem] bg-[#F05A28] text-[#FAF8F5] font-mono text-[11px] uppercase"
+                  >
+                    <span>{proj.title}</span>
+                    <ArrowUpRight className="w-3 h-3" />
+                  </Link>
+                ))
+              ) : (
+                <span className="font-mono text-[11px] text-[#000000]/65">
+                  Dipakai pada pengembangan sistem internal.
+                </span>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Typographic Skill Groups */}
       <AnimatePresence mode="wait">
         <motion.div
@@ -139,27 +200,28 @@ export function Skills({
                   <span className="font-mono text-xs text-[#F05A28]">{group.code}</span>
                 </div>
 
-                <div className="space-y-3.5">
-                  {group.skills.map((skill) => (
-                    <motion.div
-                      key={skill.name}
-                      whileHover={prefersReduced ? {} : { x: 4 }}
-                      transition={SPRINGS.snappy}
-                      className="group/sk"
-                    >
-                      <div className="flex items-baseline justify-between gap-2">
-                        <span className="font-mono text-xs sm:text-[13px] text-[#000000] dark:text-[#FAF8F5] group-hover/sk:text-[#F05A28] transition-colors">
-                          {skill.name}
-                        </span>
-                        <span className="font-mono text-[10px] px-1.5 py-0.5 rounded-[0.35rem] bg-[#C4D94E]/60 text-[#000000]">
-                          {skill.level}
-                        </span>
-                      </div>
-                      <p className="font-body-editorial text-xs text-[#000000]/65 dark:text-[#FAF8F5]/65 mt-0.5">
-                        {skill.desc}
-                      </p>
-                    </motion.div>
-                  ))}
+                <div className="flex flex-wrap gap-2">
+                  {group.skills.map((skill) => {
+                    const isPicked = selectedSkill?.name === skill.name;
+                    return (
+                      <button
+                        key={skill.name}
+                        type="button"
+                        onClick={() =>
+                          setSelectedSkill(
+                            isPicked ? null : { name: skill.name, desc: skill.desc }
+                          )
+                        }
+                        className={`px-3 py-1.5 rounded-[0.45rem] font-mono text-xs cursor-pointer transition-colors ${
+                          isPicked
+                            ? "bg-[#F05A28] text-[#FAF8F5]"
+                            : "bg-[#FAF8F5] dark:bg-[#1A1917] border border-[#000000]/15 dark:border-[#FAF8F5]/15 text-[#000000] dark:text-[#FAF8F5] hover:border-[#F05A28]"
+                        }`}
+                      >
+                        {skill.name}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             </motion.div>

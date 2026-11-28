@@ -17,8 +17,8 @@ import React, { useEffect, useState, useCallback } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { EASINGS } from "./MotionSystem";
 
-const SESSION_KEY = "bworiey_preloader_v2";
-const BRAND_CHARS = ["B", "W", "O", "R", "I", "E", "Y"];
+const SESSION_KEY = "bworiey_preloader_v3";
+const BRAND_CHARS = ["b", "w", "o", "r", "i", "e", "y"];
 
 type Stage = "entering" | "counting" | "presentation" | "exit" | "done";
 
@@ -168,9 +168,7 @@ export function BrandPreloader({ onComplete }: BrandPreloaderProps) {
                 transition={{ duration: 0.3 }}
                 className="text-[#FAF8F5]/55 uppercase tracking-[0.25em]"
               >
-                {stage === "presentation"
-                  ? "DIGITAL PLAYGROUND"
-                  : "LOADING"}
+                {stage === "presentation" ? "bworiey" : "memuat"}
               </motion.span>
               <motion.span
                 initial={{ opacity: 0 }}

@@ -9,12 +9,12 @@ import { EASINGS, SPRINGS, staggerContainer, staggerItem } from "../motion/Motio
 import { useMotionContext } from "../motion/MotionProvider";
 
 const NAV_ITEMS = [
-  { id: "about", label: "ABOUT" },
-  { id: "playground", label: "PLAYGROUND" },
-  { id: "skills", label: "SKILLS" },
-  { id: "experience", label: "EXPERIENCE" },
-  { id: "certificates", label: "CERTIFICATES" },
-  { id: "contact", label: "CONTACT" },
+  { id: "about", label: "Tentang" },
+  { id: "playground", label: "Proyek" },
+  { id: "skills", label: "Keahlian" },
+  { id: "experience", label: "Pengalaman" },
+  { id: "certificates", label: "Sertifikat" },
+  { id: "contact", label: "Kontak" },
 ];
 
 export function Navigation() {
@@ -85,7 +85,7 @@ export function Navigation() {
             className="inline-flex items-baseline gap-2 group focus:outline-none"
           >
             <span className="font-editorial italic text-2xl sm:text-3xl text-[#000000] dark:text-[#FAF8F5] tracking-tight">
-              BWORIEY
+              bworiey
             </span>
             <span className="w-2 h-2 rounded-full bg-[#F05A28] inline-block group-hover:scale-125 transition-transform" />
           </Link>
@@ -121,11 +121,31 @@ export function Navigation() {
                 </button>
               );
             })}
+            <button
+              type="button"
+              onClick={() => window.dispatchEvent(new Event("bworiey:open-cmd"))}
+              onMouseEnter={() => setCursor({ active: true, text: "CMD", variant: "hover" })}
+              onMouseLeave={resetCursor}
+              aria-label="Buka Command Palette"
+              className="px-2.5 py-1 rounded-[0.4rem] border border-[#000000]/20 dark:border-[#FAF8F5]/20 font-mono text-[11px] text-[#000000]/70 dark:text-[#FAF8F5]/70 hover:border-[#F05A28] hover:text-[#F05A28] cursor-pointer transition-colors"
+            >
+              ⌘K
+            </button>
             <ThemeToggle />
           </nav>
 
           {/* Mobile Controls */}
           <div className="flex md:hidden items-center gap-3">
+            <button
+              type="button"
+              onClick={() => window.dispatchEvent(new Event("bworiey:open-cmd"))}
+              onMouseEnter={() => setCursor({ active: true, text: "CMD", variant: "hover" })}
+              onMouseLeave={resetCursor}
+              aria-label="Buka Command Palette"
+              className="px-2.5 py-1 rounded-[0.4rem] border border-[#000000]/20 dark:border-[#FAF8F5]/20 font-mono text-[11px] text-[#000000]/70 dark:text-[#FAF8F5]/70 hover:border-[#F05A28] hover:text-[#F05A28] cursor-pointer transition-colors"
+            >
+              ⌘K
+            </button>
             <ThemeToggle />
             <button
               type="button"
@@ -165,7 +185,7 @@ export function Navigation() {
           >
             <div className="flex items-center justify-between">
               <span className="font-editorial italic text-2xl text-[#FAF8F5]">
-                BWORIEY
+                bworiey
               </span>
               <button
                 type="button"

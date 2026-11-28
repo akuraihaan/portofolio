@@ -9,10 +9,10 @@ export async function generateMetadata() {
   const b = await getPublicBundle();
   const s = b.settings;
   const ownerName = text(b.profile?.full_name) || text(s.owner_name) || "Taufik Raihandani";
-  const shortDescription = `BWORIEY — Personal Digital Playground & Portfolio ${ownerName}. Creative Developer, Cloud Computing & Educational Technology.`;
+  const shortDescription = `${ownerName} — Web Developer, Cloud Computing, dan Lulusan Pendidikan Komputer.`;
 
   return {
-    title: `BWORIEY — ${ownerName} · Personal Digital Playground`,
+    title: "bworiey",
     description: shortDescription,
     alternates: {
       canonical: origin(s),
@@ -21,7 +21,7 @@ export async function generateMetadata() {
         : {}),
     },
     openGraph: {
-      title: `BWORIEY — ${ownerName} · Personal Digital Playground`,
+      title: "bworiey",
       description: shortDescription,
       ...(safeHref(s.og_image_url) ? { images: [safeHref(s.og_image_url)!] } : {}),
     },

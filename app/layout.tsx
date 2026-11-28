@@ -30,8 +30,8 @@ import { origin } from "@/lib/data";
 
 export const metadata: Metadata = {
   metadataBase: new URL(origin()),
-  title: { default: "BWORIEY — Taufik Raihandani · Portofolio Personal", template: "%s · BWORIEY" },
-  description: "Portofolio personal Taufik Raihandani — Web Developer, Software Developer, dan Lulusan Pendidikan Komputer.",
+  title: { default: "bworiey", template: "%s · bworiey" },
+  description: "Taufik Raihandani — Web Developer & Lulusan Pendidikan Komputer.",
 };
 
 export default function RootLayout({

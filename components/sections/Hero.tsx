@@ -90,11 +90,10 @@ export function Hero({
         className="flex flex-wrap items-center justify-between gap-4 mb-10"
       >
         <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-[0.5rem] bg-[#C4D94E] text-[#000000] font-mono text-[11px] uppercase tracking-[0.05em]">
-          <span>✿</span>
-          <span>COMPUTER SCIENCE EDUCATION · CREATIVE DEVELOPER</span>
+          <span>Pendidikan Komputer · Web &amp; Cloud</span>
         </span>
         <span className="font-mono text-[11px] uppercase tracking-[0.05em] text-[#000000]/60 dark:text-[#FAF8F5]/60">
-          BANJARMASIN, ID · {projectCount} WORKS · {certificateCount} CERTS
+          Banjarmasin · {projectCount} proyek · {certificateCount} sertifikat
         </span>
       </motion.div>
 
@@ -107,12 +106,12 @@ export function Hero({
         <Sticker
           tone="blue"
           rotate={-8}
-          label="Draggable studio sticker"
+          label="Stiker interaktif"
           className="px-3.5 py-2 font-mono text-[11px] uppercase tracking-wider mb-4 lg:mb-0 lg:absolute lg:top-2 lg:right-8 z-20"
         >
           <span className="inline-flex items-center gap-1.5">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>ULM &rsquo;26 · DRAG ME</span>
+            <span>ULM &rsquo;26</span>
           </span>
         </Sticker>
 
@@ -121,16 +120,13 @@ export function Hero({
             style={prefersReduced ? {} : { x: titleX, skewX: titleSkew }}
             className="inline-block"
           >
-            <SplitText text="BWORIEY" type="chars" immediate />
+            <SplitText text="bworiey" type="chars" immediate />
           </motion.span>
         </h1>
         <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-4 mt-2">
           <p className="font-editorial italic text-[clamp(2rem,5vw,4rem)] text-[#F05A28] leading-[1.05]">
             <SplitText text={ownerName} type="words" delay={0.22} immediate />
           </p>
-          <span className="font-mono text-xs uppercase tracking-[0.04em] text-[#000000]/65 dark:text-[#FAF8F5]/65">
-            DIGITAL PLAYGROUND &amp; FULL-STACK ENGINEERING
-          </span>
         </div>
       </motion.div>
 
@@ -178,11 +174,11 @@ export function Hero({
           <div className="flex flex-wrap items-center gap-3 pt-2">
             <MagneticButton
               onClick={() => scrollTo("playground")}
-              onMouseEnter={() => setCursor({ active: true, text: "PLAYGROUND", variant: "project" })}
+              onMouseEnter={() => setCursor({ active: true, text: "PROYEK", variant: "project" })}
               onMouseLeave={resetCursor}
               className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-[0.5rem] bg-[#F05A28] text-[#FAF8F5] font-mono text-xs uppercase tracking-[0.05em] cursor-pointer"
             >
-              <span>EXPLORE PLAYGROUND</span>
+              <span>Lihat Proyek</span>
               <ArrowDownRight className="w-4 h-4" />
             </MagneticButton>
 
@@ -192,7 +188,7 @@ export function Hero({
               onMouseLeave={resetCursor}
               className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-[0.5rem] bg-[#FFD4C2] text-[#000000] font-mono text-xs uppercase tracking-[0.05em] cursor-pointer"
             >
-              <span>GET IN TOUCH</span>
+              <span>Hubungi Saya</span>
               <ArrowUpRight className="w-4 h-4" />
             </MagneticButton>
 

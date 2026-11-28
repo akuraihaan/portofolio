@@ -11,6 +11,7 @@ import { ScrollProgress } from "../motion/ScrollProgress";
 import { SmoothScrollProvider } from "../motion/SmoothScrollProvider";
 import { DottedCanvas } from "../collage";
 import { Navigation } from "../layout/Navigation";
+import { CommandPalette } from "../layout/CommandPalette";
 import { Hero } from "./Hero";
 import { About } from "./About";
 import { Playground } from "./Playground";
@@ -203,6 +204,7 @@ export function PlaygroundMain({ bundle }: PlaygroundMainProps) {
           <BrandPreloader />
           <ScrollProgress color="#F05A28" />
           <CustomCursor />
+          <CommandPalette projects={activeProjects} ownerEmail={ownerEmail} />
           <DottedCanvas>
           <Navigation />
           <main id="main">
@@ -224,7 +226,7 @@ export function PlaygroundMain({ bundle }: PlaygroundMainProps) {
               }}
             />
             <Playground projects={activeProjects} />
-            <Skills dynamicSkills={dynamicSkills} />
+            <Skills dynamicSkills={dynamicSkills} projects={activeProjects} />
             <Experience experiences={activeExperiences} />
             <Certificates certificates={activeCerts} />
             <Articles articles={activeArticles} />

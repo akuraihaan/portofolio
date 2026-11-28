@@ -3,6 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
+import { ArrowUp } from "lucide-react";
 import { AnimatedUnderline } from "../motion/AnimatedUnderline";
 import { EASINGS, DURATION, VIEWPORT_ONCE } from "../motion/MotionSystem";
 
@@ -56,10 +57,10 @@ export function Footer({
           {/* Left Column (6 cols): Poetic Statement in Large Italic Serif */}
           <div className="md:col-span-6 pr-0 md:pr-12 space-y-4">
             <p className="font-editorial italic text-[clamp(1.75rem,3.4vw,2.6rem)] leading-[1.2] text-[#FAF8F5]">
-              &ldquo;Building software as a living garden — where curiosity, human craft, and interactive code grow together.&rdquo;
+              &ldquo;Merancang perangkat lunak yang rapi, ringan, dan menyenangkan untuk dijelajahi.&rdquo;
             </p>
             <p className="font-mono text-xs text-[#FAF8F5]/55 uppercase tracking-[0.05em]">
-              BWORIEY · {ownerName} · BANJARMASIN, ID
+              bworiey · {ownerName} · Banjarmasin
             </p>
           </div>
 
@@ -139,10 +140,17 @@ export function Footer({
           ))}
         </div>
 
-        {/* Bottom Copyright */}
-        <div className="pt-6 border-t border-[#FAF8F5]/10 flex flex-col sm:flex-row items-center justify-between gap-4 font-mono text-[11px] text-[#FAF8F5]/50">
-          <span>© {new Date().getFullYear()} BWORIEY · {ownerName}</span>
-          <span>NEXT.JS + FRAMER MOTION + SUPABASE</span>
+        {/* Bottom Copyright + Back to Top */}
+        <div className="pt-6 border-t border-[#FAF8F5]/10 flex flex-col sm:flex-row items-center justify-between gap-4 font-mono text-[11px] text-[#FAF8F5]/55">
+          <span>© {new Date().getFullYear()} bworiey · {ownerName}</span>
+          <button
+            type="button"
+            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+            className="inline-flex items-center gap-1.5 text-[#C4D94E] hover:text-[#F05A28] uppercase tracking-wider cursor-pointer transition-colors"
+          >
+            <span>Kembali ke atas</span>
+            <ArrowUp className="w-3.5 h-3.5" />
+          </button>
         </div>
       </div>
     </footer>
