@@ -124,6 +124,40 @@ export function Playground({ projects = defaultMotorsportProjects }: PlaygroundP
         })}
       </div>
 
+      {/* Swipeable / Draggable Quick-Glance Strip */}
+      {filtered.length > 1 && (
+        <div className="mb-14 overflow-hidden">
+          <div className="flex items-center justify-between mb-3 font-mono text-[10px] uppercase tracking-wider text-[#000000]/55 dark:text-[#FAF8F5]/55">
+            <span>DRAG TO SWIPE SPOTLIGHT</span>
+            <span>↔ GESTURE CAROUSEL</span>
+          </div>
+          <motion.div
+            drag={prefersReduced ? false : "x"}
+            dragConstraints={{ left: -320, right: 0 }}
+            dragElastic={0.18}
+            onMouseEnter={() => setCursor({ active: true, text: "DRAG", variant: "drag" })}
+            onMouseLeave={resetCursor}
+            className="flex gap-4 cursor-grab active:cursor-grabbing w-max pb-2"
+          >
+            {filtered.slice(0, 5).map((item) => (
+              <Link
+                key={`strip-${item.id}`}
+                href={`/projects/${item.id}`}
+                onClick={(e) => e.stopPropagation()}
+                className="w-60 shrink-0 p-3.5 bg-[#FFD4C2]/65 dark:bg-[#252420] border border-[#000000]/12 dark:border-[#FAF8F5]/12 hover:border-[#F05A28] transition-colors flex flex-col justify-between"
+              >
+                <span className="font-mono text-[10px] text-[#F05A28] uppercase">
+                  {item.number} · {item.category}
+                </span>
+                <span className="font-editorial text-xl text-[#000000] dark:text-[#FAF8F5] mt-1 truncate">
+                  {item.title}
+                </span>
+              </Link>
+            ))}
+          </motion.div>
+        </div>
+      )}
+
       {/* Scattered Collage Grid (12-col asymmetric) */}
       <motion.div layout className="grid grid-cols-1 lg:grid-cols-12 gap-y-12 lg:gap-x-10 lg:gap-y-16 items-start">
         <AnimatePresence mode="popLayout">

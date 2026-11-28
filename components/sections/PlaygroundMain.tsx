@@ -8,6 +8,7 @@ import { MotionProvider } from "../motion/MotionProvider";
 import { BrandPreloader } from "../motion/BrandPreloader";
 import { CustomCursor } from "../motion/CustomCursor";
 import { ScrollProgress } from "../motion/ScrollProgress";
+import { SmoothScrollProvider } from "../motion/SmoothScrollProvider";
 import { DottedCanvas } from "../collage";
 import { Navigation } from "../layout/Navigation";
 import { Hero } from "./Hero";
@@ -198,10 +199,11 @@ export function PlaygroundMain({ bundle }: PlaygroundMainProps) {
   return (
     <ThemeProvider>
       <MotionProvider>
-        <BrandPreloader />
-        <ScrollProgress color="#F05A28" />
-        <CustomCursor />
-        <DottedCanvas>
+        <SmoothScrollProvider>
+          <BrandPreloader />
+          <ScrollProgress color="#F05A28" />
+          <CustomCursor />
+          <DottedCanvas>
           <Navigation />
           <main id="main">
             <Hero
@@ -229,7 +231,8 @@ export function PlaygroundMain({ bundle }: PlaygroundMainProps) {
             <Contact ownerEmail={ownerEmail} ownerLocation={ownerLocation} />
           </main>
           <Footer ownerName={ownerName} ownerEmail={ownerEmail} />
-        </DottedCanvas>
+          </DottedCanvas>
+        </SmoothScrollProvider>
       </MotionProvider>
     </ThemeProvider>
   );

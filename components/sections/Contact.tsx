@@ -117,22 +117,36 @@ export function Contact({
             <span className="font-mono text-[10px] uppercase tracking-wider text-[#FAF8F5]/80 block mb-2">
               OFFICIAL EMAIL
             </span>
-            <div className="flex items-center justify-between gap-2">
-              <a
-                href={`mailto:${ownerEmail}`}
-                className="font-mono text-xs sm:text-sm text-[#FAF8F5] hover:underline truncate"
-              >
-                {ownerEmail}
-              </a>
-              <button
-                type="button"
-                onClick={handleCopy}
-                aria-label="Copy email"
-                className="p-2 rounded-[0.4rem] bg-[#FAF8F5]/15 hover:bg-[#FAF8F5]/25 text-[#FAF8F5] cursor-pointer"
-              >
-                {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-              </button>
-            </div>
+              <div className="flex items-center justify-between gap-2">
+                <a
+                  href={`mailto:${ownerEmail}`}
+                  className="font-mono text-xs sm:text-sm text-[#FAF8F5] hover:underline truncate"
+                >
+                  {ownerEmail}
+                </a>
+                <div className="relative">
+                  <button
+                    type="button"
+                    onClick={handleCopy}
+                    aria-label="Copy email"
+                    className="p-2 rounded-[0.4rem] bg-[#FAF8F5]/15 hover:bg-[#FAF8F5]/25 text-[#FAF8F5] cursor-pointer"
+                  >
+                    {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                  </button>
+                  <AnimatePresence>
+                    {copied && (
+                      <motion.span
+                        initial={{ opacity: 0, y: 6, scale: 0.9 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: -4, scale: 0.9 }}
+                        className="absolute -top-9 right-0 px-2.5 py-1 rounded-[0.35rem] bg-[#C4D94E] text-[#000000] font-mono text-[10px] uppercase whitespace-nowrap"
+                      >
+                        COPIED!
+                      </motion.span>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </div>
           </InfoCard>
 
           <TextCard rotate={1.5} mobileRotate={1} foldedCorner>
